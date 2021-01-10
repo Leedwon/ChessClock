@@ -50,11 +50,11 @@ fun ClockButton(modifier: Modifier, player: Player, text: String, onClick: () ->
                 Player.Black -> Color.Black
             }
         ),
-        onClick = onClick
+        onClick = onClick,
     ) {
         Text(
             modifier = Modifier.rotate(rotateDegrees),
-            text = text, fontSize = TextUnit.Companion.Sp(25), color = when (player) {
+            text = text, fontSize = TextUnit.Companion.Sp(35), color = when (player) {
                 Player.White -> Color.Black
                 Player.Black -> Color.White
             }
