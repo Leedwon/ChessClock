@@ -1,34 +1,27 @@
 package com.example.chessclock
 
-import android.os.Parcelable
-import android.util.Log
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
-import dagger.hilt.InstallIn
-import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import java.text.DecimalFormat
 
-enum class Player {
+enum class Player{
     White, Black
 }
-
 data class State(
     val whiteText: String,
     val blackText: String
 )
 
-@Parcelize
 data class InitialData(
-    val whiteMinutes: Int,
+    val whiteSeconds: Int,
     val whiteIncrementSeconds: Int = 0,
-    val blackMinutes: Int,
+    val blackSeconds: Int,
     val blackIncrementSeconds: Int = 0
-) : Parcelable
+)
 
 class ClockViewModel @ViewModelInject constructor(
     @Assisted private val savedStateHandle: SavedStateHandle
@@ -43,16 +36,20 @@ class ClockViewModel @ViewModelInject constructor(
 
     private var currentPlayer: Player = Player.White
 
-    private var whiteMillis = initialData.whiteMinutes * MILLIS_TO_MINUTES_DIFF
+    private var whiteMillis = initialData.whiteSeconds * 1000
     private val whiteMinutes
         get() = whiteMillis / MILLIS_TO_MINUTES_DIFF
     private val whiteSeconds
         get() = whiteMillis / 1000 % 60
-    private var blackMillis = initialData.blackMinutes * MILLIS_TO_MINUTES_DIFF
+    private val whiteIncrementMillis = initialData.whiteIncrementSeconds * 1000
+
+    private var blackMillis = initialData.blackSeconds * 1000
     private val blackMinutes
         get() = blackMillis / MILLIS_TO_MINUTES_DIFF
     private val blackSeconds
         get() = blackMillis / 1000 % 60
+    private val blackIncrementMillis = initialData.blackIncrementSeconds * 1000
+
     private val gameOver: Boolean
         get() = whiteMillis == 0 || blackMillis == 0
 
@@ -99,25 +96,18 @@ class ClockViewModel @ViewModelInject constructor(
             }
             else -> {
                 State(
-                    whiteText = "${createMinutesText(whiteMinutes)}:${createSecondsText(whiteSeconds)}",
-                    blackText = "${createMinutesText(blackMinutes)}:${createSecondsText(blackSeconds)}"
+                    whiteText = "${formatTime(whiteMinutes)}:${formatTime(whiteSeconds)}",
+                    blackText = "${formatTime(blackMinutes)}:${formatTime(blackSeconds)}"
                 )
             }
         }
     }
 
-    private fun createMinutesText(minutes: Int): String =
-        if (minutes.toString().length == 1) {
-            "0$minutes"
+    private fun formatTime(time: Int): String =
+        if(time < 10) {
+            "0$time"
         } else {
-            minutes.toString()
-        }
-
-    private fun createSecondsText(seconds: Int): String =
-        if (seconds.toString().length == 1) {
-            "${seconds}0"
-        } else {
-            seconds.toString()
+            time.toString()
         }
 
     fun clockClicked(player: Player) {
@@ -130,8 +120,8 @@ class ClockViewModel @ViewModelInject constructor(
 
         if (player == currentPlayer) {
             currentPlayer = when (player) {
-                Player.White -> Player.Black
-                Player.Black -> Player.White
+                Player.White -> Player.Black.also { whiteMillis += whiteIncrementMillis}
+                Player.Black -> Player.White.also { blackMillis += blackIncrementMillis }
             }
         }
     }

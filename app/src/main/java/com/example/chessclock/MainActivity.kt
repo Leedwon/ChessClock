@@ -47,22 +47,35 @@ class MainActivity : AppCompatActivity() {
                                 timerViewModel = timerViewModel
                             )
                         }
+                        composable(Routes.CreateTimerRoute) {
+                            CreateTimer()
+                        }
                         composable(
                             Routes.ClockRoute,
-                            arguments = listOf(navArgument(Routes.ClockRouteArgs.WhiteMinutes) {
+                            arguments = listOf(navArgument(Routes.ClockRouteArgs.WhiteSeconds) {
                                 type = NavType.IntType
-                            }, navArgument(Routes.ClockRouteArgs.BlackMinutes) {
+                            }, navArgument(Routes.ClockRouteArgs.BlackSeconds) {
+                                type = NavType.IntType
+                            }, navArgument(Routes.ClockRouteArgs.WhiteIncrementSeconds) {
+                                type = NavType.IntType
+                            }, navArgument(Routes.ClockRouteArgs.BlackIncrementSeconds) {
                                 type = NavType.IntType
                             })
                         ) { navBackStackEntry ->
-                            val whiteMinutes =
-                                navBackStackEntry.arguments!!.getInt(Routes.ClockRouteArgs.WhiteMinutes)
-                            val blackMinutes =
-                                navBackStackEntry.arguments!!.getInt(Routes.ClockRouteArgs.BlackMinutes)
+                            val whiteSeconds =
+                                navBackStackEntry.arguments!!.getInt(Routes.ClockRouteArgs.WhiteSeconds)
+                            val blackSeconds =
+                                navBackStackEntry.arguments!!.getInt(Routes.ClockRouteArgs.BlackSeconds)
+                            val whiteIncrementSeconds =
+                                navBackStackEntry.arguments!!.getInt(Routes.ClockRouteArgs.WhiteIncrementSeconds)
+                            val blackIncrementSeconds =
+                                navBackStackEntry.arguments!!.getInt(Routes.ClockRouteArgs.BlackIncrementSeconds)
 
                             val initialData = InitialData(
-                                whiteMinutes = whiteMinutes,
-                                blackMinutes = blackMinutes
+                                whiteSeconds = whiteSeconds,
+                                blackSeconds = blackSeconds,
+                                whiteIncrementSeconds = whiteIncrementSeconds,
+                                blackIncrementSeconds = blackIncrementSeconds
                             )
 
                             val clockViewModel = clockViewModelFactory.create(

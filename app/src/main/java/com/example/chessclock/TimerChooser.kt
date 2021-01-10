@@ -1,89 +1,77 @@
 package com.example.chessclock
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Button
-import androidx.compose.material.Slider
-import androidx.compose.material.Text
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.WithConstraints
-import androidx.compose.ui.platform.AmbientDensity
 import androidx.compose.ui.platform.AmbientLifecycleOwner
+import androidx.compose.ui.res.loadVectorResource
 import androidx.compose.ui.unit.dp
 import com.example.chessclock.navigation.Actions
 
 @Composable
 fun TimerChooser(actions: Actions, timerViewModel: TimerViewModel) {
 
-    val state: TimerViewModel.State by timerViewModel.state.observeAsState(
-        initial = TimerViewModel.State(
-            10f,
-            10f
-        )
+    val timers: List<Timer> by timerViewModel.timers.observeAsState(
+        initial = emptyList()
     )
 
     timerViewModel.command.observe(AmbientLifecycleOwner.current, {
         when (it) {
-            is TimerViewModel.Command.NavigateToClock -> actions.openClock(it.state)
+            is TimerViewModel.Command.NavigateToClock -> actions.openClock(it.timer)
+            is TimerViewModel.Command.NavigateToCreateTimer -> actions.openCreateTimer()
             else -> {}
         }
     })
 
-    Column {
-        SliderWithDescription(
-            modifier = Modifier.padding(all = 16.dp),
-            description = "White's time",
-            value = state.whiteTime,
-            valueRange = 1f..60f,
-            onValueChange = timerViewModel::onWhiteTimeChanged
-        )
-        SliderWithDescription(
-            modifier = Modifier.padding(all = 16.dp),
-            description = "Black's time",
-            value = state.blackTime,
-            valueRange = 1f..60f,
-            onValueChange = timerViewModel::onBlackTimeChanged
-        )
-        Button(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
-            onClick = timerViewModel::onPlayClicked
-        ) {
-            Text("Start game")
+    LazyColumn(content = {
+        items(timers) { timer ->
+            TimeCard(
+                modifier = Modifier.padding(16.dp).fillMaxWidth().clickable(
+                    onClick = {
+                        timerViewModel.onTimerClicked(timer)
+                    }),
+                timer = timer
+            )
         }
-    }
+        item {
+            Button(
+                modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                onClick = timerViewModel::onCreateTimerClicked
+            ) {
+                Text("create your own timer")
+            }
+        }
+    })
 }
 
 @Composable
-fun SliderWithDescription(
-    modifier: Modifier = Modifier,
-    description: String,
-    value: Float,
-    valueRange: ClosedFloatingPointRange<Float>,
-    onValueChange: (Float) -> Unit,
-    steps: Int = 0
-) {
-    WithConstraints {
-        Column(modifier) {
-            val textPadding = (value / valueRange.endInclusive) * constraints.maxWidth
-            val textPaddingDp = with(AmbientDensity.current) { textPadding.toDp() }
-
-            Text(modifier = Modifier.padding(horizontal = 8.dp), text = description)
-            Slider(
-                value = value,
-                valueRange = valueRange,
-                onValueChange = onValueChange,
-                steps = steps
-            )
-            Text(
-                modifier = Modifier.padding(start = textPaddingDp),
-                text = value.toInt().toString()
-            )
+fun TimeCard(timer: Timer, modifier: Modifier = Modifier) {
+    Card(modifier = modifier, elevation = 4.dp, backgroundColor = MaterialTheme.colors.primary) {
+        Column(modifier = Modifier.padding(8.dp), horizontalAlignment = Alignment.Start) {
+            Row {
+                val image = loadVectorResource(id = R.drawable.ic_clock_24)
+                image.resource.resource?.let {
+                    Image(imageVector = image.resource.resource!!)
+                }
+                Text(text = timer.clockTime.toString())
+            }
+            timer.timeAdditionPerMove?.let {
+                Row {
+                    val image = loadVectorResource(id = R.drawable.ic_arrow_circle_up_24)
+                    image.resource.resource?.let {
+                        Image(imageVector = image.resource.resource!!)
+                    }
+                    Text(text = timer.timeAdditionPerMove.toString())
+                }
+            }
+            Text(text = timer.description)
         }
     }
-
-
 }
