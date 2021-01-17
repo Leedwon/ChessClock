@@ -1,6 +1,5 @@
 package com.example.chessclock.navigation
 
-import android.util.Log
 import androidx.navigation.NavController
 import androidx.navigation.compose.navigate
 import com.example.chessclock.Timer
