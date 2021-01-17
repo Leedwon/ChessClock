@@ -78,6 +78,7 @@ class MainActivity : AppCompatActivity() {
                                 blackIncrementSeconds = blackIncrementSeconds
                             )
 
+                            //todo it is not bind to lifecycle - fix it
                             val clockViewModel = clockViewModelFactory.create(
                                 SavedStateHandle(
                                     mapOf(
@@ -85,7 +86,8 @@ class MainActivity : AppCompatActivity() {
                                     )
                                 )
                             )
-                            Clock(clockViewModel = clockViewModel)
+
+                            ClockScreen(clockViewModel = clockViewModel)
                         }
                     }
                 }
