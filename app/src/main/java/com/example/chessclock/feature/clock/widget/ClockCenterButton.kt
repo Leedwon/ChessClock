@@ -17,12 +17,12 @@ import com.example.chessclock.feature.clock.GameState
 import com.example.chessclock.feature.clock.State
 
 
-data class ClockCenterInteractions(
-    val swapSides: () -> Unit,
-    val stopTimer: () -> Unit,
-    val startTimer: () -> Unit,
-    val restart: () -> Unit
-)
+interface ClockCenterInteractions {
+    fun swapSides()
+    fun stopTimer()
+    fun startTimer()
+    fun restartGame()
+}
 
 @Composable
 fun ClockCenterButton(
@@ -36,7 +36,7 @@ fun ClockCenterButton(
                 GameState.BeforeStarted -> clockCenterInteractions.swapSides()
                 GameState.Running -> clockCenterInteractions.stopTimer()
                 GameState.Paused -> clockCenterInteractions.startTimer()
-                GameState.Over -> clockCenterInteractions.restart()
+                GameState.Over -> clockCenterInteractions.restartGame()
                 else -> {
                 }
             }

@@ -22,7 +22,8 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
     )
 
     Box(contentAlignment = Alignment.Center) {
-        val clockEnabled = state.gameState != GameState.Paused && state.gameState != GameState.RandomizingPositions
+        val clockEnabled =
+            state.gameState != GameState.Paused && state.gameState != GameState.RandomizingPositions
         Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceAround) {
             val btnModifier = Modifier.weight(1f).fillMaxWidth()
             ClockButton(
@@ -43,12 +44,12 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
             RotatingDice()
         } else {
             ClockCenterButton(
-                state = state, clockCenterInteractions = ClockCenterInteractions(
-                    swapSides = clockViewModel::swapSides,
-                    stopTimer = clockViewModel::stopTimer,
-                    startTimer = clockViewModel::startTimer,
-                    restart = clockViewModel::restart
-                )
+                state = state, clockCenterInteractions = object : ClockCenterInteractions {
+                    override fun swapSides() = clockViewModel.swapSides()
+                    override fun stopTimer() = clockViewModel.stopTimer()
+                    override fun startTimer() = clockViewModel.startTimer()
+                    override fun restartGame() = clockViewModel.restartGame()
+                }
             )
         }
     }

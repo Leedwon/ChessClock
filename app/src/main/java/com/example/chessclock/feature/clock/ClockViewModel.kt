@@ -56,6 +56,7 @@ sealed class Player(var millisLeft: Float, private val incrementMillis: Int = 0)
     }
 }
 
+//PlayerDisplay allows for ui changes to happen in 1s intervals, too fast intervals caused ui to freeze
 sealed class PlayerDisplay(
     val text: String
 ) {
@@ -177,7 +178,7 @@ class ClockViewModel @ViewModelInject constructor(
         }
     }
 
-    fun restart() {
+    fun restartGame() {
         white.millisLeft = initialData.whiteSeconds * 1000f
         black.millisLeft = initialData.blackSeconds * 1000f
         gameState = GameState.BeforeStarted
