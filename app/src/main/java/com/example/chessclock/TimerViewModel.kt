@@ -8,7 +8,6 @@ import com.example.chessclock.model.ClockTime
 import com.example.chessclock.model.hour
 import com.example.chessclock.model.minute
 import com.example.chessclock.model.second
-import kotlinx.coroutines.flow.flowOf
 
 data class Timer(
     val clockTime: ClockTime,
@@ -35,6 +34,11 @@ object Timers {
         Timer(
             clockTime = ClockTime(minute = 3.minute),
             description = "Blitz 3"
+        ),
+        Timer(
+            clockTime = ClockTime(minute = 3.minute),
+            timeAdditionPerMove = ClockTime(second = 2.second),
+            description = "Blitz 3 + 2"
         ),
         Timer(
             clockTime = ClockTime(minute = 5.minute),
