@@ -6,9 +6,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.loadVectorResource
 import com.example.chessclock.feature.clock.widget.ClockButton
 import com.example.chessclock.feature.clock.widget.ClockCenterButton
-import com.example.chessclock.feature.clock.widget.ClockCenterInteractions
 import com.example.chessclock.feature.clock.widget.RotatingDice
 
 @Composable
@@ -40,17 +41,59 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
                 enabled = clockEnabled
             )
         }
-        if (state.gameState == GameState.RandomizingPositions) {
-            RotatingDice()
-        } else {
-            ClockCenterButton(
-                state = state, clockCenterInteractions = object : ClockCenterInteractions {
-                    override fun swapSides() = clockViewModel.swapSides()
-                    override fun stopTimer() = clockViewModel.stopTimer()
-                    override fun startTimer() = clockViewModel.startTimer()
-                    override fun restartGame() = clockViewModel.restartGame()
+        when (state.gameState) {
+            GameState.RandomizingPositions -> {
+                RotatingDice()
+            }
+            GameState.BeforeStarted -> {
+                ClockCenterButton(
+                    onClick = { clockViewModel.swapSides() },
+                    icon = loadVectorResource(
+                        id = com.example.chessclock.R.drawable.ic_swap_48
+                    ),
+                    iconTint = Color.Green
+                )
+            }
+            GameState.Running -> {
+                ClockCenterButton(
+                    onClick = { clockViewModel.stopTimer() },
+                    icon = loadVectorResource(
+                        id = com.example.chessclock.R.drawable.ic_pause_48
+                    ),
+                    iconTint = Color.Red
+                )
+            }
+            GameState.Paused -> {
+                Row(
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    ClockCenterButton(
+                        modifier = Modifier.weight(1f),
+                        onClick = { clockViewModel.startTimer() },
+                        icon = loadVectorResource(
+                            id = com.example.chessclock.R.drawable.ic_play_48
+                        ),
+                        iconTint = Color.Green
+                    )
+                    ClockCenterButton(
+                        modifier = Modifier.weight(1f),
+                        onClick = { clockViewModel.restartGame() },
+                        icon = loadVectorResource(
+                            id = com.example.chessclock.R.drawable.ic_replay_48
+                        ),
+                        iconTint = Color.Green
+                    )
                 }
-            )
+            }
+            GameState.Over -> {
+                ClockCenterButton(
+                    onClick = { clockViewModel.restartGame() },
+                    icon = loadVectorResource(
+                        id = com.example.chessclock.R.drawable.ic_replay_48
+                    ),
+                    iconTint = Color.Green
+                )
+            }
         }
     }
 }
