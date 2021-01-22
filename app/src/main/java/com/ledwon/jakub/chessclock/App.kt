@@ -1,4 +1,4 @@
-package com.example.chessclock
+package com.ledwon.jakub.chessclock
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp

@@ -1,4 +1,4 @@
-package com.example.chessclock
+package com.ledwon.jakub.chessclock
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.AmbientLifecycleOwner
 import androidx.compose.ui.res.loadVectorResource
 import androidx.compose.ui.unit.dp
-import com.example.chessclock.navigation.Actions
+import com.ledwon.jakub.chessclock.navigation.Actions
 
 @Composable
 fun TimerChooser(actions: Actions, timerViewModel: TimerViewModel) {

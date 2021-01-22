@@ -1,4 +1,4 @@
-package com.example.chessclock.feature.clock
+package com.ledwon.jakub.chessclock.feature.clock
 
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject

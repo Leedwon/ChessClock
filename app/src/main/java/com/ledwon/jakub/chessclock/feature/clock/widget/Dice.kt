@@ -1,4 +1,4 @@
-package com.example.chessclock.feature.clock.widget
+package com.ledwon.jakub.chessclock.feature.clock.widget
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.core.*
@@ -18,7 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.chessclock.R
+import com.ledwon.jakub.chessclock.R
 
 val rotation = FloatPropKey(label = "randomizing")
 val diceNumber = IntPropKey(label = "dice")
