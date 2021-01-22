@@ -1,4 +1,4 @@
-package com.example.chessclock
+package com.ledwon.jakub.chessclock
 
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
