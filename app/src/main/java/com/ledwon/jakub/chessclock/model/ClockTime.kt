@@ -1,4 +1,4 @@
-package com.example.chessclock.model
+package com.ledwon.jakub.chessclock.model
 
 class Second(
     seconds: Int

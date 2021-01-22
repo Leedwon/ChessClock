@@ -1,4 +1,4 @@
-package com.example.chessclock.feature.clock.widget
+package com.ledwon.jakub.chessclock.feature.clock.widget
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.height

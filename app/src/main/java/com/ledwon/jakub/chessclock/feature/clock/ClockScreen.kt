@@ -1,4 +1,4 @@
-package com.example.chessclock.feature.clock
+package com.ledwon.jakub.chessclock.feature.clock
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
@@ -8,9 +8,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.loadVectorResource
-import com.example.chessclock.feature.clock.widget.ClockButton
-import com.example.chessclock.feature.clock.widget.ClockCenterButton
-import com.example.chessclock.feature.clock.widget.RotatingDice
+import com.ledwon.jakub.chessclock.feature.clock.widget.ClockButton
+import com.ledwon.jakub.chessclock.feature.clock.widget.ClockCenterButton
+import com.ledwon.jakub.chessclock.feature.clock.widget.RotatingDice
 
 @Composable
 fun ClockScreen(clockViewModel: ClockViewModel) {
@@ -49,7 +49,7 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
                 ClockCenterButton(
                     onClick = { clockViewModel.swapSides() },
                     icon = loadVectorResource(
-                        id = com.example.chessclock.R.drawable.ic_swap_48
+                        id = com.ledwon.jakub.chessclock.R.drawable.ic_swap_48
                     ),
                     iconTint = Color.Green
                 )
@@ -58,7 +58,7 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
                 ClockCenterButton(
                     onClick = { clockViewModel.stopTimer() },
                     icon = loadVectorResource(
-                        id = com.example.chessclock.R.drawable.ic_pause_48
+                        id = com.ledwon.jakub.chessclock.R.drawable.ic_pause_48
                     ),
                     iconTint = Color.Red
                 )
@@ -71,7 +71,7 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
                         modifier = Modifier.weight(1f),
                         onClick = { clockViewModel.startTimer() },
                         icon = loadVectorResource(
-                            id = com.example.chessclock.R.drawable.ic_play_48
+                            id = com.ledwon.jakub.chessclock.R.drawable.ic_play_48
                         ),
                         iconTint = Color.Green
                     )
@@ -79,7 +79,7 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
                         modifier = Modifier.weight(1f),
                         onClick = { clockViewModel.restartGame() },
                         icon = loadVectorResource(
-                            id = com.example.chessclock.R.drawable.ic_replay_48
+                            id = com.ledwon.jakub.chessclock.R.drawable.ic_replay_48
                         ),
                         iconTint = Color.Green
                     )
@@ -89,7 +89,7 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
                 ClockCenterButton(
                     onClick = { clockViewModel.restartGame() },
                     icon = loadVectorResource(
-                        id = com.example.chessclock.R.drawable.ic_replay_48
+                        id = com.ledwon.jakub.chessclock.R.drawable.ic_replay_48
                     ),
                     iconTint = Color.Green
                 )

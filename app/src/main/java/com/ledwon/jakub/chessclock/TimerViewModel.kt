@@ -1,13 +1,13 @@
-package com.example.chessclock
+package com.ledwon.jakub.chessclock
 
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.chessclock.model.ClockTime
-import com.example.chessclock.model.hour
-import com.example.chessclock.model.minute
-import com.example.chessclock.model.second
+import com.ledwon.jakub.chessclock.model.ClockTime
+import com.ledwon.jakub.chessclock.model.hour
+import com.ledwon.jakub.chessclock.model.minute
+import com.ledwon.jakub.chessclock.model.second
 
 data class Timer(
     val clockTime: ClockTime,
