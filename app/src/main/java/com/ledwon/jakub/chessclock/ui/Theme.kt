@@ -1,4 +1,4 @@
-package com.example.chessclock.ui
+package com.ledwon.jakub.chessclock.ui
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme

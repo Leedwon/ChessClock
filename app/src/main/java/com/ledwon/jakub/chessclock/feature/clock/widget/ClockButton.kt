@@ -1,4 +1,4 @@
-package com.example.chessclock.feature.clock.widget
+package com.ledwon.jakub.chessclock.feature.clock.widget
 
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -8,7 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.TextUnit
-import com.example.chessclock.feature.clock.PlayerDisplay
+import com.ledwon.jakub.chessclock.feature.clock.PlayerDisplay
 
 @Composable
 fun ClockButton(

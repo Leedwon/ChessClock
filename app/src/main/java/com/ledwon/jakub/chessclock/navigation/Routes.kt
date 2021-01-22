@@ -1,9 +1,9 @@
-package com.example.chessclock.navigation
+package com.ledwon.jakub.chessclock.navigation
 
 import androidx.navigation.NavController
 import androidx.navigation.compose.navigate
-import com.example.chessclock.Timer
-import com.example.chessclock.navigation.Routes.CreateTimerRoute
+import com.ledwon.jakub.chessclock.Timer
+import com.ledwon.jakub.chessclock.navigation.Routes.CreateTimerRoute
 
 object Routes {
     object ClockRouteArgs {

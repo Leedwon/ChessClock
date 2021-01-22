@@ -1,4 +1,4 @@
-package com.example.chessclock
+package com.ledwon.jakub.chessclock
 
 import android.os.Bundle
 import android.view.WindowManager
@@ -14,13 +14,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.rememberNavController
-import com.example.chessclock.feature.clock.ClockScreen
-import com.example.chessclock.feature.clock.ClockViewModel
-import com.example.chessclock.feature.clock.ClockViewModel_AssistedFactory
-import com.example.chessclock.feature.clock.InitialData
-import com.example.chessclock.navigation.Actions
-import com.example.chessclock.navigation.Routes
-import com.example.chessclock.ui.ChessClockTheme
+import com.ledwon.jakub.chessclock.feature.clock.ClockScreen
+import com.ledwon.jakub.chessclock.feature.clock.ClockViewModel
+import com.ledwon.jakub.chessclock.feature.clock.ClockViewModel_AssistedFactory
+import com.ledwon.jakub.chessclock.feature.clock.InitialData
+import com.ledwon.jakub.chessclock.navigation.Actions
+import com.ledwon.jakub.chessclock.navigation.Routes
+import com.ledwon.jakub.chessclock.ui.ChessClockTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
