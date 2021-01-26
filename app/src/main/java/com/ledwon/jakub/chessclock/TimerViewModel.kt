@@ -1,6 +1,5 @@
 package com.ledwon.jakub.chessclock
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -63,7 +62,7 @@ object Timers {
     )
 }
 
-class TimerViewModel @ViewModelInject constructor() : ViewModel() {
+class TimerViewModel : ViewModel() {
 
     private val _timers: MutableLiveData<List<Timer>> = MutableLiveData(Timers.values)
     val timers: LiveData<List<Timer>> = _timers
