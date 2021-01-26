@@ -1,11 +1,10 @@
 package com.ledwon.jakub.chessclock.feature.clock
 
-import androidx.hilt.Assisted
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.ticker
+import timber.log.Timber
 import java.lang.Math.random
 
 sealed class Player(var millisLeft: Float, private val incrementMillis: Int = 0) {
@@ -98,17 +97,14 @@ data class InitialData(
     val blackIncrementSeconds: Int = 0
 )
 
-class ClockViewModel @ViewModelInject constructor(
-    @Assisted private val savedStateHandle: SavedStateHandle
+class ClockViewModel(
+    private val initialData: InitialData
 ) : ViewModel() {
 
     companion object {
-        const val SAVED_STATE_HANDLE_KEY = "KEY"
         private const val INTERVAL_MILLIS = 100L
         private const val MIN_RANDOM_ROUNDS = 9
     }
-
-    private val initialData = savedStateHandle.get<InitialData>(SAVED_STATE_HANDLE_KEY)!!
 
     private val white = Player.White(
         millisLeft = initialData.whiteSeconds * 1000f,
@@ -167,6 +163,7 @@ class ClockViewModel @ViewModelInject constructor(
         gameState = GameState.Running
         viewModelScope.launch {
             for (tick in timer) {
+                Timber.i("tick")
                 val currentMillis = System.currentTimeMillis()
                 if (gameState != GameState.Over && gameState != GameState.Paused) {
                     currentPlayer.millisLeft -= (INTERVAL_MILLIS + (System.currentTimeMillis() - currentMillis))
@@ -213,5 +210,10 @@ class ClockViewModel @ViewModelInject constructor(
                 is PlayerDisplay.Black -> white
             }
         }
+    }
+
+    override fun onCleared() {
+        Timber.i("onCleared")
+        super.onCleared()
     }
 }
