@@ -1,4 +1,4 @@
-package com.ledwon.jakub.chessclock
+package com.ledwon.jakub.chessclock.feature.choose_timer
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -13,19 +13,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.AmbientLifecycleOwner
 import androidx.compose.ui.res.loadVectorResource
 import androidx.compose.ui.unit.dp
+import com.ledwon.jakub.chessclock.R
 import com.ledwon.jakub.chessclock.navigation.Actions
 
 @Composable
-fun TimerChooser(actions: Actions, timerViewModel: TimerViewModel) {
+fun ChooseTimerScreen(actions: Actions, chooseTimerViewModel: ChooseTimerViewModel) {
 
-    val timers: List<Timer> by timerViewModel.timers.observeAsState(
+    val timers: List<Timer> by chooseTimerViewModel.timers.observeAsState(
         initial = emptyList()
     )
 
-    timerViewModel.command.observe(AmbientLifecycleOwner.current, {
+    chooseTimerViewModel.command.observe(AmbientLifecycleOwner.current, {
         when (it) {
-            is TimerViewModel.Command.NavigateToClock -> actions.openClock(it.timer)
-            is TimerViewModel.Command.NavigateToCreateTimer -> actions.openCreateTimer()
+            is ChooseTimerViewModel.Command.NavigateToClock -> actions.openClock(it.timer)
+            is ChooseTimerViewModel.Command.NavigateToCreateTimer -> actions.openCreateTimer()
             else -> {}
         }
     })
@@ -35,7 +36,7 @@ fun TimerChooser(actions: Actions, timerViewModel: TimerViewModel) {
             TimeCard(
                 modifier = Modifier.padding(16.dp).fillMaxWidth().clickable(
                     onClick = {
-                        timerViewModel.onTimerClicked(timer)
+                        chooseTimerViewModel.onTimerClicked(timer)
                     }),
                 timer = timer
             )
@@ -43,7 +44,7 @@ fun TimerChooser(actions: Actions, timerViewModel: TimerViewModel) {
         item {
             Button(
                 modifier = Modifier.padding(16.dp).fillMaxWidth(),
-                onClick = timerViewModel::onCreateTimerClicked
+                onClick = chooseTimerViewModel::onCreateTimerClicked
             ) {
                 Text("create your own timer")
             }
