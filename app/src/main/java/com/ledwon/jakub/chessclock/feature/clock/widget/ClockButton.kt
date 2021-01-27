@@ -26,10 +26,6 @@ fun ClockButton(
                 is PlayerDisplay.White -> Color.White
                 is PlayerDisplay.Black -> Color.Black
             },
-            contentColor = when(player) {
-                is PlayerDisplay.White -> Color.Black
-                is PlayerDisplay.Black -> Color.White
-            },
             disabledBackgroundColor = when (player) {
                 is PlayerDisplay.White -> Color.White
                 is PlayerDisplay.Black -> Color.Black
