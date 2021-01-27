@@ -79,7 +79,6 @@ sealed class PlayerDisplay(
 data class State(
     val first: PlayerDisplay,
     val second: PlayerDisplay,
-    val currentPlayer: Player, //todo pass some better type?
     val gameState: GameState
 )
 
@@ -189,7 +188,6 @@ class ClockViewModel(
     private fun createState(): State = State(
         first = PlayerDisplay.from(playersInOrder.first),
         second = PlayerDisplay.from(playersInOrder.second),
-        currentPlayer = currentPlayer,
         gameState = gameState
     )
 
