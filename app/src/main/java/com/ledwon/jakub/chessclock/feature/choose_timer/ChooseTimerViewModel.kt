@@ -1,4 +1,4 @@
-package com.ledwon.jakub.chessclock
+package com.ledwon.jakub.chessclock.feature.choose_timer
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -62,7 +62,7 @@ object Timers {
     )
 }
 
-class TimerViewModel : ViewModel() {
+class ChooseTimerViewModel : ViewModel() {
 
     private val _timers: MutableLiveData<List<Timer>> = MutableLiveData(Timers.values)
     val timers: LiveData<List<Timer>> = _timers

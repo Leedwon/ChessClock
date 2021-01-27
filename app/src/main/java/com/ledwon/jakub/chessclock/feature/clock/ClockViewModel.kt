@@ -213,7 +213,7 @@ class ClockViewModel(
     }
 
     override fun onCleared() {
-        Timber.i("onCleared")
+        Timber.i("$this onCleared")
         super.onCleared()
     }
 }
