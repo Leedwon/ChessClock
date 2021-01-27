@@ -18,7 +18,6 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
         State(
             PlayerDisplay.White(""),
             PlayerDisplay.Black(""),
-            Player.White(0f),
             GameState.BeforeStarted
         )
     )
@@ -33,13 +32,13 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
                 player = state.first,
                 onClick = { clockViewModel.clockClicked(state.first) },
                 rotateDegrees = 180f,
-                enabled = clockEnabled && state.first.isFor(state.currentPlayer) || state.gameState == GameState.BeforeStarted
+                enabled = clockEnabled
             )
             ClockButton(
                 modifier = btnModifier,
                 player = state.second,
                 onClick = { clockViewModel.clockClicked(state.second) },
-                enabled = clockEnabled && state.second.isFor(state.currentPlayer) || state.gameState == GameState.BeforeStarted
+                enabled = clockEnabled
             )
         }
         when (state.gameState) {
