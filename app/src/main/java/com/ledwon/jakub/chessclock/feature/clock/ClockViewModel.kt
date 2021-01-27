@@ -163,7 +163,6 @@ class ClockViewModel(
         gameState = GameState.Running
         viewModelScope.launch {
             for (tick in timer) {
-                Timber.i("tick")
                 val currentMillis = System.currentTimeMillis()
                 if (gameState != GameState.Over && gameState != GameState.Paused) {
                     currentPlayer.millisLeft -= (INTERVAL_MILLIS + (System.currentTimeMillis() - currentMillis))
