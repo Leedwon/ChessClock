@@ -6,42 +6,21 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.*
-import androidx.compose.ui.platform.AmbientViewModelStoreOwner
 import androidx.compose.ui.platform.setContent
-import androidx.lifecycle.*
-import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
+import com.ledwon.jakub.chessclock.di.provideNavViewModel
+import com.ledwon.jakub.chessclock.feature.choose_timer.ChooseTimerViewModel
+import com.ledwon.jakub.chessclock.feature.choose_timer.ChooseTimerScreen
 import com.ledwon.jakub.chessclock.feature.clock.ClockScreen
 import com.ledwon.jakub.chessclock.feature.clock.ClockViewModel
 import com.ledwon.jakub.chessclock.feature.clock.InitialData
+import com.ledwon.jakub.chessclock.feature.create_timer.CreateTimerScreen
 import com.ledwon.jakub.chessclock.navigation.Actions
 import com.ledwon.jakub.chessclock.navigation.Routes
 import com.ledwon.jakub.chessclock.ui.ChessClockTheme
-import org.koin.androidx.compose.getKoin
+import com.ledwon.jakub.chessclock.util.AmbientNavController
 import org.koin.core.parameter.parametersOf
-
-import org.koin.androidx.viewmodel.ViewModelOwner
-import org.koin.androidx.viewmodel.koin.getViewModel
-import org.koin.core.parameter.ParametersDefinition
-
-val AmbientNavController = ambientOf<NavController>()
-
-@Composable
-inline fun <reified VM : ViewModel> koinNavViewModel(
-    noinline parameters: ParametersDefinition? = null
-): VM {
-    val store = AmbientNavController.current.currentBackStackEntry?.viewModelStore
-        ?: AmbientViewModelStoreOwner.current.viewModelStore
-    return getKoin().getViewModel(
-        owner = {
-            ViewModelOwner.Companion.from(
-                store = store
-            )
-        },
-        parameters = parameters
-    )
-}
 
 class MainActivity : AppCompatActivity() {
 
@@ -61,15 +40,14 @@ class MainActivity : AppCompatActivity() {
                             startDestination = Routes.TimerChooserRoute
                         ) {
                             composable(Routes.TimerChooserRoute) {
-                                val timerVm: TimerViewModel = koinNavViewModel()
-                                TimerChooser(
+                                val chooseTimerViewModel: ChooseTimerViewModel = provideNavViewModel()
+                                ChooseTimerScreen(
                                     actions = actions,
-                                    timerViewModel = timerVm
+                                    chooseTimerViewModel = chooseTimerViewModel
                                 )
                             }
                             composable(Routes.CreateTimerRoute) {
-                                val vm: CreateTimerViewModel = koinNavViewModel()
-                                CreateTimerScreen(vm)
+                                CreateTimerScreen()
                             }
                             composable(
                                 Routes.ClockRoute,
@@ -99,10 +77,10 @@ class MainActivity : AppCompatActivity() {
                                     blackIncrementSeconds = blackIncrementSeconds
                                 )
 
-                                val vm: ClockViewModel =
-                                    koinNavViewModel(parameters = { parametersOf(initialData) })
+                                val clockViewModel: ClockViewModel =
+                                    provideNavViewModel(parameters = { parametersOf(initialData) })
 
-                                ClockScreen(clockViewModel = vm)
+                                ClockScreen(clockViewModel = clockViewModel)
                             }
                         }
                     }
