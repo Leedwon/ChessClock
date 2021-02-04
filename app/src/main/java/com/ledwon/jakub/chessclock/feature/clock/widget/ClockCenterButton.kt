@@ -34,6 +34,7 @@ fun ClockCenterButton(
         icon.resource.resource?.let {
             Icon(
                 imageVector = it,
+                contentDescription = "clock center action",
                 tint = iconTint
             )
         }
