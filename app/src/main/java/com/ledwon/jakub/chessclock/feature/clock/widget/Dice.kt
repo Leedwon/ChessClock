@@ -20,51 +20,27 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.ledwon.jakub.chessclock.R
 
-val rotation = FloatPropKey(label = "randomizing")
-val diceNumber = IntPropKey(label = "dice")
-
-enum class RollingState {
-    START, END
-}
-
-
 @SuppressLint("Range")
 @Composable
 fun RotatingDice() {
-    val definition = transitionDefinition<RollingState> {
-        state(RollingState.START) {
-            this[rotation] = 0f
-            this[diceNumber] = 0
-        }
-        state(RollingState.END) {
-            this[rotation] = 360f
-            this[diceNumber] = 0
-        }
+    val infiniteTransition = rememberInfiniteTransition()
 
-
-        transition(fromState = RollingState.START, toState = RollingState.END) {
-            rotation using infiniteRepeatable(tween(durationMillis = 1000))
-            diceNumber using infiniteRepeatable(
-                animation = keyframes {
-                    durationMillis = 3000
-                    for (i in 0..6) {
-                        i at i * durationMillis / 6
-                    }
-                }
-            )
-        }
-    }
-
-    val state = transition(
-        definition = definition,
-        initState = RollingState.START,
-        toState = RollingState.END
+    val diceIndex = infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 6f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000, easing = LinearEasing)
+        )
     )
-    Dice(state = state)
-}
 
-@Composable
-fun Dice(state: TransitionState) {
+    val rotation = infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1000)
+        )
+    )
+
     val images = listOf(
         androidx.compose.ui.res.loadVectorResource(R.drawable.ic_dice_one_48),
         androidx.compose.ui.res.loadVectorResource(R.drawable.ic_dice_two_48),
@@ -80,9 +56,10 @@ fun Dice(state: TransitionState) {
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        images[state[diceNumber]].resource.resource?.let {
+        images[diceIndex.value.toInt()].resource.resource?.let {
             Icon(
-                modifier = Modifier.rotate(state[rotation]),
+                modifier = Modifier.rotate(rotation.value),
+                contentDescription = null,
                 imageVector = it,
                 tint = Color.Green
             )

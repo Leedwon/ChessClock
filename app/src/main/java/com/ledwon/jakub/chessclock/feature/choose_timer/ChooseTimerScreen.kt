@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,7 +28,8 @@ fun ChooseTimerScreen(actions: Actions, chooseTimerViewModel: ChooseTimerViewMod
         when (it) {
             is ChooseTimerViewModel.Command.NavigateToClock -> actions.openClock(it.timer)
             is ChooseTimerViewModel.Command.NavigateToCreateTimer -> actions.openCreateTimer()
-            else -> {}
+            else -> {
+            }
         }
     })
 
@@ -59,7 +61,7 @@ fun TimeCard(timer: Timer, modifier: Modifier = Modifier) {
             Row {
                 val image = loadVectorResource(id = R.drawable.ic_clock_24)
                 image.resource.resource?.let {
-                    Image(imageVector = image.resource.resource!!)
+                    Image(imageVector = image.resource.resource!!, contentDescription = "timer")
                 }
                 Text(text = timer.clockTime.toString())
             }
@@ -67,7 +69,10 @@ fun TimeCard(timer: Timer, modifier: Modifier = Modifier) {
                 Row {
                     val image = loadVectorResource(id = R.drawable.ic_arrow_circle_up_24)
                     image.resource.resource?.let {
-                        Image(imageVector = image.resource.resource!!)
+                        Image(
+                            imageVector = image.resource.resource!!,
+                            contentDescription = "increment per move"
+                        )
                     }
                     Text(text = timer.timeAdditionPerMove.toString())
                 }
