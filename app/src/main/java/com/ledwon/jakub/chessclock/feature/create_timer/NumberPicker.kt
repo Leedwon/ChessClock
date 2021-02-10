@@ -4,7 +4,6 @@ import androidx.compose.animation.animatedFloat
 import androidx.compose.animation.core.FloatExponentialDecaySpec
 import androidx.compose.animation.core.TargetAnimation
 import androidx.compose.animation.core.fling
-import androidx.compose.foundation.animation.FlingConfig
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.layout.*
@@ -19,35 +18,34 @@ import androidx.compose.ui.platform.AmbientDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import timber.log.Timber
-import kotlin.math.abs
-import kotlin.math.max
 import kotlin.math.roundToInt
 
+//todo refactor listener mechanism - it spams events now
 @Composable
 fun NumberPicker(
     range: IntRange,
     modifier: Modifier = Modifier,
-    onValueChangeListener: (Int) -> Unit = {}
+    initialValue: Int = range.first,
+    onValueChangedListener: (Int) -> Unit = {}
 ) {
-    val cellHeight = 64.dp
-    val cellHeightPx = with(AmbientDensity.current) { cellHeight.toPx() }
+    val cellSize = 64.dp
+    val cellSizePx = with(AmbientDensity.current) { cellSize.toPx() }
 
-    val offset = animatedFloat(initVal = 0f).apply {
+    val offset = animatedFloat(initVal = initialValue * cellSizePx).apply {
         setBounds(
-            range.first.toFloat() * cellHeightPx,
-            range.last.toFloat() * cellHeightPx
+            range.first.toFloat() * cellSizePx,
+            range.last.toFloat() * cellSizePx
         )
     }
 
-    fun currentValue(offset: Float): Int = (offset / cellHeightPx).roundToInt()
+    fun currentValue(offset: Float): Int = (offset / cellSizePx).roundToInt()
 
     Column(
         modifier = modifier.draggable(
             orientation = Orientation.Vertical,
             onDrag = { dy ->
                 offset.snapTo(offset.value - dy)
-                onValueChangeListener(currentValue(offset.value))
+                onValueChangedListener(currentValue(offset.value))
             },
             onDragStopped = { velocity ->
                 offset.fling(
@@ -57,8 +55,8 @@ fun NumberPicker(
                     ),
                     adjustTarget = { target ->
                         val valueForTarget = currentValue(target)
-                        val actualTarget = valueForTarget * cellHeightPx
-                        onValueChangeListener(currentValue(actualTarget))
+                        val actualTarget = valueForTarget * cellSizePx
+                        onValueChangedListener(currentValue(actualTarget))
                         TargetAnimation(actualTarget)
                     }
                 )
@@ -66,19 +64,21 @@ fun NumberPicker(
         )
     ) {
         val currentValue = currentValue(offset.value)
-        val animOffsetPx = currentValue * cellHeightPx - offset.value
+        val animOffsetPx = currentValue * cellSizePx - offset.value
         val animOffsetDp = with(AmbientDensity.current) { animOffsetPx.toDp() }
 
-        val alpha = (animOffsetPx % cellHeightPx) / cellHeightPx
+        val alpha = (animOffsetPx % cellSizePx) / cellSizePx
         Cell(
             textAlpha = alpha + 0.5f,
-            size = cellHeight,
+            size = cellSize,
             text = (currentValue - 1).takeIf { it in range }?.toString() ?: "",
             textOffset = animOffsetDp
         )
-        Cell(size = cellHeight, text = currentValue.toString(), textOffset = animOffsetDp)
+        Spacer(modifier = Modifier.height(0.5.dp).background(Color.Black).width(cellSize))
+        Cell(size = cellSize, text = currentValue.toString(), textOffset = animOffsetDp)
+        Spacer(modifier = Modifier.height(0.5.dp).background(Color.Black).width(cellSize))
         Cell(
-            size = cellHeight,
+            size = cellSize,
             text = (currentValue + 1).takeIf { it in range }?.toString() ?: "",
             textOffset = animOffsetDp,
             textAlpha = 0.5f - alpha
