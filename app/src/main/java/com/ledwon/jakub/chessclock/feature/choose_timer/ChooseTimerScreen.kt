@@ -16,6 +16,7 @@ import androidx.compose.ui.res.loadVectorResource
 import androidx.compose.ui.unit.dp
 import com.ledwon.jakub.chessclock.R
 import com.ledwon.jakub.chessclock.navigation.Actions
+import com.ledwon.jakub.chessclock.navigation.OpenClockPayload
 
 @Composable
 fun ChooseTimerScreen(actions: Actions, chooseTimerViewModel: ChooseTimerViewModel) {
@@ -26,7 +27,12 @@ fun ChooseTimerScreen(actions: Actions, chooseTimerViewModel: ChooseTimerViewMod
 
     chooseTimerViewModel.command.observe(AmbientLifecycleOwner.current, {
         when (it) {
-            is ChooseTimerViewModel.Command.NavigateToClock -> actions.openClock(it.timer)
+            is ChooseTimerViewModel.Command.NavigateToClock -> actions.openClock(
+                OpenClockPayload(
+                    whiteClock = it.timer.clockTime,
+                    blackCLock = it.timer.clockTime,
+                )
+            )
             is ChooseTimerViewModel.Command.NavigateToCreateTimer -> actions.openCreateTimer()
             else -> {
             }
@@ -65,7 +71,7 @@ fun TimeCard(timer: Timer, modifier: Modifier = Modifier) {
                 }
                 Text(text = timer.clockTime.toString())
             }
-            timer.timeAdditionPerMove?.let {
+            timer.clockTime.increment.takeIf { it > 0 }?.let {
                 Row {
                     val image = loadVectorResource(id = R.drawable.ic_arrow_circle_up_24)
                     image.resource.resource?.let {
@@ -74,7 +80,7 @@ fun TimeCard(timer: Timer, modifier: Modifier = Modifier) {
                             contentDescription = "increment per move"
                         )
                     }
-                    Text(text = timer.timeAdditionPerMove.toString())
+                    Text(text = it.toString())
                 }
             }
             Text(text = timer.description)

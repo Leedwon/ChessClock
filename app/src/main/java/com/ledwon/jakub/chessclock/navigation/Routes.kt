@@ -3,6 +3,7 @@ package com.ledwon.jakub.chessclock.navigation
 import androidx.navigation.NavController
 import androidx.navigation.compose.navigate
 import com.ledwon.jakub.chessclock.feature.choose_timer.Timer
+import com.ledwon.jakub.chessclock.model.ClockTime
 import com.ledwon.jakub.chessclock.navigation.Routes.CreateTimerRoute
 
 object Routes {
@@ -14,17 +15,23 @@ object Routes {
     }
 
     const val TimerChooserRoute = "TimerChooser"
-    const val ClockRoute = "Clock/{${ClockRouteArgs.WhiteSeconds}}/{${ClockRouteArgs.BlackSeconds}}/{${ClockRouteArgs.WhiteIncrementSeconds}}/{${ClockRouteArgs.BlackIncrementSeconds}}"
+    const val ClockRoute =
+        "Clock/{${ClockRouteArgs.WhiteSeconds}}/{${ClockRouteArgs.BlackSeconds}}/{${ClockRouteArgs.WhiteIncrementSeconds}}/{${ClockRouteArgs.BlackIncrementSeconds}}"
     const val CreateTimerRoute = "CreateTimer"
 }
+
+data class OpenClockPayload(
+    val whiteClock: ClockTime,
+    val blackCLock: ClockTime
+)
 
 class Actions(navController: NavController) {
     val navigateBack: () -> Unit = {
         navController.popBackStack()
     }
 
-    val openClock: (Timer) -> Unit = {
-        navController.navigate("Clock/${it.clockTime.seconds}/${it.clockTime.seconds}/${it.timeAdditionPerMove?.seconds ?: 0}/${it.timeAdditionPerMove?.seconds ?: 0}")
+    val openClock: (OpenClockPayload) -> Unit = {
+        navController.navigate("Clock/${it.whiteClock.secondsSum}/${it.blackCLock.secondsSum}/${it.whiteClock.increment}/${it.blackCLock.increment}")
     }
 
     val openCreateTimer: () -> Unit = {
