@@ -1,85 +1,106 @@
 package com.ledwon.jakub.chessclock.feature.create_timer
 
-import androidx.compose.animation.animatedFloat
-import androidx.compose.animation.core.FloatExponentialDecaySpec
-import androidx.compose.animation.core.TargetAnimation
-import androidx.compose.animation.core.fling
+import androidx.compose.animation.AnimatedFloatModel
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.gesture.scrollorientationlocking.Orientation
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.AmbientDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlin.math.roundToInt
 
-//todo refactor listener mechanism - it spams events now
+class NumberPickerState(
+    val clock: AnimationClockObservable,
+    val range: IntRange,
+    private val initValue: Int = range.first
+) {
+    private val _currentOffset =
+        AnimatedFloatModel(
+            clock = clock,
+            initialValue = initValue.toFloat()
+        ).apply {
+            setBounds(range.first.toFloat(), range.last.toFloat())
+        }
+
+    var currentOffset: Float
+        get() = _currentOffset.value
+        set(value) {
+            _currentOffset.snapTo(value)
+        }
+
+    val currentValue
+        get() = _currentOffset.value.roundToInt()
+
+    fun fling(velocity: Float, onAnimationFinished: ((Int) -> Unit)? = null) {
+        _currentOffset.fling(
+            startVelocity = velocity,
+            decay = FloatExponentialDecaySpec(frictionMultiplier = 15f),
+            adjustTarget = { target ->
+                TargetAnimation(target.roundToInt().toFloat())
+            },
+            onEnd = { animationEndReason: AnimationEndReason, _, _ ->
+                if (animationEndReason == AnimationEndReason.Finished || animationEndReason == AnimationEndReason.TargetReached) {
+                    onAnimationFinished?.invoke(currentValue)
+                }
+            }
+        )
+    }
+
+}
+
 @Composable
 fun NumberPicker(
-    range: IntRange,
+    state: NumberPickerState,
     modifier: Modifier = Modifier,
-    initialValue: Int = range.first,
-    onValueChangedListener: (Int) -> Unit = {}
+    onValueChangedListener: ((Int) -> Unit)? = null
 ) {
     val cellSize = 64.dp
     val cellSizePx = with(AmbientDensity.current) { cellSize.toPx() }
 
-    val offset = animatedFloat(initVal = initialValue * cellSizePx).apply {
-        setBounds(
-            range.first.toFloat() * cellSizePx,
-            range.last.toFloat() * cellSizePx
-        )
-    }
-
-    fun currentValue(offset: Float): Int = (offset / cellSizePx).roundToInt()
-
     Column(
         modifier = modifier.draggable(
             orientation = Orientation.Vertical,
-            onDrag = { dy ->
-                offset.snapTo(offset.value - dy)
-                onValueChangedListener(currentValue(offset.value))
-            },
+            onDrag = { dy -> state.currentOffset += -dy / cellSizePx },
             onDragStopped = { velocity ->
-                offset.fling(
-                    -velocity,
-                    decay = FloatExponentialDecaySpec(
-                        frictionMultiplier = 5f
-                    ),
-                    adjustTarget = { target ->
-                        val valueForTarget = currentValue(target)
-                        val actualTarget = valueForTarget * cellSizePx
-                        onValueChangedListener(currentValue(actualTarget))
-                        TargetAnimation(actualTarget)
-                    }
+                state.fling(
+                    velocity = -velocity / cellSizePx,
+                    onAnimationFinished = onValueChangedListener
                 )
             }
         )
     ) {
-        val currentValue = currentValue(offset.value)
-        val animOffsetPx = currentValue * cellSizePx - offset.value
+        val currentValue = state.currentValue
+        val animOffsetPx = currentValue * cellSizePx - state.currentOffset * cellSizePx
         val animOffsetDp = with(AmbientDensity.current) { animOffsetPx.toDp() }
 
         val alpha = (animOffsetPx % cellSizePx) / cellSizePx
         Cell(
             textAlpha = alpha + 0.5f,
             size = cellSize,
-            text = (currentValue - 1).takeIf { it in range }?.toString() ?: "",
+            text = (currentValue - 1).takeIf { it in state.range }?.toString() ?: "",
             textOffset = animOffsetDp
         )
-        Spacer(modifier = Modifier.height(0.5.dp).background(Color.Black).width(cellSize))
+        Spacer(
+            modifier = Modifier.height(0.5.dp).background(MaterialTheme.colors.onSurface)
+                .width(cellSize)
+        )
         Cell(size = cellSize, text = currentValue.toString(), textOffset = animOffsetDp)
-        Spacer(modifier = Modifier.height(0.5.dp).background(Color.Black).width(cellSize))
+        Spacer(
+            modifier = Modifier.height(0.5.dp).background(MaterialTheme.colors.onSurface)
+                .width(cellSize)
+        )
         Cell(
             size = cellSize,
-            text = (currentValue + 1).takeIf { it in range }?.toString() ?: "",
+            text = (currentValue + 1).takeIf { it in state.range }?.toString() ?: "",
             textOffset = animOffsetDp,
             textAlpha = 0.5f - alpha
         )
