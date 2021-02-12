@@ -11,7 +11,7 @@ sealed class Player(var millisLeft: Float, private val incrementMillis: Int = 0)
     private val seconds: Int
         get() = millisLeft.toInt() / 1000 % 60
     private val minutes: Int
-        get() = millisLeft.toInt() / 1000 / 60
+        get() = millisLeft.toInt() / 1000 / 60 % 60
     private val hours: Int
         get() = millisLeft.toInt() / 1000 / 60 / 60
 

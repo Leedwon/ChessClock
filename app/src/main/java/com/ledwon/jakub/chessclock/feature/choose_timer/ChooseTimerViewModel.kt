@@ -4,59 +4,52 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ledwon.jakub.chessclock.model.ClockTime
-import com.ledwon.jakub.chessclock.model.hour
-import com.ledwon.jakub.chessclock.model.minute
-import com.ledwon.jakub.chessclock.model.second
 
 data class Timer(
     val clockTime: ClockTime,
-    val timeAdditionPerMove: ClockTime? = null,
     val description: String
 )
 
 object Timers {
     val values = listOf(
         Timer(
-            clockTime = ClockTime(minute = 1.minute),
+            clockTime = ClockTime(minutes = 1),
             description = "Bullet 1"
         ),
         Timer(
-            clockTime = ClockTime(minute = 1.minute),
-            timeAdditionPerMove = ClockTime(second = 1.second),
+            clockTime = ClockTime(minutes = 1, increment = 1),
             description = "Bullet 1 + 1"
         ),
         Timer(
-            clockTime = ClockTime(minute = 2.minute),
-            timeAdditionPerMove = ClockTime(second = 1.second),
+            clockTime = ClockTime(minutes = 2, increment = 1),
             description = "Bullet 2 + 1"
         ),
         Timer(
-            clockTime = ClockTime(minute = 3.minute),
+            clockTime = ClockTime(minutes = 3),
             description = "Blitz 3"
         ),
         Timer(
-            clockTime = ClockTime(minute = 3.minute),
-            timeAdditionPerMove = ClockTime(second = 2.second),
+            clockTime = ClockTime(minutes = 3, increment = 2),
             description = "Blitz 3 + 2"
         ),
         Timer(
-            clockTime = ClockTime(minute = 5.minute),
+            clockTime = ClockTime(minutes = 5),
             description = "Blitz 5"
         ),
         Timer(
-            clockTime = ClockTime(minute = 10.minute),
+            clockTime = ClockTime(minutes = 10),
             description = "Rapid 10"
         ),
         Timer(
-            clockTime = ClockTime(minute = 15.minute),
+            clockTime = ClockTime(minutes = 15),
             description = "Rapid 15"
         ),
         Timer(
-            clockTime = ClockTime(minute = 30.minute),
+            clockTime = ClockTime(minutes = 30),
             description = "Regular 30"
         ),
         Timer(
-            clockTime = ClockTime(hour = 1.hour),
+            clockTime = ClockTime(hours = 1),
             description = "Regular 60"
         )
     )
@@ -70,10 +63,10 @@ class ChooseTimerViewModel : ViewModel() {
     private val _command: MutableLiveData<Command> = MutableLiveData()
     val command: LiveData<Command> = _command
 
-   fun onTimerClicked(timer: Timer) {
-       _command.value = Command.NavigateToClock(timer)
-       _command.value = null
-   }
+    fun onTimerClicked(timer: Timer) {
+        _command.value = Command.NavigateToClock(timer)
+        _command.value = null
+    }
 
     fun onCreateTimerClicked() {
         _command.value = Command.NavigateToCreateTimer
