@@ -10,6 +10,7 @@ import androidx.compose.material.OutlinedButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.DeferredResource
 import androidx.compose.ui.unit.dp
@@ -18,7 +19,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ClockCenterButton(
     onClick: () -> Unit,
-    icon: DeferredResource<ImageVector>,
+    icon: Painter,
     iconTint: Color,
     modifier: Modifier = Modifier
 ) {
@@ -31,12 +32,10 @@ fun ClockCenterButton(
         border = BorderStroke(2.dp, color = Color.White),
         shape = CircleShape
     ) {
-        icon.resource.resource?.let {
-            Icon(
-                imageVector = it,
-                contentDescription = "clock center action",
-                tint = iconTint
-            )
-        }
+        Icon(
+            painter = icon,
+            contentDescription = "clock center action",
+            tint = iconTint
+        )
     }
 }

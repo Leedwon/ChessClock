@@ -2,7 +2,6 @@ package com.ledwon.jakub.chessclock.feature.create_timer
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,6 +14,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
 import com.ledwon.jakub.chessclock.navigation.Actions
 import com.ledwon.jakub.chessclock.navigation.OpenClockPayload
+import com.ledwon.jakub.chessclock.ui.widgets.OutlinePrimaryButton
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -46,6 +46,9 @@ fun CreateTimerScreen(actions: Actions, createTimerViewModel: CreateTimerViewMod
                         blackCLock = it.state.blackClock
                     )
                 )
+            }
+            is CreateTimerViewModel.Command.NavigateBack -> {
+                actions.navigateBack()
             }
             is CreateTimerViewModel.Command.Noop -> {
                 //noop
@@ -138,14 +141,16 @@ fun CreateTimerScreen(actions: Actions, createTimerViewModel: CreateTimerViewMod
                 .padding(start = 16.dp, end = 16.dp, top = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Button(onClick = createTimerViewModel::startGame) {
-                Text("Start game")
+            OutlinePrimaryButton(onClick = createTimerViewModel::onStartGameClick) {
+                Text("Start")
             }
-            Button(onClick = createTimerViewModel::startGame) {
-                Text("Start and save")
+            OutlinePrimaryButton(
+                onClick = createTimerViewModel::onStartGameAndSaveTimerClick
+            ) {
+                Text("Start & save")
             }
-            Button(onClick = { }) {
-                Text("Save timer")
+            OutlinePrimaryButton(onClick = createTimerViewModel::onSaveTimerClick) {
+                Text("Save")
             }
         }
     }
