@@ -48,7 +48,7 @@ class NumberPickerState(
                 TargetAnimation(target.roundToInt().toFloat())
             },
             onEnd = { animationEndReason: AnimationEndReason, _, _ ->
-                if (animationEndReason == AnimationEndReason.Finished || animationEndReason == AnimationEndReason.TargetReached) {
+                if (animationEndReason == AnimationEndReason.Finished || animationEndReason == AnimationEndReason.TargetReached || animationEndReason == AnimationEndReason.BoundReached) {
                     onAnimationFinished?.invoke(currentValue)
                 }
             }

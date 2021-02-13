@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.*
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.setContent
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
@@ -20,6 +21,7 @@ import com.ledwon.jakub.chessclock.feature.create_timer.CreateTimerViewModel
 import com.ledwon.jakub.chessclock.navigation.Actions
 import com.ledwon.jakub.chessclock.navigation.Routes
 import com.ledwon.jakub.chessclock.ui.ChessClockTheme
+import com.ledwon.jakub.chessclock.ui.greenPrimaryDark
 import com.ledwon.jakub.chessclock.util.AmbientNavController
 import org.koin.core.parameter.parametersOf
 
@@ -32,6 +34,8 @@ class MainActivity : AppCompatActivity() {
 
         setContent {
             ChessClockTheme {
+                window.statusBarColor = greenPrimaryDark.toArgb()
+
                 Surface(color = MaterialTheme.colors.background) {
                     val navController = rememberNavController()
                     val actions = remember(navController) { Actions(navController) }

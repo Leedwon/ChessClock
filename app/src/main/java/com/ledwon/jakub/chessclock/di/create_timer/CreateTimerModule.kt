@@ -6,6 +6,6 @@ import org.koin.dsl.module
 
 val createTimerModule = module {
     viewModel {
-        CreateTimerViewModel()
+        CreateTimerViewModel(timerRepository = get())
     }
 }
