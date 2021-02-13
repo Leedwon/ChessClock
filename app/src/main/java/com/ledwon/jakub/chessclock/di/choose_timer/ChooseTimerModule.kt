@@ -6,6 +6,9 @@ import org.koin.dsl.module
 
 val chooseTimerModule = module {
     viewModel {
-        ChooseTimerViewModel()
+        ChooseTimerViewModel(
+            timerRepository = get(),
+            prepopulateDataStore = get()
+        )
     }
 }

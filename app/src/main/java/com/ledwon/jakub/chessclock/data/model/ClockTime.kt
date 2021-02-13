@@ -1,4 +1,4 @@
-package com.ledwon.jakub.chessclock.model
+package com.ledwon.jakub.chessclock.data.model
 
 data class ClockTime(
     val seconds: Int = 0,
