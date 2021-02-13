@@ -142,15 +142,15 @@ fun CreateTimerScreen(actions: Actions, createTimerViewModel: CreateTimerViewMod
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             OutlinePrimaryButton(onClick = createTimerViewModel::onStartGameClick) {
-                Text("Start")
+                Text("Start", fontSize = 19.sp)
             }
             OutlinePrimaryButton(
                 onClick = createTimerViewModel::onStartGameAndSaveTimerClick
             ) {
-                Text("Start & save")
+                Text("Start & save", fontSize = 19.sp)
             }
             OutlinePrimaryButton(onClick = createTimerViewModel::onSaveTimerClick) {
-                Text("Save")
+                Text("Save", fontSize = 19.sp)
             }
         }
     }
