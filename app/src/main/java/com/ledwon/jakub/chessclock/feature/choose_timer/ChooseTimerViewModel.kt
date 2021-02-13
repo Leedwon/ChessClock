@@ -3,65 +3,41 @@ package com.ledwon.jakub.chessclock.feature.choose_timer
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.ledwon.jakub.chessclock.model.ClockTime
+import androidx.lifecycle.viewModelScope
+import com.ledwon.jakub.chessclock.data.model.Timer
+import com.ledwon.jakub.chessclock.data.persistance.PrepopulateDataStore
+import com.ledwon.jakub.chessclock.data.repository.TimerRepository
+import com.ledwon.jakub.chessclock.util.PredefinedTimers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
-data class Timer(
-    val clockTime: ClockTime,
-    val description: String
-)
+class ChooseTimerViewModel(
+    private val timerRepository: TimerRepository,
+    prepopulateDataStore: PrepopulateDataStore
+) : ViewModel() {
 
-object Timers {
-    val values = listOf(
-        Timer(
-            clockTime = ClockTime(minutes = 1),
-            description = "Bullet 1"
-        ),
-        Timer(
-            clockTime = ClockTime(minutes = 1, increment = 1),
-            description = "Bullet 1 + 1"
-        ),
-        Timer(
-            clockTime = ClockTime(minutes = 2, increment = 1),
-            description = "Bullet 2 + 1"
-        ),
-        Timer(
-            clockTime = ClockTime(minutes = 3),
-            description = "Blitz 3"
-        ),
-        Timer(
-            clockTime = ClockTime(minutes = 3, increment = 2),
-            description = "Blitz 3 + 2"
-        ),
-        Timer(
-            clockTime = ClockTime(minutes = 5),
-            description = "Blitz 5"
-        ),
-        Timer(
-            clockTime = ClockTime(minutes = 10),
-            description = "Rapid 10"
-        ),
-        Timer(
-            clockTime = ClockTime(minutes = 15),
-            description = "Rapid 15"
-        ),
-        Timer(
-            clockTime = ClockTime(minutes = 30),
-            description = "Regular 30"
-        ),
-        Timer(
-            clockTime = ClockTime(hours = 1),
-            description = "Regular 60"
-        )
-    )
-}
-
-class ChooseTimerViewModel : ViewModel() {
-
-    private val _timers: MutableLiveData<List<Timer>> = MutableLiveData(Timers.values)
+    private val _timers: MutableLiveData<List<Timer>> = MutableLiveData()
     val timers: LiveData<List<Timer>> = _timers
 
     private val _command: MutableLiveData<Command> = MutableLiveData()
     val command: LiveData<Command> = _command
+
+    init {
+        if (prepopulateDataStore.shouldPrepopulateDatabase) {
+            viewModelScope.launch(Dispatchers.IO) {
+                //reversed because while fetching timers they are sorted desc by id to show user timers as first
+                timerRepository.addTimers(PredefinedTimers.timers.reversed())
+            }
+            prepopulateDataStore.shouldPrepopulateDatabase = false
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            timerRepository.timers.collect {
+                _timers.postValue(it)
+            }
+        }
+    }
 
     fun onTimerClicked(timer: Timer) {
         _command.value = Command.NavigateToClock(timer)
@@ -71,6 +47,12 @@ class ChooseTimerViewModel : ViewModel() {
     fun onCreateTimerClicked() {
         _command.value = Command.NavigateToCreateTimer
         _command.value = null
+    }
+
+    fun onRemoveTimer(timer: Timer) {
+        viewModelScope.launch(Dispatchers.IO) {
+            timerRepository.deleteTimer(timer)
+        }
     }
 
     sealed class Command {

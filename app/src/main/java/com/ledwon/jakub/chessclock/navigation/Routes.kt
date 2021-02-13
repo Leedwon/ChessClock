@@ -2,8 +2,7 @@ package com.ledwon.jakub.chessclock.navigation
 
 import androidx.navigation.NavController
 import androidx.navigation.compose.navigate
-import com.ledwon.jakub.chessclock.feature.choose_timer.Timer
-import com.ledwon.jakub.chessclock.model.ClockTime
+import com.ledwon.jakub.chessclock.data.model.ClockTime
 import com.ledwon.jakub.chessclock.navigation.Routes.CreateTimerRoute
 
 object Routes {
