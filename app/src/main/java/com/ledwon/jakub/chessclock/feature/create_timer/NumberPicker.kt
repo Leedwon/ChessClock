@@ -3,7 +3,7 @@ package com.ledwon.jakub.chessclock.feature.create_timer
 import androidx.compose.animation.AnimatedFloatModel
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -67,16 +67,19 @@ fun NumberPicker(
     val cellSizePx = with(AmbientDensity.current) { cellSize.toPx() }
 
     Column(
-        modifier = modifier.draggable(
-            orientation = Orientation.Vertical,
-            onDrag = { dy -> state.currentOffset += -dy / cellSizePx },
-            onDragStopped = { velocity ->
-                state.fling(
-                    velocity = -velocity / cellSizePx,
-                    onAnimationFinished = onValueChangedListener
-                )
-            }
-        )
+        modifier = modifier
+            .wrapContentSize(unbounded = true)
+            .draggable(
+                orientation = Orientation.Vertical,
+                onDrag = { dy -> state.currentOffset += -dy / cellSizePx },
+                startDragImmediately = true,
+                onDragStopped = { velocity ->
+                    state.fling(
+                        velocity = -velocity / cellSizePx,
+                        onAnimationFinished = onValueChangedListener
+                    )
+                }
+            )
     ) {
         val currentValue = state.currentValue
         val animOffsetPx = currentValue * cellSizePx - state.currentOffset * cellSizePx
