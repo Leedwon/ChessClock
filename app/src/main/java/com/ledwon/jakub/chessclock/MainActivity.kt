@@ -18,6 +18,7 @@ import com.ledwon.jakub.chessclock.feature.clock.ClockViewModel
 import com.ledwon.jakub.chessclock.feature.clock.InitialData
 import com.ledwon.jakub.chessclock.feature.create_timer.CreateTimerScreen
 import com.ledwon.jakub.chessclock.feature.create_timer.CreateTimerViewModel
+import com.ledwon.jakub.chessclock.feature.settings.SettingsScreen
 import com.ledwon.jakub.chessclock.navigation.Actions
 import com.ledwon.jakub.chessclock.navigation.Routes
 import com.ledwon.jakub.chessclock.ui.ChessClockTheme
@@ -51,6 +52,9 @@ class MainActivity : AppCompatActivity() {
                                     actions = actions,
                                     chooseTimerViewModel = chooseTimerViewModel
                                 )
+                            }
+                            composable(Routes.SettingsRoute) {
+                                SettingsScreen()
                             }
                             composable(Routes.CreateTimerRoute) {
                                 val createTimerViewModel: CreateTimerViewModel =

@@ -4,6 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.navigate
 import com.ledwon.jakub.chessclock.data.model.ClockTime
 import com.ledwon.jakub.chessclock.navigation.Routes.CreateTimerRoute
+import com.ledwon.jakub.chessclock.navigation.Routes.SettingsRoute
 
 object Routes {
     object ClockRouteArgs {
@@ -17,6 +18,7 @@ object Routes {
     const val ClockRoute =
         "Clock/{${ClockRouteArgs.WhiteSeconds}}/{${ClockRouteArgs.BlackSeconds}}/{${ClockRouteArgs.WhiteIncrementSeconds}}/{${ClockRouteArgs.BlackIncrementSeconds}}"
     const val CreateTimerRoute = "CreateTimer"
+    const val SettingsRoute = "Settings"
 }
 
 data class OpenClockPayload(
@@ -35,5 +37,9 @@ class Actions(navController: NavController) {
 
     val openCreateTimer: () -> Unit = {
         navController.navigate(CreateTimerRoute)
+    }
+
+    val openSettings: () -> Unit = {
+        navController.navigate(SettingsRoute)
     }
 }

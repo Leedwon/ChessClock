@@ -31,7 +31,11 @@ fun ChooseTimerScreen(actions: Actions, chooseTimerViewModel: ChooseTimerViewMod
         initial = emptyList()
     )
 
+
     chooseTimerViewModel.command.observe(AmbientLifecycleOwner.current, {
+        if (it == null) {
+            return@observe
+        }
         when (it) {
             is ChooseTimerViewModel.Command.NavigateToClock -> actions.openClock(
                 OpenClockPayload(
@@ -40,32 +44,45 @@ fun ChooseTimerScreen(actions: Actions, chooseTimerViewModel: ChooseTimerViewMod
                 )
             )
             is ChooseTimerViewModel.Command.NavigateToCreateTimer -> actions.openCreateTimer()
-            else -> {
-            }
+            is ChooseTimerViewModel.Command.NavigateToSettings -> actions.openSettings()
         }
     })
 
-    LazyColumn(content = {
-        item {
-            OutlinePrimaryButton(
-                modifier = Modifier.padding(16.dp).fillMaxWidth(),
-                onClick = chooseTimerViewModel::onCreateTimerClicked
-            ) {
-                Text("Create new timer", fontSize = 21.sp)
-            }
-        }
-        items(timers) { timer ->
-            TimeCard(
-                modifier = Modifier.padding(vertical = 12.dp, horizontal = 16.dp).fillMaxWidth()
-                    .clickable(
-                        onClick = {
-                            chooseTimerViewModel.onTimerClicked(timer)
-                        }),
-                timer = timer,
-                onRemove = chooseTimerViewModel::onRemoveTimer
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(text = "Chess clock") },
+                actions = {
+                    val icon = painterResource(id = R.drawable.ic_settings_24)
+                    IconButton(onClick = chooseTimerViewModel::onOpenSettingsClicked) {
+                        Icon(painter = icon, contentDescription = "settings")
+                    }
+                }
             )
         }
-    })
+    ) {
+        LazyColumn(content = {
+            item {
+                OutlinePrimaryButton(
+                    modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                    onClick = chooseTimerViewModel::onCreateTimerClicked
+                ) {
+                    Text("Create new timer", fontSize = 21.sp)
+                }
+            }
+            items(timers) { timer ->
+                TimeCard(
+                    modifier = Modifier.padding(vertical = 12.dp, horizontal = 16.dp).fillMaxWidth()
+                        .clickable(
+                            onClick = {
+                                chooseTimerViewModel.onTimerClicked(timer)
+                            }),
+                    timer = timer,
+                    onRemove = chooseTimerViewModel::onRemoveTimer
+                )
+            }
+        })
+    }
 }
 
 @Composable
@@ -79,7 +96,6 @@ fun TimeCard(timer: Timer, modifier: Modifier = Modifier, onRemove: (Timer) -> U
             Text(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 text = timer.description,
-                color = MaterialTheme.colors.onSurface,
                 fontSize = 19.sp
             )
             Row(
@@ -117,7 +133,6 @@ fun ClockIconsColumn(clockTime: ClockTime, modifier: Modifier = Modifier, isWhit
             Text(
                 text = clockTime.toString(),
                 fontSize = 17.sp,
-                color = MaterialTheme.colors.onSurface
             )
         }
         clockTime.increment.takeIf { it > 0 }?.let {
@@ -134,7 +149,6 @@ fun ClockIconsColumn(clockTime: ClockTime, modifier: Modifier = Modifier, isWhit
                 )
                 Text(
                     text = incrementClock.toString(), fontSize = 17.sp,
-                    color = MaterialTheme.colors.onSurface
                 )
             }
         }

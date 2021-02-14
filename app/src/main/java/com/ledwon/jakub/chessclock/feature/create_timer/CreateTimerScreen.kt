@@ -2,16 +2,19 @@ package com.ledwon.jakub.chessclock.feature.create_timer
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Text
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.AmbientAnimationClock
 import androidx.compose.ui.platform.AmbientLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
+import com.ledwon.jakub.chessclock.R
 import com.ledwon.jakub.chessclock.navigation.Actions
 import com.ledwon.jakub.chessclock.navigation.OpenClockPayload
 import com.ledwon.jakub.chessclock.ui.widgets.OutlinePrimaryButton
@@ -108,49 +111,72 @@ fun CreateTimerScreen(actions: Actions, createTimerViewModel: CreateTimerViewMod
         }
     }
 
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = "White's timer: ", fontSize = 24.sp)
-        ClockPicker(
-            clockPickerData = ClockPickerData(
-                hoursPickerState = state.whiteHoursState,
-                minutesPickerState = state.whiteMinutesState,
-                secondsPickerState = state.whiteSecondsState,
-                incrementPickerState = state.whiteIncrementState
-            ),
-            onHoursChanged = createTimerViewModel::onWhiteHoursChanged,
-            onMinutesChanged = createTimerViewModel::onWhiteMinutesChanged,
-            onSecondsChanged = createTimerViewModel::onWhiteSecondsChanged,
-            onIncrementChanged = createTimerViewModel::onWhiteIncrementChanged
-        )
-        Text(text = "Black's timer: ", fontSize = 24.sp)
-        ClockPicker(
-            clockPickerData = ClockPickerData(
-                hoursPickerState = state.blackHoursState,
-                minutesPickerState = state.blackMinutesState,
-                secondsPickerState = state.blackSecondsState,
-                incrementPickerState = state.blackIncrementState
-            ),
-            onHoursChanged = createTimerViewModel::onBlackHoursChanged,
-            onMinutesChanged = createTimerViewModel::onBlackMinutesChanged,
-            onSecondsChanged = createTimerViewModel::onBlackSecondsChanged,
-            onIncrementChanged = createTimerViewModel::onBlackIncrementChanged
-
-        )
-        Row(
-            modifier = Modifier.fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, top = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(text = "Create timer") },
+                navigationIcon = {
+                    val backIcon = painterResource(id = R.drawable.ic_arrow_back_24)
+                    IconButton(onClick = createTimerViewModel::onBackClick) {
+                        Icon(painter = backIcon, contentDescription = "navigate back")
+                    }
+                }
+            )
+        }
+    ) {
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            OutlinePrimaryButton(onClick = createTimerViewModel::onStartGameClick) {
-                Text("Start", fontSize = 19.sp)
+            item { Text(text = "White's timer: ", fontSize = 24.sp) }
+            item {
+                ClockPicker(
+                    clockPickerData = ClockPickerData(
+                        hoursPickerState = state.whiteHoursState,
+                        minutesPickerState = state.whiteMinutesState,
+                        secondsPickerState = state.whiteSecondsState,
+                        incrementPickerState = state.whiteIncrementState
+                    ),
+                    onHoursChanged = createTimerViewModel::onWhiteHoursChanged,
+                    onMinutesChanged = createTimerViewModel::onWhiteMinutesChanged,
+                    onSecondsChanged = createTimerViewModel::onWhiteSecondsChanged,
+                    onIncrementChanged = createTimerViewModel::onWhiteIncrementChanged
+                )
             }
-            OutlinePrimaryButton(
-                onClick = createTimerViewModel::onStartGameAndSaveTimerClick
-            ) {
-                Text("Start & save", fontSize = 19.sp)
+            item { Text(text = "Black's timer: ", fontSize = 24.sp) }
+            item {
+                ClockPicker(
+                    clockPickerData = ClockPickerData(
+                        hoursPickerState = state.blackHoursState,
+                        minutesPickerState = state.blackMinutesState,
+                        secondsPickerState = state.blackSecondsState,
+                        incrementPickerState = state.blackIncrementState
+                    ),
+                    onHoursChanged = createTimerViewModel::onBlackHoursChanged,
+                    onMinutesChanged = createTimerViewModel::onBlackMinutesChanged,
+                    onSecondsChanged = createTimerViewModel::onBlackSecondsChanged,
+                    onIncrementChanged = createTimerViewModel::onBlackIncrementChanged
+
+                )
             }
-            OutlinePrimaryButton(onClick = createTimerViewModel::onSaveTimerClick) {
-                Text("Save", fontSize = 19.sp)
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(start = 16.dp, end = 16.dp, top = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    OutlinePrimaryButton(onClick = createTimerViewModel::onStartGameClick) {
+                        Text("Start", fontSize = 19.sp)
+                    }
+                    OutlinePrimaryButton(
+                        onClick = createTimerViewModel::onStartGameAndSaveTimerClick
+                    ) {
+                        Text("Start & save", fontSize = 19.sp)
+                    }
+                    OutlinePrimaryButton(onClick = createTimerViewModel::onSaveTimerClick) {
+                        Text("Save", fontSize = 19.sp)
+                    }
+                }
             }
         }
     }
