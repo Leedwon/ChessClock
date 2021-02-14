@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,7 +23,7 @@ import com.ledwon.jakub.chessclock.R
 
 @SuppressLint("Range")
 @Composable
-fun RotatingDice() {
+fun RotatingDice(onDiceClick: (() -> Unit)? = null) {
     val infiniteTransition = rememberInfiniteTransition()
 
     val diceIndex = infiniteTransition.animateFloat(
@@ -56,11 +57,13 @@ fun RotatingDice() {
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            modifier = Modifier.rotate(rotation.value),
-            contentDescription = null,
-            painter = images[diceIndex.value.toInt()],
-            tint = Color.Green
-        )
+        IconButton(onClick = { onDiceClick?.invoke() }) {
+            Icon(
+                modifier = Modifier.rotate(rotation.value),
+                contentDescription = null,
+                painter = images[diceIndex.value.toInt()],
+                tint = Color.Green
+            )
+        }
     }
 }

@@ -26,12 +26,7 @@ fun ClockButton(
                 is PlayerDisplay.Black -> Color.Black
             },
             contentColor = when (player) {
-                //hack for ripple not working properly in dark mode - it is compose bug probably?
-                is PlayerDisplay.White -> if (MaterialTheme.colors.isLight) {
-                    Color.Black
-                } else {
-                    yellowRipple
-                }
+                is PlayerDisplay.White -> Color.Black
                 is PlayerDisplay.Black -> Color.White
             },
             disabledBackgroundColor = when (player) {

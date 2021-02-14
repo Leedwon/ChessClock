@@ -43,7 +43,7 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
         }
         when (state.gameState) {
             GameState.RandomizingPositions -> {
-                RotatingDice()
+                RotatingDice(onDiceClick = clockViewModel::cancelRandomization)
             }
             GameState.BeforeStarted -> {
                 ClockCenterButton(
