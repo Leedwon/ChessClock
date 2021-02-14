@@ -140,10 +140,12 @@ class ClockViewModel(
         randomizePositions()
     }
 
+    private var randomizingJob: Job? = null
+
     private fun randomizePositions() {
         val randomRounds = (random() * 100 % 2 + MIN_RANDOM_ROUNDS).toInt()
         var currentRound = 1
-        viewModelScope.launch {
+        randomizingJob = viewModelScope.launch {
             repeat(randomRounds) {
                 delay(250L.takeIf { currentRound++ <= randomRounds - 3 } ?: 75L * currentRound++)
                 swapSides()
@@ -185,6 +187,12 @@ class ClockViewModel(
         gameState = GameState.Paused
     }
 
+    fun cancelRandomization() {
+        randomizingJob?.cancel()
+        gameState = GameState.BeforeStarted
+        _state.postValue(createState())
+    }
+
     private fun createState(): State = State(
         first = PlayerDisplay.from(playersInOrder.first),
         second = PlayerDisplay.from(playersInOrder.second),
@@ -209,10 +217,5 @@ class ClockViewModel(
                 is PlayerDisplay.Black -> white
             }
         }
-    }
-
-    override fun onCleared() {
-        Timber.i("$this onCleared")
-        super.onCleared()
     }
 }
