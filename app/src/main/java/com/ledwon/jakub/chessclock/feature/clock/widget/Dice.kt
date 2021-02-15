@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
@@ -52,18 +53,23 @@ fun RotatingDice(onDiceClick: (() -> Unit)? = null) {
     )
 
     Row(
-        modifier = Modifier.height(96.dp).width(96.dp).clip(CircleShape).background(Color.Black)
-            .border(width = 2.dp, color = Color.White, shape = CircleShape),
+        modifier = Modifier
+            .height(96.dp)
+            .width(96.dp)
+            .clip(CircleShape)
+            .background(Color.Black)
+            .border(width = 2.dp, color = Color.White, shape = CircleShape)
+            .clickable {
+                onDiceClick?.invoke()
+            },
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        IconButton(onClick = { onDiceClick?.invoke() }) {
-            Icon(
-                modifier = Modifier.rotate(rotation.value),
-                contentDescription = null,
-                painter = images[diceIndex.value.toInt()],
-                tint = Color.Green
-            )
-        }
+        Icon(
+            modifier = Modifier.rotate(rotation.value),
+            contentDescription = null,
+            painter = images[diceIndex.value.toInt()],
+            tint = Color.Green
+        )
     }
 }

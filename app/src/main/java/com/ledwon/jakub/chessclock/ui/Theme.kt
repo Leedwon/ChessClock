@@ -2,43 +2,25 @@ package com.ledwon.jakub.chessclock.ui
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.darkColors
-import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 
-private val DarkColorPalette = darkColors(
-        primary = greenPrimaryDark,
-        primaryVariant = greenSecondaryDark,
-        secondary = greenA700
-)
-
-private val LightColorPalette = lightColors(
-        primary = greenPrimaryLight,
-        primaryVariant = greenSecondaryLight,
-        secondary = greenA700
-
-        /* Other default colors to override
-    background = Color.White,
-    surface = Color.White,
-    onPrimary = Color.White,
-    onSecondary = Color.Black,
-    onBackground = Color.Black,
-    onSurface = Color.Black,
-    */
-)
 
 @Composable
-fun ChessClockTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable() () -> Unit) {
+fun ChessClockTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    colorTheme: ColorTheme = ColorTheme.Purple,
+    content: @Composable () -> Unit
+) {
     val colors = if (darkTheme) {
-        DarkColorPalette
+        colorTheme.theme.darkColors
     } else {
-        LightColorPalette
+        colorTheme.theme.lightColors
     }
 
     MaterialTheme(
-            colors = colors,
-            typography = typography,
-            shapes = shapes,
-            content = content
+        colors = colors,
+        typography = typography,
+        shapes = shapes,
+        content = content
     )
 }

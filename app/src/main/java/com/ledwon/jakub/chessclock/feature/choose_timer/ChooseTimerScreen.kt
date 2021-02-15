@@ -31,7 +31,6 @@ fun ChooseTimerScreen(actions: Actions, chooseTimerViewModel: ChooseTimerViewMod
         initial = emptyList()
     )
 
-
     chooseTimerViewModel.command.observe(AmbientLifecycleOwner.current, {
         if (it == null) {
             return@observe
@@ -96,6 +95,7 @@ fun TimeCard(timer: Timer, modifier: Modifier = Modifier, onRemove: (Timer) -> U
             Text(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 text = timer.description,
+                color = MaterialTheme.colors.onSurface,
                 fontSize = 19.sp
             )
             Row(
@@ -132,7 +132,8 @@ fun ClockIconsColumn(clockTime: ClockTime, modifier: Modifier = Modifier, isWhit
             )
             Text(
                 text = clockTime.toString(),
-                fontSize = 17.sp,
+                color = MaterialTheme.colors.onSurface,
+                fontSize = 17.sp
             )
         }
         clockTime.increment.takeIf { it > 0 }?.let {
@@ -148,7 +149,9 @@ fun ClockIconsColumn(clockTime: ClockTime, modifier: Modifier = Modifier, isWhit
                     colorFilter = ColorFilter.tint(if (isWhite) Color.White else Color.Black)
                 )
                 Text(
-                    text = incrementClock.toString(), fontSize = 17.sp,
+                    text = incrementClock.toString(),
+                    fontSize = 17.sp,
+                    color = MaterialTheme.colors.onSurface
                 )
             }
         }

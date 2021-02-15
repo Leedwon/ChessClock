@@ -162,7 +162,7 @@ fun CreateTimerScreen(actions: Actions, createTimerViewModel: CreateTimerViewMod
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth()
-                        .padding(start = 16.dp, end = 16.dp, top = 16.dp),
+                        .padding(16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     OutlinePrimaryButton(onClick = createTimerViewModel::onStartGameClick) {

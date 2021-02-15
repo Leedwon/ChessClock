@@ -1,9 +1,14 @@
 package com.ledwon.jakub.chessclock.feature.clock
 
+import androidx.compose.ui.viewinterop.viewModel
 import androidx.lifecycle.*
+import com.ledwon.jakub.chessclock.data.repository.SettingsRepository
+import com.ledwon.jakub.chessclock.data.repository.repositoryModule
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.ticker
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.take
 import timber.log.Timber
 import java.lang.Math.random
 
@@ -98,7 +103,8 @@ data class InitialData(
 )
 
 class ClockViewModel(
-    private val initialData: InitialData
+    private val initialData: InitialData,
+    private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
     companion object {
@@ -143,15 +149,25 @@ class ClockViewModel(
     private var randomizingJob: Job? = null
 
     private fun randomizePositions() {
-        val randomRounds = (random() * 100 % 2 + MIN_RANDOM_ROUNDS).toInt()
-        var currentRound = 1
         randomizingJob = viewModelScope.launch {
-            repeat(randomRounds) {
-                delay(250L.takeIf { currentRound++ <= randomRounds - 3 } ?: 75L * currentRound++)
-                swapSides()
+            settingsRepository.randomizePosition.take(1).collect { randomizeEnabled ->
+                if (randomizeEnabled) {
+                    val randomRounds = (random() * 100 % 2 + MIN_RANDOM_ROUNDS).toInt()
+                    var currentRound = 1
+
+                    repeat(randomRounds) {
+                        delay(250L.takeIf { currentRound++ <= randomRounds - 3 }
+                            ?: 75L * currentRound++)
+                        swapSides()
+                    }
+                    gameState = GameState.BeforeStarted
+                    _state.postValue(createState())
+                } else {
+                    gameState = GameState.BeforeStarted
+                    _state.postValue(createState())
+                }
+
             }
-            gameState = GameState.BeforeStarted
-            _state.postValue(createState())
         }
     }
 
