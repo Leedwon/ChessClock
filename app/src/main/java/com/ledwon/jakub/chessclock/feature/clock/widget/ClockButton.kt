@@ -5,9 +5,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.sp
 import com.ledwon.jakub.chessclock.feature.clock.PlayerDisplay
-import com.ledwon.jakub.chessclock.ui.yellowRipple
 
 @Composable
 fun ClockButton(
@@ -38,7 +37,7 @@ fun ClockButton(
     ) {
         Text(
             modifier = Modifier.rotate(rotateDegrees),
-            text = player.text, fontSize = TextUnit.Sp(35), color = when (player) {
+            text = player.text, fontSize = 35.sp, color = when (player) {
                 is PlayerDisplay.White -> Color.Black
                 is PlayerDisplay.Black -> Color.White
             }
