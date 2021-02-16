@@ -10,9 +10,10 @@ class TimerRepository(private val timerDao: TimerDao) {
 
     private val timersCache: MutableMap<Int, Timer> = mutableMapOf()
 
-    val timers: Flow<List<Timer>> = timerDao.getAllTimers().distinctUntilChanged().onEach { timers ->
-        timersCache.putAll(timers.associateBy { it.id })
-    }
+    val timers: Flow<List<Timer>> =
+        timerDao.getAllTimers().distinctUntilChanged().onEach { timers ->
+            timersCache.putAll(timers.associateBy { it.id })
+        }
 
     suspend fun getTimerById(id: Int, allowCache: Boolean = true): Timer {
         return if (allowCache && timersCache[id] != null) {
@@ -37,6 +38,17 @@ class TimerRepository(private val timerDao: TimerDao) {
     suspend fun deleteTimer(timer: Timer) {
         timerDao.deleteTimer(timer)
         timersCache.remove(timer.id)
+    }
+
+    suspend fun deleteTimers(timers: List<Timer>) {
+        timerDao.deleteTimers(timers)
+        timers.forEach { timer ->
+            timersCache.remove(timer.id)
+        }
+    }
+
+    suspend fun updateFavouriteStatus(timer: Timer) {
+        timerDao.updateFavouriteStatus(timer.id, timer.isFavourite)
     }
 
 }

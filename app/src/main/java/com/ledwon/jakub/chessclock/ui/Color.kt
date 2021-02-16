@@ -74,7 +74,7 @@ class DarkModeAwareSimpleColorTheme(
     )
 }
 
-sealed class ColorTheme(val theme: DarkModeAwareSimpleColorTheme) {
+sealed class ColorTheme(val colorTheme: DarkModeAwareSimpleColorTheme) {
     object Purple : ColorTheme(
         DarkModeAwareSimpleColorTheme(
             light = SimpleColorTheme(

@@ -27,8 +27,11 @@ import com.ledwon.jakub.chessclock.ui.widgets.OutlinePrimaryButton
 @Composable
 fun ChooseTimerScreen(actions: Actions, chooseTimerViewModel: ChooseTimerViewModel) {
 
-    val timers: List<Timer> by chooseTimerViewModel.timers.observeAsState(
-        initial = emptyList()
+    val chooseTimerState: ChooseTimerState by chooseTimerViewModel.chooseTimerState.observeAsState(
+        initial = ChooseTimerState(
+            isSelectableModeOn = false,
+            timersToSelected = emptyMap()
+        )
     )
 
     chooseTimerViewModel.command.observe(AmbientLifecycleOwner.current, {
@@ -59,38 +62,89 @@ fun ChooseTimerScreen(actions: Actions, chooseTimerViewModel: ChooseTimerViewMod
                 }
             )
         }
-    ) {
-        LazyColumn(content = {
-            item {
-                OutlinePrimaryButton(
-                    modifier = Modifier.padding(16.dp).fillMaxWidth(),
-                    onClick = chooseTimerViewModel::onCreateTimerClicked
+    ) { paddingValues ->
+        ConstraintLayout(modifier = Modifier.fillMaxHeight().padding(paddingValues)) {
+
+            val (column, removeSelectedButton) = createRefs()
+            //this padding is a hack for bottom.linkTo(removeSelectedButton.top) causing Create new timer button to move up and be below TopAppBar
+            LazyColumn(
+                modifier = Modifier.padding(
+                    bottom = if (chooseTimerState.isSelectableModeOn) 48.dp else
+                        0.dp
+                ).constrainAs(column) {
+                    top.linkTo(parent.top)
+                }, content = {
+                    item {
+                        OutlinePrimaryButton(
+                            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                            onClick = chooseTimerViewModel::onCreateTimerClicked
+                        ) {
+                            Text("Create new timer", fontSize = 21.sp)
+                        }
+                    }
+
+                    items(chooseTimerState.timersToSelected.toList()) { (timer, selected) ->
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            if (chooseTimerState.isSelectableModeOn) {
+                                RadioButton(
+                                    modifier = Modifier.padding(start = 8.dp),
+                                    selected = selected,
+                                    onClick = { chooseTimerViewModel.onSelectTimerClick(timer) }
+                                )
+                            }
+                            TimeCard(
+                                modifier = Modifier.padding(vertical = 12.dp, horizontal = 16.dp)
+                                    .fillMaxWidth()
+                                    .clickable(
+                                        onClick = {
+                                            chooseTimerViewModel.onTimerClicked(timer)
+                                        },
+                                        onLongClick = chooseTimerViewModel::onTimerLongClicked
+                                    ),
+                                timer = timer,
+                                onStarClicked = chooseTimerViewModel::onStarClicked
+                            )
+                        }
+                    }
+                })
+            if (chooseTimerState.isSelectableModeOn) {
+                Button(
+                    elevation = ButtonDefaults.elevation(6.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = MaterialTheme.colors.primaryVariant,
+                        contentColor = MaterialTheme.colors.onSurface
+                    ),
+                    modifier = Modifier.fillMaxWidth().constrainAs(
+                        removeSelectedButton
+                    ) {
+                        bottom.linkTo(parent.bottom)
+                    },
+                    onClick = chooseTimerViewModel::onRemoveTimers
                 ) {
-                    Text("Create new timer", fontSize = 21.sp)
+                    Text(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        text = "Delete selected",
+                        fontSize = 18.sp
+                    )
                 }
             }
-            items(timers) { timer ->
-                TimeCard(
-                    modifier = Modifier.padding(vertical = 12.dp, horizontal = 16.dp).fillMaxWidth()
-                        .clickable(
-                            onClick = {
-                                chooseTimerViewModel.onTimerClicked(timer)
-                            }),
-                    timer = timer,
-                    onRemove = chooseTimerViewModel::onRemoveTimer
-                )
-            }
-        })
+        }
+
     }
 }
 
 @Composable
-fun TimeCard(timer: Timer, modifier: Modifier = Modifier, onRemove: (Timer) -> Unit) {
+fun TimeCard(
+    timer: Timer,
+    modifier: Modifier = Modifier,
+    onStarClicked: (Timer) -> Unit
+) {
     Card(
         modifier = modifier,
         elevation = 6.dp,
         backgroundColor = MaterialTheme.colors.primary
     ) {
+
         Column(modifier = Modifier.padding(8.dp), horizontalAlignment = Alignment.Start) {
             Text(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -99,30 +153,33 @@ fun TimeCard(timer: Timer, modifier: Modifier = Modifier, onRemove: (Timer) -> U
                 fontSize = 19.sp
             )
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 ClockIconsColumn(clockTime = timer.whiteClockTime)
                 ClockIconsColumn(clockTime = timer.blackClockTime, isWhite = false)
-                val removeImage = painterResource(id = R.drawable.ic_delete_forever_24)
-                Image(
-                    modifier = Modifier.align(Alignment.CenterVertically).clickable {
-                        onRemove(timer)
-                    },
-                    painter = removeImage,
-                    contentDescription = "remove timer",
-                    colorFilter = ColorFilter.tint(Color.Red)
-                )
+                val star = painterResource(id = R.drawable.ic_star_24)
+                val starOutline = painterResource(id = R.drawable.ic_star_border_24)
+                IconButton(
+                    modifier = Modifier.height(24.dp).width(24.dp)
+                        .align(alignment = Alignment.CenterVertically),
+                    onClick = { onStarClicked(timer) }) {
+                    Icon(
+                        painter = if (timer.isFavourite) star else starOutline,
+                        contentDescription = "is favourite timer",
+                        tint = Color.Yellow
+                    )
+                }
             }
         }
-
     }
 }
 
 @Composable
 fun ClockIconsColumn(clockTime: ClockTime, modifier: Modifier = Modifier, isWhite: Boolean = true) {
     Column(modifier = modifier.padding(top = 4.dp)) {
-        Row {
+        Row(modifier = Modifier.defaultMinSizeConstraints(minHeight = 24.dp)) {
             val clockImage = painterResource(id = R.drawable.ic_clock_24)
             Image(
                 modifier = Modifier.padding(end = 8.dp),
