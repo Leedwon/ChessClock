@@ -1,6 +1,5 @@
 package com.ledwon.jakub.chessclock.data.repository
 
-import androidx.compose.runtime.MutableState
 import com.ledwon.jakub.chessclock.data.persistance.SettingsDataStore
 import com.ledwon.jakub.chessclock.ui.ColorTheme
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,16 +11,16 @@ enum class AppDarkTheme {
     SystemDefault
 }
 
-enum class AppColorThemeType {
-    Green,
-    DarkGreen,
-    Purple,
-    Blue,
-    DarkBlue,
-    Red,
-    Brown,
-    Pink,
-    Orange
+enum class AppColorThemeType(val value: ColorTheme) {
+    Green(ColorTheme.Green),
+    DarkGreen(ColorTheme.DarkGreen),
+    Purple(ColorTheme.Purple),
+    Blue(ColorTheme.Blue),
+    DarkBlue(ColorTheme.DarkBlue),
+    Red(ColorTheme.Red),
+    Brown(ColorTheme.Brown),
+    Pink(ColorTheme.Pink),
+    Orange(ColorTheme.Orange)
 }
 
 class SettingsRepository(private val settingsDataStore: SettingsDataStore) {
@@ -30,8 +29,8 @@ class SettingsRepository(private val settingsDataStore: SettingsDataStore) {
     val appDarkTheme: StateFlow<AppDarkTheme> = _appDarkThemeFlow
 
     private val _appColorThemeFlow =
-        MutableStateFlow(settingsDataStore.appColorThemeType.toColorTheme())
-    val appColorTheme: StateFlow<ColorTheme> = _appColorThemeFlow
+        MutableStateFlow(settingsDataStore.appColorThemeType)
+    val appColorTheme: StateFlow<AppColorThemeType> = _appColorThemeFlow
 
     private val _randomizePositionFlow = MutableStateFlow(settingsDataStore.randomizePosition)
     val randomizePosition: StateFlow<Boolean> = _randomizePositionFlow
@@ -41,41 +40,13 @@ class SettingsRepository(private val settingsDataStore: SettingsDataStore) {
         _appDarkThemeFlow.tryEmit(settingsDataStore.appDarkTheme)
     }
 
-    fun updateAppColorTheme(appColorThemeType: ColorTheme) {
-        settingsDataStore.appColorThemeType = appColorThemeType.toAppColorThemeType()
+    fun updateAppColorTheme(appColorThemeType: AppColorThemeType) {
+        settingsDataStore.appColorThemeType = appColorThemeType
         _appColorThemeFlow.tryEmit(appColorThemeType)
     }
 
     fun updateRandomizePosition(randomizePosition: Boolean) {
         settingsDataStore.randomizePosition = randomizePosition
         _randomizePositionFlow.tryEmit(settingsDataStore.randomizePosition)
-    }
-
-    private fun AppColorThemeType.toColorTheme(): ColorTheme {
-        return when (this) {
-            AppColorThemeType.Green -> ColorTheme.Green
-            AppColorThemeType.DarkGreen -> ColorTheme.DarkGreen
-            AppColorThemeType.Purple -> ColorTheme.Purple
-            AppColorThemeType.Blue -> ColorTheme.Blue
-            AppColorThemeType.DarkBlue -> ColorTheme.DarkBlue
-            AppColorThemeType.Red -> ColorTheme.Red
-            AppColorThemeType.Pink -> ColorTheme.Pink
-            AppColorThemeType.Brown -> ColorTheme.Brown
-            AppColorThemeType.Orange -> ColorTheme.Orange
-        }
-    }
-
-    private fun ColorTheme.toAppColorThemeType(): AppColorThemeType {
-        return when (this) {
-            is ColorTheme.Green -> AppColorThemeType.Green
-            is ColorTheme.DarkGreen -> AppColorThemeType.DarkGreen
-            is ColorTheme.Purple -> AppColorThemeType.Purple
-            is ColorTheme.Blue -> AppColorThemeType.Blue
-            is ColorTheme.DarkBlue -> AppColorThemeType.DarkBlue
-            is ColorTheme.Red -> AppColorThemeType.Red
-            is ColorTheme.Pink -> AppColorThemeType.Pink
-            is ColorTheme.Brown -> AppColorThemeType.Brown
-            is ColorTheme.Orange -> AppColorThemeType.Orange
-        }
     }
 }

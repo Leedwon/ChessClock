@@ -28,23 +28,23 @@ import com.ledwon.jakub.chessclock.navigation.Routes
 import com.ledwon.jakub.chessclock.ui.ChessClockTheme
 import com.ledwon.jakub.chessclock.util.AmbientIsDarkMode
 import com.ledwon.jakub.chessclock.util.AmbientNavController
+import com.ledwon.jakub.chessclock.util.AmbientWindowProvider
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 class MainActivity : AppCompatActivity() {
+
     private val mainViewModel: MainViewModel by viewModel()
 
     @ExperimentalFoundationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-
         setContent {
-            val appDarkTheme = mainViewModel.appDarkTheme.collectAsState()
-            val appColorTheme = mainViewModel.appColorTheme.collectAsState()
+            val appDarkThemeState = mainViewModel.appDarkTheme.collectAsState()
+            val appColorThemeState = mainViewModel.appColorTheme.collectAsState()
 
-            val isDarkTheme = when (appDarkTheme.value) {
+            val isDarkTheme = when (appDarkThemeState.value) {
                 AppDarkTheme.Light -> false
                 AppDarkTheme.Dark -> true
                 AppDarkTheme.SystemDefault -> isSystemInDarkTheme()
@@ -52,11 +52,12 @@ class MainActivity : AppCompatActivity() {
 
             ChessClockTheme(
                 darkTheme = isDarkTheme,
-                colorTheme = appColorTheme.value
+                colorTheme = appColorThemeState.value.value
             ) {
-                window.statusBarColor = appColorTheme.value.theme.darkColors.primaryVariant.toArgb()
+                window.statusBarColor =
+                    appColorThemeState.value.value.colorTheme.darkColors.primaryVariant.toArgb()
 
-                Providers(AmbientIsDarkMode provides isDarkTheme) {
+                Providers(AmbientIsDarkMode provides isDarkTheme, AmbientWindowProvider provides window) {
                     Surface(color = MaterialTheme.colors.background) {
                         val navController = rememberNavController()
                         val actions = remember(navController) { Actions(navController) }
