@@ -3,6 +3,7 @@ package com.ledwon.jakub.chessclock.feature.settings
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.ledwon.jakub.chessclock.data.repository.AppColorThemeType
 import com.ledwon.jakub.chessclock.data.repository.AppDarkTheme
 import com.ledwon.jakub.chessclock.data.repository.SettingsRepository
 import com.ledwon.jakub.chessclock.ui.ColorTheme
@@ -13,15 +14,15 @@ class SettingsViewModel(private val settingsRepository: SettingsRepository) : Vi
     val command: LiveData<Command> = _command
 
     val themes = listOf(
-        ColorTheme.Green,
-        ColorTheme.DarkGreen,
-        ColorTheme.Blue,
-        ColorTheme.DarkBlue,
-        ColorTheme.Purple,
-        ColorTheme.Red,
-        ColorTheme.Orange,
-        ColorTheme.Brown,
-        ColorTheme.Pink
+        AppColorThemeType.Green,
+        AppColorThemeType.DarkGreen,
+        AppColorThemeType.Blue,
+        AppColorThemeType.DarkBlue,
+        AppColorThemeType.Purple,
+        AppColorThemeType.Red,
+        AppColorThemeType.Orange,
+        AppColorThemeType.Brown,
+        AppColorThemeType.Pink
     )
 
     val appDarkThemeFlow = settingsRepository.appDarkTheme
@@ -32,7 +33,7 @@ class SettingsViewModel(private val settingsRepository: SettingsRepository) : Vi
         settingsRepository.updateAppDarkTheme(appDarkTheme)
     }
 
-    fun updateAppColorTheme(appColorThemeType: ColorTheme) {
+    fun updateAppColorTheme(appColorThemeType: AppColorThemeType) {
         settingsRepository.updateAppColorTheme(appColorThemeType)
     }
 
