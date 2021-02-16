@@ -1,6 +1,7 @@
 package com.ledwon.jakub.chessclock.di
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.AmbientViewModelStoreOwner
 import androidx.lifecycle.ViewModel
 import com.ledwon.jakub.chessclock.util.AmbientNavController
@@ -15,12 +16,15 @@ inline fun <reified VM : ViewModel> provideNavViewModel(
 ): VM {
     val store = AmbientNavController.current.currentBackStackEntry?.viewModelStore
         ?: AmbientViewModelStoreOwner.current.viewModelStore
-    return getKoin().getViewModel(
-        owner = {
-            ViewModelOwner.Companion.from(
-                store = store
-            )
-        },
-        parameters = parameters
-    )
+    val koin = getKoin()
+    return remember {
+        koin.getViewModel(
+            owner = {
+                ViewModelOwner.Companion.from(
+                    store = store
+                )
+            },
+            parameters = parameters
+        )
+    }
 }

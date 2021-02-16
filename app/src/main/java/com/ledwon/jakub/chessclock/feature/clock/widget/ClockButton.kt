@@ -5,9 +5,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.sp
 import com.ledwon.jakub.chessclock.feature.clock.PlayerDisplay
-import com.ledwon.jakub.chessclock.ui.yellowRipple
 
 @Composable
 fun ClockButton(
@@ -26,12 +25,7 @@ fun ClockButton(
                 is PlayerDisplay.Black -> Color.Black
             },
             contentColor = when (player) {
-                //hack for ripple not working properly in dark mode - it is compose bug probably?
-                is PlayerDisplay.White -> if (MaterialTheme.colors.isLight) {
-                    Color.Black
-                } else {
-                    yellowRipple
-                }
+                is PlayerDisplay.White -> Color.Black
                 is PlayerDisplay.Black -> Color.White
             },
             disabledBackgroundColor = when (player) {
@@ -43,7 +37,7 @@ fun ClockButton(
     ) {
         Text(
             modifier = Modifier.rotate(rotateDegrees),
-            text = player.text, fontSize = TextUnit.Sp(35), color = when (player) {
+            text = player.text, fontSize = 35.sp, color = when (player) {
                 is PlayerDisplay.White -> Color.Black
                 is PlayerDisplay.Black -> Color.White
             }
