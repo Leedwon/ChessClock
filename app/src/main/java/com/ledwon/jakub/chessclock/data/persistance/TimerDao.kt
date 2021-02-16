@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TimerDao {
-    @Query("SELECT * from timer ORDER BY isFavourite asc, id desc")
+    @Query("SELECT * from timer ORDER BY isFavourite desc, id desc")
     fun getAllTimers(): Flow<List<Timer>>
 
     @Query("SELECT * from timer where id = :timerId")
@@ -20,6 +20,9 @@ interface TimerDao {
 
     @Delete
     suspend fun deleteTimer(timer: Timer)
+
+    @Delete
+    suspend fun deleteTimers(timers: List<Timer>)
 
     @Query("UPDATE timer set isFavourite=:isFavourite where id=:id")
     suspend fun updateFavouriteStatus(id: Int, isFavourite: Boolean)

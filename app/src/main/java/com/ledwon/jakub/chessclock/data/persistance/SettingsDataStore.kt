@@ -25,7 +25,7 @@ class SettingsDataStore(preferences: SharedPreferences) {
         preferences = preferences,
         key = APP_COLOR_THEME_TYPE_KEY,
         enumClass = AppColorThemeType::class.java,
-        defaultValue = AppColorThemeType.Green
+        defaultValue = AppColorThemeType.DarkGreen
     )
 
     var randomizePosition: Boolean by BooleanPreferencesDelegate(

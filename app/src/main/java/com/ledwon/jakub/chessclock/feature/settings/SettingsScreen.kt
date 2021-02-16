@@ -4,7 +4,6 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,12 +19,10 @@ import androidx.compose.ui.platform.AmbientLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.lifecycleScope
 import com.ledwon.jakub.chessclock.R
 import com.ledwon.jakub.chessclock.data.repository.AppDarkTheme
 import com.ledwon.jakub.chessclock.navigation.Actions
 import com.ledwon.jakub.chessclock.util.AmbientIsDarkMode
-import kotlinx.coroutines.launch
 
 @ExperimentalFoundationApi
 @Composable
@@ -49,13 +46,12 @@ fun SettingsScreen(actions: Actions, settingsViewModel: SettingsViewModel) {
             }
             is SettingsViewModel.Command.RateApp -> {
                 //todo implement when app is published
-            } else -> {
+            }
+            else -> {
                 //noop
             }
         }
     })
-
-
 
     Scaffold(
         topBar = {
@@ -111,7 +107,7 @@ fun SettingsScreen(actions: Actions, settingsViewModel: SettingsViewModel) {
                                 onClick = { settingsViewModel.updateAppColorTheme(theme) })
                             Box(
                                 modifier = Modifier.height(64.dp).width(64.dp).padding(start = 8.dp)
-                                    .background(if (isDarkMode) theme.theme.darkColors.primary else theme.theme.lightColors.primary)
+                                    .background(if (isDarkMode) theme.value.colorTheme.darkColors.primary else theme.value.colorTheme.lightColors.primary)
                             )
                         }
                     }

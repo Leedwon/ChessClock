@@ -12,13 +12,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
+data class ChooseTimerState(
+    val isSelectableModeOn: Boolean,
+    val timersToSelected: Map<Timer, Boolean>
+)
+
 class ChooseTimerViewModel(
     private val timerRepository: TimerRepository,
     prepopulateDataStore: PrepopulateDataStore
 ) : ViewModel() {
 
-    private val _timers: MutableLiveData<List<Timer>> = MutableLiveData()
-    val timers: LiveData<List<Timer>> = _timers
+    private val _chooseTimerState: MutableLiveData<ChooseTimerState> = MutableLiveData()
+    val chooseTimerState: LiveData<ChooseTimerState> = _chooseTimerState
 
     private val _command: MutableLiveData<Command> = MutableLiveData()
     val command: LiveData<Command> = _command
@@ -33,8 +38,13 @@ class ChooseTimerViewModel(
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            timerRepository.timers.collect {
-                _timers.postValue(it)
+            timerRepository.timers.collect { timers ->
+                _chooseTimerState.postValue(
+                    ChooseTimerState(
+                        isSelectableModeOn = _chooseTimerState.value?.isSelectableModeOn ?: false,
+                        timersToSelected = timers.associateWith { false }
+                    )
+                )
             }
         }
     }
@@ -49,15 +59,40 @@ class ChooseTimerViewModel(
         _command.value = null
     }
 
-    fun onRemoveTimer(timer: Timer) {
+    fun onRemoveTimers() {
+        val state = _chooseTimerState.value!!
         viewModelScope.launch(Dispatchers.IO) {
-            timerRepository.deleteTimer(timer)
+            timerRepository.deleteTimers(state.timersToSelected.filter { it.value }.keys.toList())
         }
+        _chooseTimerState.postValue(state.copy(isSelectableModeOn = false))
     }
 
     fun onOpenSettingsClicked() {
         _command.value = Command.NavigateToSettings
         _command.value = null
+    }
+
+    fun onTimerLongClicked() {
+        val state = _chooseTimerState.value!!
+        _chooseTimerState.postValue(state.copy(isSelectableModeOn = !state.isSelectableModeOn))
+    }
+
+    fun onSelectTimerClick(timer: Timer) {
+        val state = _chooseTimerState.value!!
+
+        _chooseTimerState.postValue(state.copy(
+            timersToSelected = state.timersToSelected.toMutableMap().apply {
+                this[timer] = !this[timer]!!
+            }
+        ))
+    }
+
+    fun onStarClicked(timer: Timer) {
+        viewModelScope.launch(Dispatchers.IO) {
+            timerRepository.updateFavouriteStatus(
+                timer.copy(isFavourite = !timer.isFavourite)
+            )
+        }
     }
 
     sealed class Command {

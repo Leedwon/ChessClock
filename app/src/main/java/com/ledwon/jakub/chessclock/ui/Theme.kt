@@ -12,9 +12,9 @@ fun ChessClockTheme(
     content: @Composable () -> Unit
 ) {
     val colors = if (darkTheme) {
-        colorTheme.theme.darkColors
+        colorTheme.colorTheme.darkColors
     } else {
-        colorTheme.theme.lightColors
+        colorTheme.colorTheme.lightColors
     }
 
     MaterialTheme(
