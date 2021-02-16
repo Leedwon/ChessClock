@@ -125,6 +125,10 @@ class CreateTimerViewModel(
         onStartGameClick()
     }
 
+    fun onBackClick() {
+        _command.value = Command.NavigateBack
+    }
+
     sealed class Command {
         data class NavigateToClock(val state: State) : Command()
         object NavigateBack : Command()

@@ -5,5 +5,10 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val clockModule = module {
-    viewModel { parameters -> ClockViewModel(initialData = parameters[0]) }
+    viewModel { parameters ->
+        ClockViewModel(
+            initialData = parameters[0],
+            settingsRepository = get()
+        )
+    }
 }

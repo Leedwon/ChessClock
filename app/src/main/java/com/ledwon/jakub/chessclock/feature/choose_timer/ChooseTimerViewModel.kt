@@ -55,8 +55,14 @@ class ChooseTimerViewModel(
         }
     }
 
+    fun onOpenSettingsClicked() {
+        _command.value = Command.NavigateToSettings
+        _command.value = null
+    }
+
     sealed class Command {
         data class NavigateToClock(val timer: Timer) : Command()
         object NavigateToCreateTimer : Command()
+        object NavigateToSettings : Command()
     }
 }
