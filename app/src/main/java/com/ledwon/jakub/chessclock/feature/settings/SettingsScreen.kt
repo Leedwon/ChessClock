@@ -5,9 +5,7 @@ import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -66,42 +64,46 @@ fun SettingsScreen(actions: Actions, settingsViewModel: SettingsViewModel) {
             )
         }
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            SettingHeader(modifier = Modifier.padding(bottom = 8.dp), text = "Dark mode")
-            LazyColumn(content = {
-                item {
-                    Row(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        TextRadioButton(
-                            modifier = Modifier.padding(8.dp),
-                            text = "Light",
-                            selected = appDarkTheme.value == AppDarkTheme.Light,
-                            onClick = { settingsViewModel.updateAppDarkTheme(AppDarkTheme.Light) }
-                        )
-                        TextRadioButton(
-                            modifier = Modifier.padding(8.dp),
-                            text = "Dark",
-                            selected = appDarkTheme.value == AppDarkTheme.Dark,
-                            onClick = { settingsViewModel.updateAppDarkTheme(AppDarkTheme.Dark) })
-                        TextRadioButton(
-                            modifier = Modifier.padding(8.dp),
-                            text = "System",
-                            selected = appDarkTheme.value == AppDarkTheme.SystemDefault,
-                            onClick = { settingsViewModel.updateAppDarkTheme(AppDarkTheme.SystemDefault) })
-                    }
+        LazyColumn(modifier = Modifier.padding(16.dp)) {
+            item { SettingHeader(modifier = Modifier.padding(bottom = 8.dp), text = "Dark mode") }
+            item {
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    TextRadioButton(
+                        modifier = Modifier.padding(8.dp),
+                        text = "Light",
+                        selected = appDarkTheme.value == AppDarkTheme.Light,
+                        onClick = { settingsViewModel.updateAppDarkTheme(AppDarkTheme.Light) }
+                    )
+                    TextRadioButton(
+                        modifier = Modifier.padding(8.dp),
+                        text = "Dark",
+                        selected = appDarkTheme.value == AppDarkTheme.Dark,
+                        onClick = { settingsViewModel.updateAppDarkTheme(AppDarkTheme.Dark) })
+                    TextRadioButton(
+                        modifier = Modifier.padding(8.dp),
+                        text = "System",
+                        selected = appDarkTheme.value == AppDarkTheme.SystemDefault,
+                        onClick = { settingsViewModel.updateAppDarkTheme(AppDarkTheme.SystemDefault) })
                 }
-            })
-            SettingHeader(modifier = Modifier.padding(vertical = 8.dp), text = "Color theme")
-            LazyVerticalGrid(
-                cells = GridCells.Fixed(3),
-                content = {
-                    items(settingsViewModel.themes) { theme ->
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(vertical = 8.dp)
-                        ) {
+            }
+            item {
+                SettingHeader(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    text = "Color theme"
+                )
+            }
+
+            val rows = settingsViewModel.themes.chunked(3)
+            items(rows) { row ->
+                Row(
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier.padding(vertical = 16.dp).fillMaxWidth()
+                ) {
+                    row.forEach { theme ->
+                        Row(verticalAlignment = Alignment.CenterVertically) {
                             RadioButton(
                                 selected = theme == appColorTheme.value,
                                 onClick = { settingsViewModel.updateAppColorTheme(theme) })
@@ -111,56 +113,57 @@ fun SettingsScreen(actions: Actions, settingsViewModel: SettingsViewModel) {
                             )
                         }
                     }
-                })
-            LazyColumn(content = {
-                item {
-                    SettingHeader(
-                        modifier = Modifier.padding(vertical = 8.dp),
-                        text = "Randomize white & black clock initial position"
-                    )
-                }
-                item {
-                    Text(
-                        text = "Note: you can always stop the animation by clicking on rotating dice",
-                        fontSize = 13.sp,
-                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
-                    )
-                }
-                item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Switch(
-                            modifier = Modifier.width(32.dp).height(32.dp),
-                            checked = randomizePosition.value,
-                            onCheckedChange = settingsViewModel::updateRandomizePosition
-                        )
-                    }
-                }
-                item {
-                    SettingHeader(
-                        text = "Do you like the app?",
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    )
-                }
-                item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        TextButton(onClick = settingsViewModel::onRateAppClick) {
-                            Text("rate it", fontSize = 18.sp)
-                        }
-                        Text("or", fontSize = 18.sp)
-                        TextButton(onClick = settingsViewModel::onBuyMeACoffeeClick) {
-                            Text("buy me a coffee", fontSize = 18.sp)
-                        }
-                    }
 
                 }
-            })
+            }
+
+            item {
+                SettingHeader(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    text = "Randomize white & black clock initial position"
+                )
+            }
+            item {
+                Text(
+                    text = "Note: you can always stop the animation by clicking on rotating dice",
+                    fontSize = 13.sp,
+                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
+                )
+            }
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Switch(
+                        modifier = Modifier.width(32.dp).height(32.dp),
+                        checked = randomizePosition.value,
+                        onCheckedChange = settingsViewModel::updateRandomizePosition
+                    )
+                }
+            }
+            item {
+                SettingHeader(
+                    text = "Do you like the app?",
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+            }
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    TextButton(onClick = settingsViewModel::onRateAppClick) {
+                        Text("rate it", fontSize = 18.sp)
+                    }
+                    Text("or", fontSize = 18.sp)
+                    TextButton(onClick = settingsViewModel::onBuyMeACoffeeClick) {
+                        Text("buy me a coffee", fontSize = 18.sp)
+                    }
+                }
+
+            }
         }
     }
 }

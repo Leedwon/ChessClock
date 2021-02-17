@@ -97,7 +97,11 @@ fun ChooseTimerScreen(actions: Actions, chooseTimerViewModel: ChooseTimerViewMod
                                     .fillMaxWidth()
                                     .clickable(
                                         onClick = {
-                                            chooseTimerViewModel.onTimerClicked(timer)
+                                            if (chooseTimerState.isSelectableModeOn) {
+                                                chooseTimerViewModel.onSelectTimerClick(timer)
+                                            } else {
+                                                chooseTimerViewModel.onTimerClicked(timer)
+                                            }
                                         },
                                         onLongClick = chooseTimerViewModel::onTimerLongClicked
                                     ),
