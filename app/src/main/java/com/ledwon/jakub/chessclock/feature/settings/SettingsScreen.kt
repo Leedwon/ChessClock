@@ -69,7 +69,7 @@ fun SettingsScreen(actions: Actions, settingsViewModel: SettingsViewModel) {
             item {
                 Row(
                     modifier = Modifier.fillMaxSize(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     TextRadioButton(
                         modifier = Modifier.padding(8.dp),
