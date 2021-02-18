@@ -114,7 +114,7 @@ fun CreateTimerScreen(actions: Actions, createTimerViewModel: CreateTimerViewMod
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Create timer") },
+                title = { Text(text = "Create clock") },
                 navigationIcon = {
                     val backIcon = painterResource(id = R.drawable.ic_arrow_back_24)
                     IconButton(onClick = createTimerViewModel::onBackClick) {
@@ -128,7 +128,7 @@ fun CreateTimerScreen(actions: Actions, createTimerViewModel: CreateTimerViewMod
             modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            item { Text(text = "White's timer: ", fontSize = 24.sp) }
+            item { Text(text = "White's clock: ", fontSize = 24.sp) }
             item {
                 ClockPicker(
                     clockPickerData = ClockPickerData(
@@ -143,7 +143,7 @@ fun CreateTimerScreen(actions: Actions, createTimerViewModel: CreateTimerViewMod
                     onIncrementChanged = createTimerViewModel::onWhiteIncrementChanged
                 )
             }
-            item { Text(text = "Black's timer: ", fontSize = 24.sp) }
+            item { Text(text = "Black's clock: ", fontSize = 24.sp) }
             item {
                 ClockPicker(
                     clockPickerData = ClockPickerData(
