@@ -79,7 +79,7 @@ fun ChooseTimerScreen(actions: Actions, chooseTimerViewModel: ChooseTimerViewMod
                             modifier = Modifier.padding(16.dp).fillMaxWidth(),
                             onClick = chooseTimerViewModel::onCreateTimerClicked
                         ) {
-                            Text("Create new timer", fontSize = 21.sp)
+                            Text("Create new clock", fontSize = 21.sp)
                         }
                     }
 
@@ -188,7 +188,7 @@ fun ClockIconsColumn(clockTime: ClockTime, modifier: Modifier = Modifier, isWhit
             Image(
                 modifier = Modifier.padding(end = 8.dp),
                 painter = clockImage,
-                contentDescription = "timer",
+                contentDescription = "clock",
                 colorFilter = ColorFilter.tint(if (isWhite) Color.White else Color.Black)
             )
             Text(
