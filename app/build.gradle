@@ -10,12 +10,16 @@ android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
 
+    def major = 1
+    def minor = 1
+    def patch = 0
+
     defaultConfig {
         applicationId "com.ledwon.jakub.chessclock"
         minSdkVersion 23
         targetSdkVersion 30
-        versionCode 1
-        versionName "1.0"
+        versionCode major * 100 + minor * 10 + patch
+        versionName "$major.$minor.$patch"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -71,7 +75,7 @@ dependencies {
 
 
     testImplementation "androidx.room:room-testing:$room_version"
-    
+
     implementation "org.koin:koin-androidx-scope:$koin_version"
     implementation "org.koin:koin-androidx-viewmodel:$koin_version"
     implementation "org.koin:koin-androidx-compose:$koin_version"
