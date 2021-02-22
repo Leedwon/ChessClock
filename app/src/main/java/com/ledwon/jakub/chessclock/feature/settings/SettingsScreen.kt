@@ -35,6 +35,7 @@ fun SettingsScreen(actions: Actions, settingsViewModel: SettingsViewModel) {
     val context = AmbientContext.current
 
     settingsViewModel.command.observe(AmbientLifecycleOwner.current, {
+        //todo move links to build config
         when (it) {
             is SettingsViewModel.Command.NavigateBack -> actions.navigateBack()
             is SettingsViewModel.Command.OpenBuyMeACoffee -> {
@@ -43,7 +44,7 @@ fun SettingsScreen(actions: Actions, settingsViewModel: SettingsViewModel) {
                 context.startActivity(intent)
             }
             is SettingsViewModel.Command.RateApp -> {
-                //todo implement when app is published
+                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.ledwon.jakub.chessclock")))
             }
             else -> {
                 //noop
