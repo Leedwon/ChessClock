@@ -1,9 +1,10 @@
 package com.ledwon.jakub.chessclock.util
 
 import android.view.Window
-import androidx.compose.runtime.ambientOf
+import androidx.compose.runtime.compositionLocalOf
 import androidx.navigation.NavController
 
-val AmbientNavController = ambientOf<NavController>()
-val AmbientIsDarkMode = ambientOf<Boolean>()
-val AmbientWindowProvider = ambientOf<Window>()
+//todo find a way without a factory
+val LocalNavController = compositionLocalOf<NavController?>(defaultFactory = { null })
+val LocalIsDarkMode = compositionLocalOf<Boolean>(defaultFactory = { false })
+val LocalWindowProvider = compositionLocalOf<Window?>(defaultFactory = { null })

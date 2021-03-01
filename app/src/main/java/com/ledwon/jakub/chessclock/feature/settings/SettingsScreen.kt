@@ -12,15 +12,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.AmbientContext
-import androidx.compose.ui.platform.AmbientLifecycleOwner
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ledwon.jakub.chessclock.R
 import com.ledwon.jakub.chessclock.data.repository.AppDarkTheme
 import com.ledwon.jakub.chessclock.navigation.Actions
-import com.ledwon.jakub.chessclock.util.AmbientIsDarkMode
+import com.ledwon.jakub.chessclock.util.LocalIsDarkMode
 
 @ExperimentalFoundationApi
 @Composable
@@ -30,11 +30,11 @@ fun SettingsScreen(actions: Actions, settingsViewModel: SettingsViewModel) {
     val appColorTheme = settingsViewModel.appColorThemeFlow.collectAsState()
     val randomizePosition = settingsViewModel.randomizePosition.collectAsState()
 
-    val isDarkMode: Boolean = AmbientIsDarkMode.current
+    val isDarkMode: Boolean = LocalIsDarkMode.current
 
-    val context = AmbientContext.current
+    val context = LocalContext.current
 
-    settingsViewModel.command.observe(AmbientLifecycleOwner.current, {
+    settingsViewModel.command.observe(LocalLifecycleOwner.current, {
         //todo move links to build config
         when (it) {
             is SettingsViewModel.Command.NavigateBack -> actions.navigateBack()

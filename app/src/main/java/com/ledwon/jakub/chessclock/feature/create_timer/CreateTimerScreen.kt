@@ -8,8 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.AmbientAnimationClock
-import androidx.compose.ui.platform.AmbientLifecycleOwner
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -40,7 +39,7 @@ fun CreateTimerScreen(actions: Actions, createTimerViewModel: CreateTimerViewMod
     val secondsRange = 0..59
     val incrementRange = 0..600
 
-    createTimerViewModel.command.observe(AmbientLifecycleOwner.current, {
+    createTimerViewModel.command.observe(LocalLifecycleOwner.current, {
         when (it) {
             is CreateTimerViewModel.Command.NavigateToClock -> {
                 actions.openClock(
@@ -59,46 +58,46 @@ fun CreateTimerScreen(actions: Actions, createTimerViewModel: CreateTimerViewMod
         }
     })
 
-    val clock = AmbientAnimationClock.current
+    val coroutineScope = LocalLifecycleOwner.current.lifecycleScope
 
     val state = remember {
         NumberPickerStates(
             whiteHoursState = NumberPickerState(
-                clock = clock,
+                coroutineScope = coroutineScope,
                 range = hoursRange
             ),
             whiteMinutesState = NumberPickerState(
-                clock = clock,
+                coroutineScope = coroutineScope,
                 range = minutesRange
             ),
             whiteSecondsState = NumberPickerState(
-                clock = clock,
+                coroutineScope = coroutineScope,
                 range = minutesRange
             ),
             whiteIncrementState = NumberPickerState(
-                clock = clock,
+                coroutineScope = coroutineScope,
                 range = incrementRange
             ),
             blackHoursState = NumberPickerState(
-                clock = clock,
+                coroutineScope = coroutineScope,
                 range = hoursRange
             ),
             blackMinutesState = NumberPickerState(
-                clock = clock,
+                coroutineScope = coroutineScope,
                 range = minutesRange
             ),
             blackSecondsState = NumberPickerState(
-                clock = clock,
+                coroutineScope = coroutineScope,
                 range = secondsRange
             ),
             blackIncrementState = NumberPickerState(
-                clock = clock,
+                coroutineScope = coroutineScope,
                 range = incrementRange
             ),
         )
     }
 
-    AmbientLifecycleOwner.current.lifecycleScope.launch {
+    LocalLifecycleOwner.current.lifecycleScope.launch {
         createTimerViewModel.state.collect {
             state.blackHoursState.currentOffset = it.blackClock.hours.toFloat()
             state.blackMinutesState.currentOffset = it.blackClock.minutes.toFloat()
