@@ -1,15 +1,12 @@
 package com.ledwon.jakub.chessclock.feature.clock
 
-import androidx.compose.ui.viewinterop.viewModel
 import androidx.lifecycle.*
 import com.ledwon.jakub.chessclock.data.repository.SettingsRepository
-import com.ledwon.jakub.chessclock.data.repository.repositoryModule
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.ticker
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.take
-import timber.log.Timber
 import java.lang.Math.random
 
 sealed class Player(var millisLeft: Float, private val incrementMillis: Int = 0) {

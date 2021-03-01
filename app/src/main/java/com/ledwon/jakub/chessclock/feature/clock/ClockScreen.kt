@@ -11,7 +11,7 @@ import androidx.compose.ui.res.painterResource
 import com.ledwon.jakub.chessclock.feature.clock.widget.ClockButton
 import com.ledwon.jakub.chessclock.feature.clock.widget.ClockCenterButton
 import com.ledwon.jakub.chessclock.feature.clock.widget.RotatingDice
-import com.ledwon.jakub.chessclock.util.AmbientWindowProvider
+import com.ledwon.jakub.chessclock.util.LocalWindowProvider
 
 @Composable
 fun ClockScreen(clockViewModel: ClockViewModel) {
@@ -23,17 +23,17 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
         )
     )
 
-    val window = AmbientWindowProvider.current
+    val window = LocalWindowProvider.current
 
     //todo it works fine but investigate if we should use such a simple key here
     LaunchedEffect(key1 = "clock", block = {
-        window.addFlags((WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON))
+        window?.addFlags((WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON))
 
     })
 
     DisposableEffect(key1 = "clock", effect = {
         onDispose {
-            window.clearFlags((WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON))
+            window?.clearFlags((WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON))
         }
     })
 
