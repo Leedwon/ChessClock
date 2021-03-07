@@ -11,16 +11,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.CoroutineScope
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
-//todo don't pass scope, instead make suspend?
 class NumberPickerState(
-    val coroutineScope: CoroutineScope,
     val range: IntRange,
     private val initValue: Int = range.first
 ) {
@@ -29,30 +28,25 @@ class NumberPickerState(
         updateBounds(range.first.toFloat(), range.last.toFloat())
     }
 
-    var currentOffset: Float
+    val currentOffset: Float
         get() = _currentOffset.value
-        set(value) {
-            coroutineScope.launch {
-                //todo seems hacky - switch to updating bounds of _currentOffset?
-                _currentOffset.snapTo(value.coerceIn(range.first.toFloat(), range.last.toFloat()))
-            }
-        }
 
     val currentValue
         get() = _currentOffset.value.roundToInt()
 
-    fun fling(velocity: Float, onAnimationFinished: ((Int) -> Unit)? = null) {
-        //todo seems hacky?
-        coroutineScope.launch {
-            _currentOffset.animateDecay(
-                initialVelocity = velocity,
-                animationSpec = FloatExponentialDecaySpec(frictionMultiplier = 15f).generateDecayAnimationSpec()
-            )
+    suspend fun updateCurrentOffset(newValue: Float) {
+        _currentOffset.snapTo(newValue.coerceIn(range.first.toFloat(), range.last.toFloat()))
+    }
 
-            _currentOffset.animateTo(currentValue.toFloat())
+    suspend fun fling(velocity: Float, onAnimationFinished: ((Int) -> Unit)? = null) {
+        _currentOffset.animateDecay(
+            initialVelocity = velocity,
+            animationSpec = FloatExponentialDecaySpec(frictionMultiplier = 15f).generateDecayAnimationSpec()
+        )
 
-            onAnimationFinished?.invoke(currentValue)
-        }
+        _currentOffset.animateTo(currentValue.toFloat())
+
+        onAnimationFinished?.invoke(currentValue)
     }
 
 }
@@ -66,15 +60,18 @@ fun NumberPicker(
     val cellSize = 64.dp
     val cellSizePx = with(LocalDensity.current) { cellSize.toPx() }
 
+    val scope = LocalLifecycleOwner.current.lifecycleScope
+
     Column(
         modifier = modifier
             .wrapContentSize(unbounded = true)
             .draggable(
                 state = rememberDraggableState { dy ->
-                    state.currentOffset += -dy / cellSizePx
+                    scope.launch {
+                        state.updateCurrentOffset(state.currentOffset + (-dy / cellSizePx))
+                    }
                 },
                 orientation = Orientation.Vertical,
-                //onDrag = { dy -> state.currentOffset += -dy / cellSizePx },
                 startDragImmediately = true,
                 onDragStopped = { velocity ->
                     state.fling(
