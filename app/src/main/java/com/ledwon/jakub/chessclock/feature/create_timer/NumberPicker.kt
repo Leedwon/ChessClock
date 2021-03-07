@@ -21,7 +21,7 @@ import kotlin.math.roundToInt
 
 class NumberPickerState(
     val range: IntRange,
-    private val initValue: Int = range.first
+    initValue: Int = range.first
 ) {
 
     private val _currentOffset = Animatable(initValue.coerceIn(range).toFloat()).apply {
