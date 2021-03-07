@@ -58,55 +58,29 @@ fun CreateTimerScreen(actions: Actions, createTimerViewModel: CreateTimerViewMod
         }
     })
 
-    val coroutineScope = LocalLifecycleOwner.current.lifecycleScope
-
     val state = remember {
         NumberPickerStates(
-            whiteHoursState = NumberPickerState(
-                coroutineScope = coroutineScope,
-                range = hoursRange
-            ),
-            whiteMinutesState = NumberPickerState(
-                coroutineScope = coroutineScope,
-                range = minutesRange
-            ),
-            whiteSecondsState = NumberPickerState(
-                coroutineScope = coroutineScope,
-                range = minutesRange
-            ),
-            whiteIncrementState = NumberPickerState(
-                coroutineScope = coroutineScope,
-                range = incrementRange
-            ),
-            blackHoursState = NumberPickerState(
-                coroutineScope = coroutineScope,
-                range = hoursRange
-            ),
-            blackMinutesState = NumberPickerState(
-                coroutineScope = coroutineScope,
-                range = minutesRange
-            ),
-            blackSecondsState = NumberPickerState(
-                coroutineScope = coroutineScope,
-                range = secondsRange
-            ),
-            blackIncrementState = NumberPickerState(
-                coroutineScope = coroutineScope,
-                range = incrementRange
-            ),
+            whiteHoursState = NumberPickerState(range = hoursRange),
+            whiteMinutesState = NumberPickerState(range = minutesRange),
+            whiteSecondsState = NumberPickerState(range = minutesRange),
+            whiteIncrementState = NumberPickerState(range = incrementRange),
+            blackHoursState = NumberPickerState(range = hoursRange),
+            blackMinutesState = NumberPickerState(range = minutesRange),
+            blackSecondsState = NumberPickerState(range = secondsRange),
+            blackIncrementState = NumberPickerState(range = incrementRange),
         )
     }
 
     LocalLifecycleOwner.current.lifecycleScope.launch {
         createTimerViewModel.state.collect {
-            state.blackHoursState.currentOffset = it.blackClock.hours.toFloat()
-            state.blackMinutesState.currentOffset = it.blackClock.minutes.toFloat()
-            state.blackSecondsState.currentOffset = it.blackClock.seconds.toFloat()
-            state.blackIncrementState.currentOffset = it.blackClock.increment.toFloat()
-            state.whiteHoursState.currentOffset = it.whiteClock.hours.toFloat()
-            state.whiteMinutesState.currentOffset = it.whiteClock.minutes.toFloat()
-            state.whiteSecondsState.currentOffset = it.whiteClock.seconds.toFloat()
-            state.whiteIncrementState.currentOffset = it.whiteClock.increment.toFloat()
+            state.blackHoursState.updateCurrentOffset(it.blackClock.hours.toFloat())
+            state.blackMinutesState.updateCurrentOffset(it.blackClock.minutes.toFloat())
+            state.blackSecondsState.updateCurrentOffset(it.blackClock.seconds.toFloat())
+            state.blackIncrementState.updateCurrentOffset(it.blackClock.increment.toFloat())
+            state.whiteHoursState.updateCurrentOffset(it.whiteClock.hours.toFloat())
+            state.whiteMinutesState.updateCurrentOffset(it.whiteClock.minutes.toFloat())
+            state.whiteSecondsState.updateCurrentOffset(it.whiteClock.seconds.toFloat())
+            state.whiteIncrementState.updateCurrentOffset(it.whiteClock.increment.toFloat())
         }
     }
 
