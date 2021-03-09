@@ -1,7 +1,8 @@
 package com.ledwon.jakub.chessclock.feature.choose_timer
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -13,10 +14,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.platform.AmbientLifecycleOwner
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
 import com.ledwon.jakub.chessclock.R
 import com.ledwon.jakub.chessclock.data.model.ClockTime
 import com.ledwon.jakub.chessclock.data.model.Timer
@@ -24,6 +26,7 @@ import com.ledwon.jakub.chessclock.navigation.Actions
 import com.ledwon.jakub.chessclock.navigation.OpenClockPayload
 import com.ledwon.jakub.chessclock.ui.widgets.OutlinePrimaryButton
 
+@ExperimentalFoundationApi
 @Composable
 fun ChooseTimerScreen(actions: Actions, chooseTimerViewModel: ChooseTimerViewModel) {
 
@@ -34,7 +37,7 @@ fun ChooseTimerScreen(actions: Actions, chooseTimerViewModel: ChooseTimerViewMod
         )
     )
 
-    chooseTimerViewModel.command.observe(AmbientLifecycleOwner.current, {
+    chooseTimerViewModel.command.observe(LocalLifecycleOwner.current, {
         if (it == null) {
             return@observe
         }
@@ -95,7 +98,7 @@ fun ChooseTimerScreen(actions: Actions, chooseTimerViewModel: ChooseTimerViewMod
                             TimeCard(
                                 modifier = Modifier.padding(vertical = 12.dp, horizontal = 16.dp)
                                     .fillMaxWidth()
-                                    .clickable(
+                                    .combinedClickable(
                                         onClick = {
                                             if (chooseTimerState.isSelectableModeOn) {
                                                 chooseTimerViewModel.onSelectTimerClick(timer)
@@ -183,7 +186,7 @@ fun TimeCard(
 @Composable
 fun ClockIconsColumn(clockTime: ClockTime, modifier: Modifier = Modifier, isWhite: Boolean = true) {
     Column(modifier = modifier.padding(top = 4.dp)) {
-        Row(modifier = Modifier.defaultMinSizeConstraints(minHeight = 24.dp)) {
+        Row(modifier = Modifier.defaultMinSize(minHeight = 24.dp)) {
             val clockImage = painterResource(id = R.drawable.ic_clock_24)
             Image(
                 modifier = Modifier.padding(end = 8.dp),

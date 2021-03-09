@@ -1,7 +1,7 @@
 package com.ledwon.jakub.chessclock
 
 import android.os.Bundle
-import android.view.WindowManager
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -9,7 +9,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.setContent
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import com.ledwon.jakub.chessclock.data.repository.AppDarkTheme
@@ -26,9 +25,9 @@ import com.ledwon.jakub.chessclock.feature.settings.SettingsViewModel
 import com.ledwon.jakub.chessclock.navigation.Actions
 import com.ledwon.jakub.chessclock.navigation.Routes
 import com.ledwon.jakub.chessclock.ui.ChessClockTheme
-import com.ledwon.jakub.chessclock.util.AmbientIsDarkMode
-import com.ledwon.jakub.chessclock.util.AmbientNavController
-import com.ledwon.jakub.chessclock.util.AmbientWindowProvider
+import com.ledwon.jakub.chessclock.util.LocalIsDarkMode
+import com.ledwon.jakub.chessclock.util.LocalNavController
+import com.ledwon.jakub.chessclock.util.LocalWindowProvider
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -57,11 +56,11 @@ class MainActivity : AppCompatActivity() {
                 window.statusBarColor =
                     appColorThemeState.value.value.colorTheme.darkColors.primaryVariant.toArgb()
 
-                Providers(AmbientIsDarkMode provides isDarkTheme, AmbientWindowProvider provides window) {
+                CompositionLocalProvider(LocalIsDarkMode provides isDarkTheme, LocalWindowProvider provides window) {
                     Surface(color = MaterialTheme.colors.background) {
                         val navController = rememberNavController()
                         val actions = remember(navController) { Actions(navController) }
-                        Providers(AmbientNavController provides navController) {
+                        CompositionLocalProvider(LocalNavController provides navController) {
                             NavHost(
                                 navController = navController,
                                 startDestination = Routes.TimerChooserRoute
