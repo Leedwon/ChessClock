@@ -41,15 +41,14 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    kotlinOptions {
-        jvmTarget = '1.8'
-        useIR = true
-        //todo remove while migrating to koin 3.0.1
-        freeCompilerArgs += "-Xallow-unstable-dependencies"
-    }
+
     buildFeatures {
         compose true
     }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
     composeOptions {
         kotlinCompilerVersion = "1.4.30"
         kotlinCompilerExtensionVersion = compose_version
@@ -80,10 +79,9 @@ dependencies {
 
     testImplementation "androidx.room:room-testing:$room_version"
 
-    implementation "org.koin:koin-androidx-scope:$koin_version"
-    implementation "org.koin:koin-androidx-viewmodel:$koin_version"
-    implementation "org.koin:koin-androidx-compose:$koin_version"
-    implementation "org.koin:koin-androidx-ext:$koin_version"
+    implementation "io.insert-koin:koin-android:$koin_version"
+    implementation "io.insert-koin:koin-android-ext:$koin_version"
+    implementation "io.insert-koin:koin-androidx-compose:$koin_version"
 
     implementation 'com.jakewharton.timber:timber:4.7.1'
 
@@ -101,12 +99,4 @@ dependencies {
 
 kapt {
     correctErrorTypes true
-}
-
-//todo try to remove it?
-tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
-    kotlinOptions {
-        jvmTarget = "1.8"
-        freeCompilerArgs += ["-Xallow-jvm-ir-dependencies", "-Xskip-prerelease-check"]
-    }
 }
