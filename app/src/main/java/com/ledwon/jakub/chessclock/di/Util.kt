@@ -15,7 +15,7 @@ import org.koin.core.parameter.ParametersDefinition
 inline fun <reified VM : ViewModel> provideNavViewModel(
     noinline parameters: ParametersDefinition? = null
 ): VM {
-    val store = LocalNavController.current?.currentBackStackEntry?.viewModelStore
+    val store = LocalNavController.current.currentBackStackEntry?.viewModelStore
         ?: LocalViewModelStoreOwner.current.viewModelStore
     val koin = getKoin()
     return remember {
