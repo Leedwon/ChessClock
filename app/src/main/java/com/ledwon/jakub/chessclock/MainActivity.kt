@@ -66,8 +66,7 @@ class MainActivity : AppCompatActivity() {
                                 startDestination = Routes.TimerChooserRoute
                             ) {
                                 composable(Routes.TimerChooserRoute) {
-                                    val chooseTimerViewModel: ChooseTimerViewModel =
-                                        provideNavViewModel()
+                                    val chooseTimerViewModel: ChooseTimerViewModel = provideNavViewModel()
                                     ChooseTimerScreen(
                                         actions = actions,
                                         chooseTimerViewModel = chooseTimerViewModel
