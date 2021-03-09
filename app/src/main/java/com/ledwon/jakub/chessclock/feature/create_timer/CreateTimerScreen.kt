@@ -8,8 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.AmbientAnimationClock
-import androidx.compose.ui.platform.AmbientLifecycleOwner
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -40,7 +39,7 @@ fun CreateTimerScreen(actions: Actions, createTimerViewModel: CreateTimerViewMod
     val secondsRange = 0..59
     val incrementRange = 0..600
 
-    createTimerViewModel.command.observe(AmbientLifecycleOwner.current, {
+    createTimerViewModel.command.observe(LocalLifecycleOwner.current, {
         when (it) {
             is CreateTimerViewModel.Command.NavigateToClock -> {
                 actions.openClock(
@@ -59,55 +58,29 @@ fun CreateTimerScreen(actions: Actions, createTimerViewModel: CreateTimerViewMod
         }
     })
 
-    val clock = AmbientAnimationClock.current
-
     val state = remember {
         NumberPickerStates(
-            whiteHoursState = NumberPickerState(
-                clock = clock,
-                range = hoursRange
-            ),
-            whiteMinutesState = NumberPickerState(
-                clock = clock,
-                range = minutesRange
-            ),
-            whiteSecondsState = NumberPickerState(
-                clock = clock,
-                range = minutesRange
-            ),
-            whiteIncrementState = NumberPickerState(
-                clock = clock,
-                range = incrementRange
-            ),
-            blackHoursState = NumberPickerState(
-                clock = clock,
-                range = hoursRange
-            ),
-            blackMinutesState = NumberPickerState(
-                clock = clock,
-                range = minutesRange
-            ),
-            blackSecondsState = NumberPickerState(
-                clock = clock,
-                range = secondsRange
-            ),
-            blackIncrementState = NumberPickerState(
-                clock = clock,
-                range = incrementRange
-            ),
+            whiteHoursState = NumberPickerState(range = hoursRange),
+            whiteMinutesState = NumberPickerState(range = minutesRange),
+            whiteSecondsState = NumberPickerState(range = minutesRange),
+            whiteIncrementState = NumberPickerState(range = incrementRange),
+            blackHoursState = NumberPickerState(range = hoursRange),
+            blackMinutesState = NumberPickerState(range = minutesRange),
+            blackSecondsState = NumberPickerState(range = secondsRange),
+            blackIncrementState = NumberPickerState(range = incrementRange),
         )
     }
 
-    AmbientLifecycleOwner.current.lifecycleScope.launch {
+    LocalLifecycleOwner.current.lifecycleScope.launch {
         createTimerViewModel.state.collect {
-            state.blackHoursState.currentOffset = it.blackClock.hours.toFloat()
-            state.blackMinutesState.currentOffset = it.blackClock.minutes.toFloat()
-            state.blackSecondsState.currentOffset = it.blackClock.seconds.toFloat()
-            state.blackIncrementState.currentOffset = it.blackClock.increment.toFloat()
-            state.whiteHoursState.currentOffset = it.whiteClock.hours.toFloat()
-            state.whiteMinutesState.currentOffset = it.whiteClock.minutes.toFloat()
-            state.whiteSecondsState.currentOffset = it.whiteClock.seconds.toFloat()
-            state.whiteIncrementState.currentOffset = it.whiteClock.increment.toFloat()
+            state.blackHoursState.updateCurrentOffset(it.blackClock.hours.toFloat())
+            state.blackMinutesState.updateCurrentOffset(it.blackClock.minutes.toFloat())
+            state.blackSecondsState.updateCurrentOffset(it.blackClock.seconds.toFloat())
+            state.blackIncrementState.updateCurrentOffset(it.blackClock.increment.toFloat())
+            state.whiteHoursState.updateCurrentOffset(it.whiteClock.hours.toFloat())
+            state.whiteMinutesState.updateCurrentOffset(it.whiteClock.minutes.toFloat())
+            state.whiteSecondsState.updateCurrentOffset(it.whiteClock.seconds.toFloat())
+            state.whiteIncrementState.updateCurrentOffset(it.whiteClock.increment.toFloat())
         }
     }
 

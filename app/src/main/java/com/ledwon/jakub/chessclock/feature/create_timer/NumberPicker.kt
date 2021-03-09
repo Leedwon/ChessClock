@@ -1,6 +1,5 @@
 package com.ledwon.jakub.chessclock.feature.create_timer
 
-import androidx.compose.animation.AnimatedFloatModel
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.*
@@ -11,48 +10,43 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.gesture.scrollorientationlocking.Orientation
-import androidx.compose.ui.platform.AmbientDensity
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 class NumberPickerState(
-    val clock: AnimationClockObservable,
     val range: IntRange,
-    private val initValue: Int = range.first
+    initValue: Int = range.first
 ) {
-    private val _currentOffset =
-        AnimatedFloatModel(
-            clock = clock,
-            initialValue = initValue.toFloat()
-        ).apply {
-            setBounds(range.first.toFloat(), range.last.toFloat())
-        }
 
-    var currentOffset: Float
+    private val _currentOffset = Animatable(initValue.coerceIn(range).toFloat()).apply {
+        updateBounds(range.first.toFloat(), range.last.toFloat())
+    }
+
+    val currentOffset: Float
         get() = _currentOffset.value
-        set(value) {
-            _currentOffset.snapTo(value)
-        }
 
     val currentValue
         get() = _currentOffset.value.roundToInt()
 
-    fun fling(velocity: Float, onAnimationFinished: ((Int) -> Unit)? = null) {
-        _currentOffset.fling(
-            startVelocity = velocity,
-            decay = FloatExponentialDecaySpec(frictionMultiplier = 15f),
-            adjustTarget = { target ->
-                TargetAnimation(target.roundToInt().toFloat())
-            },
-            onEnd = { animationEndReason: AnimationEndReason, _, _ ->
-                if (animationEndReason == AnimationEndReason.Finished || animationEndReason == AnimationEndReason.TargetReached || animationEndReason == AnimationEndReason.BoundReached) {
-                    onAnimationFinished?.invoke(currentValue)
-                }
-            }
+    suspend fun updateCurrentOffset(newValue: Float) {
+        _currentOffset.snapTo(newValue.coerceIn(range.first.toFloat(), range.last.toFloat()))
+    }
+
+    suspend fun fling(velocity: Float, onAnimationFinished: ((Int) -> Unit)? = null) {
+        _currentOffset.animateDecay(
+            initialVelocity = velocity,
+            animationSpec = FloatExponentialDecaySpec(frictionMultiplier = 15f).generateDecayAnimationSpec()
         )
+
+        _currentOffset.animateTo(currentValue.toFloat())
+
+        onAnimationFinished?.invoke(currentValue)
     }
 
 }
@@ -64,14 +58,20 @@ fun NumberPicker(
     onValueChangedListener: ((Int) -> Unit)? = null
 ) {
     val cellSize = 64.dp
-    val cellSizePx = with(AmbientDensity.current) { cellSize.toPx() }
+    val cellSizePx = with(LocalDensity.current) { cellSize.toPx() }
+
+    val scope = LocalLifecycleOwner.current.lifecycleScope
 
     Column(
         modifier = modifier
             .wrapContentSize(unbounded = true)
             .draggable(
+                state = rememberDraggableState { dy ->
+                    scope.launch {
+                        state.updateCurrentOffset(state.currentOffset + (-dy / cellSizePx))
+                    }
+                },
                 orientation = Orientation.Vertical,
-                onDrag = { dy -> state.currentOffset += -dy / cellSizePx },
                 startDragImmediately = true,
                 onDragStopped = { velocity ->
                     state.fling(
@@ -83,7 +83,7 @@ fun NumberPicker(
     ) {
         val currentValue = state.currentValue
         val animOffsetPx = currentValue * cellSizePx - state.currentOffset * cellSizePx
-        val animOffsetDp = with(AmbientDensity.current) { animOffsetPx.toDp() }
+        val animOffsetDp = with(LocalDensity.current) { animOffsetPx.toDp() }
 
         val alpha = (animOffsetPx % cellSizePx) / cellSizePx
         Cell(
