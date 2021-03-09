@@ -15,6 +15,8 @@ import com.ledwon.jakub.chessclock.util.LocalWindowProvider
 
 @Composable
 fun ClockScreen(clockViewModel: ClockViewModel) {
+    val launchedEffectKey = "clock_key"
+
     val state: State by clockViewModel.state.observeAsState(
         State(
             PlayerDisplay.White(""),
@@ -25,15 +27,14 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
 
     val window = LocalWindowProvider.current
 
-    //todo it works fine but investigate if we should use such a simple key here
-    LaunchedEffect(key1 = "clock", block = {
-        window?.addFlags((WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON))
+    LaunchedEffect(key1 = launchedEffectKey, block = {
+        window.addFlags((WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON))
 
     })
 
-    DisposableEffect(key1 = "clock", effect = {
+    DisposableEffect(key1 = launchedEffectKey, effect = {
         onDispose {
-            window?.clearFlags((WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON))
+            window.clearFlags((WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON))
         }
     })
 
@@ -80,10 +81,10 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
             }
             GameState.Paused -> {
                 Row(
-                    horizontalArrangement = Arrangement.Center
+                    horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     ClockCenterButton(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.weight(1f, fill = false),
                         onClick = { clockViewModel.startTimer() },
                         icon = painterResource(
                             id = com.ledwon.jakub.chessclock.R.drawable.ic_play_48
@@ -91,7 +92,7 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
                         iconTint = Color.Green
                     )
                     ClockCenterButton(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.weight(1f, fill = false),
                         onClick = { clockViewModel.restartGame() },
                         icon = painterResource(
                             id = com.ledwon.jakub.chessclock.R.drawable.ic_replay_48
