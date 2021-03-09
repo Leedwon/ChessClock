@@ -44,6 +44,7 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
         useIR = true
+        //todo remove while migrating to koin 3.0.1
         freeCompilerArgs += "-Xallow-unstable-dependencies"
     }
     buildFeatures {
@@ -102,6 +103,7 @@ kapt {
     correctErrorTypes true
 }
 
+//todo try to remove it?
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
     kotlinOptions {
         jvmTarget = "1.8"
