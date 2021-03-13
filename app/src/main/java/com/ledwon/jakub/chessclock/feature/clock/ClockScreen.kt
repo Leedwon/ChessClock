@@ -8,9 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import com.ledwon.jakub.chessclock.feature.clock.widget.ClockButton
-import com.ledwon.jakub.chessclock.feature.clock.widget.ClockCenterButton
-import com.ledwon.jakub.chessclock.feature.clock.widget.RotatingDice
+import com.ledwon.jakub.chessclock.feature.clock.widget.*
 import com.ledwon.jakub.chessclock.util.LocalWindowProvider
 
 @Composable
@@ -41,22 +39,11 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
     Box(contentAlignment = Alignment.Center) {
         val clockEnabled =
             state.gameState != GameState.Paused && state.gameState != GameState.RandomizingPositions
-        Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceAround) {
-            val btnModifier = Modifier.weight(1f).fillMaxWidth()
-            ClockButton(
-                modifier = btnModifier,
-                player = state.first,
-                onClick = { clockViewModel.clockClicked(state.first) },
-                rotateDegrees = 180f,
-                enabled = clockEnabled
-            )
-            ClockButton(
-                modifier = btnModifier,
-                player = state.second,
-                onClick = { clockViewModel.clockClicked(state.second) },
-                enabled = clockEnabled
-            )
-        }
+        BothPlayersTimeClock(
+            playersDisplay = state.first to state.second,
+            onClockButtonClick = clockViewModel::clockClicked,
+            enabled = clockEnabled
+        )
         when (state.gameState) {
             GameState.RandomizingPositions -> {
                 RotatingDice(onDiceClick = clockViewModel::cancelRandomization)
