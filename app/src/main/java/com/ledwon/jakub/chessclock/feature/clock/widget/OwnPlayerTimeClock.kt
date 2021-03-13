@@ -23,7 +23,6 @@ fun OwnPlayerTimeClock(
         ClockButton(
             modifier = btnModifier,
             player = playersDisplay.first,
-            //todo is both content color inside ClockButton and text color needed?
             onClick = onClockButtonClick,
             enabled = enabled
         ) {
@@ -31,7 +30,7 @@ fun OwnPlayerTimeClock(
                 modifier = Modifier.rotate(rotations.first),
                 fontSize = 35.sp,
                 text = playersDisplay.first.text,
-                color = playersDisplay.first.textColor()
+                color = playersDisplay.first.contentColor()
             )
         }
         ClockButton(
@@ -44,7 +43,7 @@ fun OwnPlayerTimeClock(
                 modifier = Modifier.rotate(rotations.second),
                 fontSize = 35.sp,
                 text = playersDisplay.second.text,
-                color = playersDisplay.second.textColor()
+                color = playersDisplay.second.contentColor()
             )
         }
     }

@@ -21,7 +21,7 @@ fun ClockButton(
         modifier = modifier,
         colors = ButtonDefaults.buttonColors(
             backgroundColor = player.backgroundColor(),
-            contentColor = player.textColor(),
+            contentColor = player.contentColor(),
             disabledBackgroundColor = player.backgroundColor()
         ),
         onClick = { onClick.invoke(player) },
@@ -34,7 +34,7 @@ fun ClockButton(
 fun ClockButtonPreview() {
     ClockButton(
         modifier = Modifier.fillMaxWidth(),
-        player = PlayerDisplay.White("01:00"),
+        player = PlayerDisplay.White("01:00", 1.0f),
         onClick = { },
         enabled = true
     ) {
