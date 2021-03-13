@@ -39,8 +39,8 @@ fun BothPlayersTimeClock(
                 start.linkTo(firstBtn.start, margin = 64.dp)
             },
             text = playersDisplay.first.text,
-            fontSize = 35.sp,
-            color = playersDisplay.first.textColor()
+            color = playersDisplay.first.contentColor(),
+            fontSize = 35.sp
         )
         Text(
             modifier = Modifier.rotate(180f).constrainAs(firstPlayerOpponentTime) {
@@ -48,8 +48,8 @@ fun BothPlayersTimeClock(
                 end.linkTo(firstBtn.end, margin = 64.dp)
             },
             text = playersDisplay.second.text,
-            fontSize = 24.sp,
-            color = playersDisplay.first.textColor()
+            color = playersDisplay.first.contentColor(),
+            fontSize = 24.sp
         )
         ClockButton(
             modifier = Modifier.constrainAs(
@@ -72,8 +72,8 @@ fun BothPlayersTimeClock(
                 start.linkTo(secondBtn.start, margin = 64.dp)
             },
             text = playersDisplay.second.text,
-            fontSize = 35.sp,
-            color = playersDisplay.second.textColor()
+            color = playersDisplay.second.contentColor(),
+            fontSize = 35.sp
         )
         Text(
             modifier = Modifier.constrainAs(secondPlayerOpponentTime) {
@@ -81,8 +81,8 @@ fun BothPlayersTimeClock(
                 end.linkTo(secondBtn.end, margin = 64.dp)
             },
             text = playersDisplay.first.text,
-            fontSize = 24.sp,
-            color = playersDisplay.second.textColor()
+            color = playersDisplay.second.contentColor(),
+            fontSize = 24.sp
         )
     }
 }
@@ -91,7 +91,7 @@ fun BothPlayersTimeClock(
 @Composable
 fun ClockPreview() {
     BothPlayersTimeClock(
-        playersDisplay = PlayerDisplay.White("05:00") to PlayerDisplay.Black("03:00"),
+        playersDisplay = PlayerDisplay.White("05:00", 1.0f) to PlayerDisplay.Black("03:00", 0.6f),
         onClockButtonClick = { }, //noop
     )
 }

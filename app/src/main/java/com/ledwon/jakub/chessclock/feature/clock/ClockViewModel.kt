@@ -9,13 +9,21 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.take
 import java.lang.Math.random
 
-sealed class Player(var millisLeft: Float, private val incrementMillis: Int = 0) {
+sealed class Player(
+    private val initialMillis: Float,
+    private val incrementMillis: Int = 0
+) {
+    var millisLeft: Float = initialMillis //todo make private?
+
     private val seconds: Int
         get() = millisLeft.toInt() / 1000 % 60
     private val minutes: Int
         get() = millisLeft.toInt() / 1000 / 60 % 60
     private val hours: Int
         get() = millisLeft.toInt() / 1000 / 60 / 60
+
+    val percentageLeft: Float
+        get() = millisLeft / initialMillis
 
     open val text: String
         get() {
@@ -32,6 +40,10 @@ sealed class Player(var millisLeft: Float, private val incrementMillis: Int = 0)
         millisLeft += incrementMillis
     }
 
+    fun resetTime() {
+        millisLeft = initialMillis
+    }
+
     val hasLost: Boolean
         get() = millisLeft <= 0
 
@@ -46,23 +58,24 @@ sealed class Player(var millisLeft: Float, private val incrementMillis: Int = 0)
         return "Player(millisLeft=$millisLeft, increment=$incrementMillis)"
     }
 
-    class White(millisLeft: Float, increment: Int = 0) : Player(millisLeft, increment) {
+    class White(initialMillis: Float, increment: Int = 0) : Player(initialMillis, increment) {
         override val text: String
             get() = if (hasLost) "Black wins" else super.text
     }
 
-    class Black(millisLeft: Float, increment: Int = 0) : Player(millisLeft, increment) {
+    class Black(initialMillis: Float, increment: Int = 0) : Player(initialMillis, increment) {
         override val text: String
             get() = if (hasLost) "White wins" else super.text
     }
 }
 
-//PlayerDisplay allows for ui changes to happen in 1s intervals, too fast intervals caused ui to freeze
+//todo is this needed? Mb Player is enough? although display doesn't allow for time left to change so it is kinda justified?
 sealed class PlayerDisplay(
-    val text: String
+    val text: String,
+    val percentageLeft: Float
 ) {
-    class White(text: String) : PlayerDisplay(text)
-    class Black(text: String) : PlayerDisplay(text)
+    class White(text: String, percentageLeft: Float) : PlayerDisplay(text, percentageLeft)
+    class Black(text: String, percentageLeft: Float) : PlayerDisplay(text, percentageLeft)
 
     fun isFor(player: Player): Boolean =
         this is White && player is Player.White || this is Black && player is Player.Black
@@ -71,8 +84,8 @@ sealed class PlayerDisplay(
     companion object {
         fun from(player: Player): PlayerDisplay {
             return when (player) {
-                is Player.White -> White(player.text)
-                is Player.Black -> Black(player.text)
+                is Player.White -> White(player.text, player.percentageLeft)
+                is Player.Black -> Black(player.text, player.percentageLeft)
             }
         }
     }
@@ -100,21 +113,21 @@ data class InitialData(
 )
 
 class ClockViewModel(
-    private val initialData: InitialData,
+     initialData: InitialData,
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
     companion object {
-        private const val INTERVAL_MILLIS = 100L
+        private const val INTERVAL_MILLIS = 50L
         private const val MIN_RANDOM_ROUNDS = 9
     }
 
     private val white = Player.White(
-        millisLeft = initialData.whiteSeconds * 1000f,
+        initialMillis = initialData.whiteSeconds * 1000f,
         increment = initialData.whiteIncrementSeconds * 1000
     )
     private val black = Player.Black(
-        millisLeft = initialData.blackSeconds * 1000f,
+        initialMillis = initialData.blackSeconds * 1000f,
         increment = initialData.blackIncrementSeconds * 1000
     )
 
@@ -190,8 +203,8 @@ class ClockViewModel(
     }
 
     fun restartGame() {
-        white.millisLeft = initialData.whiteSeconds * 1000f
-        black.millisLeft = initialData.blackSeconds * 1000f
+        white.resetTime()
+        black.resetTime()
         gameState = GameState.BeforeStarted
         _state.value = createState()
     }

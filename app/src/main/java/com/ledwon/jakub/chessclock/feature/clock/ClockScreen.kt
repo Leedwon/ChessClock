@@ -17,8 +17,8 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
 
     val state: State by clockViewModel.state.observeAsState(
         State(
-            PlayerDisplay.White(""),
-            PlayerDisplay.Black(""),
+            PlayerDisplay.White("", 1.0f),
+            PlayerDisplay.Black("", 1.0f),
             GameState.BeforeStarted
         )
     )
@@ -39,10 +39,10 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
     Box(contentAlignment = Alignment.Center) {
         val clockEnabled =
             state.gameState != GameState.Paused && state.gameState != GameState.RandomizingPositions
-        BothPlayersTimeClock(
+        CircleAnimatedClock(
             playersDisplay = state.first to state.second,
             onClockButtonClick = clockViewModel::clockClicked,
-            enabled = clockEnabled
+            enabled = clockEnabled,
         )
         when (state.gameState) {
             GameState.RandomizingPositions -> {
