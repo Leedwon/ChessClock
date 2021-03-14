@@ -29,6 +29,7 @@ fun SettingsScreen(actions: Actions, settingsViewModel: SettingsViewModel) {
     val appDarkTheme = settingsViewModel.appDarkThemeFlow.collectAsState()
     val appColorTheme = settingsViewModel.appColorThemeFlow.collectAsState()
     val randomizePosition = settingsViewModel.randomizePosition.collectAsState()
+    val selectedClockType = settingsViewModel.clockType.collectAsState()
 
     val isDarkMode: Boolean = LocalIsDarkMode.current
 
@@ -44,7 +45,12 @@ fun SettingsScreen(actions: Actions, settingsViewModel: SettingsViewModel) {
                 context.startActivity(intent)
             }
             is SettingsViewModel.Command.RateApp -> {
-                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.ledwon.jakub.chessclock")))
+                context.startActivity(
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("market://details?id=com.ledwon.jakub.chessclock")
+                    )
+                )
             }
             else -> {
                 //noop
@@ -97,8 +103,8 @@ fun SettingsScreen(actions: Actions, settingsViewModel: SettingsViewModel) {
                 )
             }
 
-            val rows = settingsViewModel.themes.chunked(3)
-            items(rows) { row ->
+            val colorThemeRows = settingsViewModel.themes.chunked(3)
+            items(colorThemeRows) { row ->
                 Row(
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     modifier = Modifier.padding(vertical = 16.dp).fillMaxWidth()
@@ -115,6 +121,25 @@ fun SettingsScreen(actions: Actions, settingsViewModel: SettingsViewModel) {
                         }
                     }
 
+                }
+            }
+
+            item {
+                SettingHeader(text = "Clock display type")
+            }
+
+            val clockDisplayTypeRows = settingsViewModel.clockTypes.chunked(3)
+            items(clockDisplayTypeRows) { row ->
+                Row(
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier.padding(vertical = 16.dp).fillMaxWidth()
+                ) {
+                    row.forEach { clockType ->
+                        RadioButton(
+                            selected = clockType == selectedClockType.value,
+                            onClick = { settingsViewModel.updateClockType(clockType) }
+                        )
+                    }
                 }
             }
 

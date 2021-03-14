@@ -20,6 +20,7 @@ import com.ledwon.jakub.chessclock.ui.*
 @Composable
 fun CircleAnimatedClock(
     playersDisplay: Pair<PlayerDisplay, PlayerDisplay>,
+    rotations: Pair<Float, Float>,
     onClockButtonClick: (PlayerDisplay) -> Unit,
     enabled: Boolean = true
 ) {
@@ -32,7 +33,7 @@ fun CircleAnimatedClock(
             enabled = enabled
         ) {
             Box(
-                modifier = Modifier.fillMaxSize().padding(bottom = 64.dp),
+                modifier = Modifier.fillMaxSize().padding(bottom = 64.dp).rotate(rotations.first),
                 contentAlignment = Alignment.Center
             ) {
                 FilledCircle(
@@ -41,7 +42,6 @@ fun CircleAnimatedClock(
                     borderColor = playersDisplay.first.contentColor()
                 )
                 Text(
-                    modifier = Modifier.rotate(180f),
                     text = playersDisplay.first.text,
                     color = playersDisplay.first.contentColor(),
                     fontSize = 35.sp
@@ -55,7 +55,7 @@ fun CircleAnimatedClock(
             enabled = enabled
         ) {
             Box(
-                modifier = Modifier.fillMaxSize().padding(top = 64.dp),
+                modifier = Modifier.fillMaxSize().padding(top = 64.dp).rotate(rotations.second),
                 contentAlignment = Alignment.Center
             ) {
                 FilledCircle(
@@ -99,6 +99,7 @@ fun FilledCircle(modifier: Modifier = Modifier, filledPercentage: Float, borderC
 @Composable
 fun FilledCirclePrev() {
     CircleAnimatedClock(
+        rotations = 180f to 0f,
         playersDisplay = PlayerDisplay.White("01:00", 1.0f) to PlayerDisplay.Black("00:30", 0.5f),
         onClockButtonClick = { }
     )
