@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.ledwon.jakub.chessclock.data.repository.AppColorThemeType
 import com.ledwon.jakub.chessclock.data.repository.AppDarkTheme
 import com.ledwon.jakub.chessclock.data.repository.SettingsRepository
+import com.ledwon.jakub.chessclock.feature.clock.ClockType
 import com.ledwon.jakub.chessclock.ui.ColorTheme
 
 class SettingsViewModel(private val settingsRepository: SettingsRepository) : ViewModel() {
@@ -25,9 +26,21 @@ class SettingsViewModel(private val settingsRepository: SettingsRepository) : Vi
         AppColorThemeType.Pink
     )
 
+    //todo with names
+    val clockTypes = listOf(
+        ClockType.OwnPlayerTimeClock(180f to 0f),
+        ClockType.OwnPlayerTimeClock(90f to 90f),
+        ClockType.OwnPlayerTimeClock(270f to 270f),
+        ClockType.BothPlayersTimeClock,
+        ClockType.CircleAnimatedClock(180f to 0f),
+        ClockType.CircleAnimatedClock(90f to 90f),
+        ClockType.CircleAnimatedClock(270f to 270f),
+    )
+
     val appDarkThemeFlow = settingsRepository.appDarkTheme
     val appColorThemeFlow = settingsRepository.appColorTheme
     val randomizePosition = settingsRepository.randomizePosition
+    val clockType = settingsRepository.clockType
 
     fun updateAppDarkTheme(appDarkTheme: AppDarkTheme) {
         settingsRepository.updateAppDarkTheme(appDarkTheme)
@@ -39,6 +52,10 @@ class SettingsViewModel(private val settingsRepository: SettingsRepository) : Vi
 
     fun updateRandomizePosition(randomizePosition: Boolean) {
         settingsRepository.updateRandomizePosition(randomizePosition)
+    }
+
+    fun updateClockType(clockType: ClockType) {
+        settingsRepository.updateClockType(clockType = clockType)
     }
 
     fun onBackClick() {

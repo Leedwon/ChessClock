@@ -1,6 +1,7 @@
 package com.ledwon.jakub.chessclock.data.repository
 
 import com.ledwon.jakub.chessclock.data.persistance.SettingsDataStore
+import com.ledwon.jakub.chessclock.feature.clock.ClockType
 import com.ledwon.jakub.chessclock.ui.ColorTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -35,6 +36,9 @@ class SettingsRepository(private val settingsDataStore: SettingsDataStore) {
     private val _randomizePositionFlow = MutableStateFlow(settingsDataStore.randomizePosition)
     val randomizePosition: StateFlow<Boolean> = _randomizePositionFlow
 
+    private val _clockTypeFlow = MutableStateFlow(settingsDataStore.clockType)
+    val clockType: StateFlow<ClockType> = _clockTypeFlow
+
     fun updateAppDarkTheme(appDarkTheme: AppDarkTheme) {
         settingsDataStore.appDarkTheme = appDarkTheme
         _appDarkThemeFlow.tryEmit(settingsDataStore.appDarkTheme)
@@ -48,5 +52,10 @@ class SettingsRepository(private val settingsDataStore: SettingsDataStore) {
     fun updateRandomizePosition(randomizePosition: Boolean) {
         settingsDataStore.randomizePosition = randomizePosition
         _randomizePositionFlow.tryEmit(settingsDataStore.randomizePosition)
+    }
+
+    fun updateClockType(clockType: ClockType) {
+        settingsDataStore.clockType = clockType
+        _clockTypeFlow.tryEmit(clockType)
     }
 }

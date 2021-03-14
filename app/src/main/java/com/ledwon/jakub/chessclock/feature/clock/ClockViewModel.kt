@@ -5,6 +5,7 @@ import com.ledwon.jakub.chessclock.data.repository.SettingsRepository
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.ticker
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.take
 import java.lang.Math.random
@@ -145,6 +146,8 @@ class ClockViewModel(
 
     private val _state: MutableLiveData<State> = MutableLiveData(createState())
     val state: LiveData<State> = _state
+
+    val clockType: StateFlow<ClockType> = settingsRepository.clockType
 
     private val timer: ReceiveChannel<Unit> = ticker(
         delayMillis = INTERVAL_MILLIS,
