@@ -18,6 +18,8 @@ import com.ledwon.jakub.chessclock.feature.choose_timer.ChooseTimerScreen
 import com.ledwon.jakub.chessclock.feature.clock.ClockScreen
 import com.ledwon.jakub.chessclock.feature.clock.ClockViewModel
 import com.ledwon.jakub.chessclock.feature.clock.InitialData
+import com.ledwon.jakub.chessclock.feature.clock_preview.ClockPreviewScreen
+import com.ledwon.jakub.chessclock.feature.clock_preview.ClockPreviewViewModel
 import com.ledwon.jakub.chessclock.feature.create_timer.CreateTimerScreen
 import com.ledwon.jakub.chessclock.feature.create_timer.CreateTimerViewModel
 import com.ledwon.jakub.chessclock.feature.settings.SettingsScreen
@@ -56,7 +58,10 @@ class MainActivity : AppCompatActivity() {
                 window.statusBarColor =
                     appColorThemeState.value.value.colorTheme.darkColors.primaryVariant.toArgb()
 
-                CompositionLocalProvider(LocalIsDarkMode provides isDarkTheme, LocalWindowProvider provides window) {
+                CompositionLocalProvider(
+                    LocalIsDarkMode provides isDarkTheme,
+                    LocalWindowProvider provides window
+                ) {
                     Surface(color = MaterialTheme.colors.background) {
                         val navController = rememberNavController()
                         val actions = remember(navController) { Actions(navController) }
@@ -66,7 +71,8 @@ class MainActivity : AppCompatActivity() {
                                 startDestination = Routes.TimerChooserRoute
                             ) {
                                 composable(Routes.TimerChooserRoute) {
-                                    val chooseTimerViewModel: ChooseTimerViewModel = provideNavViewModel()
+                                    val chooseTimerViewModel: ChooseTimerViewModel =
+                                        provideNavViewModel()
                                     ChooseTimerScreen(
                                         actions = actions,
                                         chooseTimerViewModel = chooseTimerViewModel
@@ -80,8 +86,7 @@ class MainActivity : AppCompatActivity() {
                                     )
                                 }
                                 composable(Routes.CreateTimerRoute) {
-                                    val createTimerViewModel: CreateTimerViewModel =
-                                        provideNavViewModel()
+                                    val createTimerViewModel: CreateTimerViewModel = provideNavViewModel()
                                     CreateTimerScreen(
                                         actions = actions,
                                         createTimerViewModel = createTimerViewModel
@@ -99,10 +104,8 @@ class MainActivity : AppCompatActivity() {
                                         type = NavType.IntType
                                     })
                                 ) { navBackStackEntry ->
-                                    val whiteSeconds =
-                                        navBackStackEntry.arguments!!.getInt(Routes.ClockRouteArgs.WhiteSeconds)
-                                    val blackSeconds =
-                                        navBackStackEntry.arguments!!.getInt(Routes.ClockRouteArgs.BlackSeconds)
+                                    val whiteSeconds = navBackStackEntry.arguments!!.getInt(Routes.ClockRouteArgs.WhiteSeconds)
+                                    val blackSeconds = navBackStackEntry.arguments!!.getInt(Routes.ClockRouteArgs.BlackSeconds)
                                     val whiteIncrementSeconds =
                                         navBackStackEntry.arguments!!.getInt(Routes.ClockRouteArgs.WhiteIncrementSeconds)
                                     val blackIncrementSeconds =
@@ -115,10 +118,29 @@ class MainActivity : AppCompatActivity() {
                                         blackIncrementSeconds = blackIncrementSeconds
                                     )
 
-                                    val clockViewModel: ClockViewModel =
-                                        provideNavViewModel(parameters = { parametersOf(initialData) })
+                                    val clockViewModel: ClockViewModel = provideNavViewModel(parameters = { parametersOf(initialData) })
 
                                     ClockScreen(clockViewModel = clockViewModel)
+                                }
+                                composable(
+                                    Routes.ClockPreviewRoute,
+                                    arguments = listOf(navArgument(Routes.ClockPreviewRoute) {
+                                        type = NavType.StringType
+                                    })
+                                ) { navBackStackEntry ->
+                                    val clockPreviewName = navBackStackEntry.arguments!!.getString(Routes.ClockRouteArgs.ClockDisplayName)
+
+                                    val clockPreviewViewModel: ClockPreviewViewModel =
+                                        provideNavViewModel(parameters = {
+                                            parametersOf(
+                                                clockPreviewName
+                                            )
+                                        })
+
+                                    ClockPreviewScreen(
+                                        actions = actions,
+                                        clockPreviewViewModel = clockPreviewViewModel
+                                    )
                                 }
                             }
                         }

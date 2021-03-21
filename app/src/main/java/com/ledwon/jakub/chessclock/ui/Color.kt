@@ -50,6 +50,9 @@ val red500 = Color(0xFFf44336)
 val red200 = Color(0xFFef9a9a)
 val accentForRed = Color(0xFF76e0de)
 
+val yellow700 = Color(0xFFFBC02D)
+val yellow500 = Color(0xFFFFEB3B)
+
 class SimpleColorTheme(
     val primary: Color,
     val primaryVariant: Color,

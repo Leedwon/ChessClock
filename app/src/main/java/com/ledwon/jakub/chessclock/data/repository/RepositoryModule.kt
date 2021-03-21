@@ -5,4 +5,5 @@ import org.koin.dsl.module
 val repositoryModule = module {
     single { TimerRepository(get()) }
     single { SettingsRepository(get()) }
+    single { ClockTypesRepository() }
 }
