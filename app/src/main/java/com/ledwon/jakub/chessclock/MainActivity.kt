@@ -86,8 +86,7 @@ class MainActivity : AppCompatActivity() {
                                     )
                                 }
                                 composable(Routes.CreateTimerRoute) {
-                                    val createTimerViewModel: CreateTimerViewModel =
-                                        provideNavViewModel()
+                                    val createTimerViewModel: CreateTimerViewModel = provideNavViewModel()
                                     CreateTimerScreen(
                                         actions = actions,
                                         createTimerViewModel = createTimerViewModel
@@ -105,10 +104,8 @@ class MainActivity : AppCompatActivity() {
                                         type = NavType.IntType
                                     })
                                 ) { navBackStackEntry ->
-                                    val whiteSeconds =
-                                        navBackStackEntry.arguments!!.getInt(Routes.ClockRouteArgs.WhiteSeconds)
-                                    val blackSeconds =
-                                        navBackStackEntry.arguments!!.getInt(Routes.ClockRouteArgs.BlackSeconds)
+                                    val whiteSeconds = navBackStackEntry.arguments!!.getInt(Routes.ClockRouteArgs.WhiteSeconds)
+                                    val blackSeconds = navBackStackEntry.arguments!!.getInt(Routes.ClockRouteArgs.BlackSeconds)
                                     val whiteIncrementSeconds =
                                         navBackStackEntry.arguments!!.getInt(Routes.ClockRouteArgs.WhiteIncrementSeconds)
                                     val blackIncrementSeconds =
@@ -121,8 +118,7 @@ class MainActivity : AppCompatActivity() {
                                         blackIncrementSeconds = blackIncrementSeconds
                                     )
 
-                                    val clockViewModel: ClockViewModel =
-                                        provideNavViewModel(parameters = { parametersOf(initialData) })
+                                    val clockViewModel: ClockViewModel = provideNavViewModel(parameters = { parametersOf(initialData) })
 
                                     ClockScreen(clockViewModel = clockViewModel)
                                 }
@@ -132,8 +128,7 @@ class MainActivity : AppCompatActivity() {
                                         type = NavType.StringType
                                     })
                                 ) { navBackStackEntry ->
-                                    val clockPreviewName =
-                                        navBackStackEntry.arguments!!.getString(Routes.ClockRouteArgs.ClockDisplayName)
+                                    val clockPreviewName = navBackStackEntry.arguments!!.getString(Routes.ClockRouteArgs.ClockDisplayName)
 
                                     val clockPreviewViewModel: ClockPreviewViewModel =
                                         provideNavViewModel(parameters = {
