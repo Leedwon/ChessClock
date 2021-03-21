@@ -1,5 +1,6 @@
 package com.ledwon.jakub.chessclock.feature.clock.widget
 
+import androidx.compose.animation.core.InfiniteTransition
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
@@ -11,7 +12,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ledwon.jakub.chessclock.feature.clock.PlayerDisplay
-import timber.log.Timber
 
 @Composable
 fun BothPlayersTimeClock(
@@ -20,15 +20,14 @@ fun BothPlayersTimeClock(
     pulsationEnabled: Boolean,
     enabled: Boolean = true
 ) {
-    val infiniteTransition = rememberInfiniteTransition()
+    val infiniteTransition: InfiniteTransition? = if (pulsationEnabled) rememberInfiniteTransition() else null
 
-    val firstClockFontSize: Float = if (pulsationEnabled) {
+    val firstClockFontSize: Float = if (pulsationEnabled && infiniteTransition != null) {
         infiniteTransition.animateClockFontSize(isActive = playersDisplay.first.isActive).value
     } else {
         35f
     }
-    val secondClockFontSize: Float = if (pulsationEnabled) {
-        Timber.d("i should not be here to not waste resources")
+    val secondClockFontSize: Float = if (pulsationEnabled && infiniteTransition != null) {
         infiniteTransition.animateClockFontSize(isActive = playersDisplay.second.isActive).value
     } else {
         35f
