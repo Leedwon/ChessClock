@@ -112,8 +112,7 @@ sealed class PlayerDisplay(
 }
 
 data class State(
-    val first: PlayerDisplay,
-    val second: PlayerDisplay,
+    val playersDisplay: Pair<PlayerDisplay, PlayerDisplay>,
     val gameState: GameState
 )
 
@@ -245,11 +244,10 @@ class ClockViewModel(
     }
 
     private fun createState(): State = State(
-        first = PlayerDisplay.from(
+        playersDisplay = PlayerDisplay.from(
             player = playersInOrder.first,
             isActive = currentPlayer == playersInOrder.first
-        ),
-        second = PlayerDisplay.from(
+        ) to PlayerDisplay.from(
             player = playersInOrder.second,
             isActive = currentPlayer == playersInOrder.second
         ),
