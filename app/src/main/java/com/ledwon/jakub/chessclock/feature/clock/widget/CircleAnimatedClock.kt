@@ -46,7 +46,7 @@ fun CircleAnimatedClock(
     val height = LocalConfiguration.current.screenHeightDp
     val width = LocalConfiguration.current.screenWidthDp
 
-    val circleSize = min(width, height) / 2
+    val circleSize = min(width, height) * 0.6f
 
     val padding = remember { ClockScreenMetrics.centerButtonSize.dp / 2 }
 
