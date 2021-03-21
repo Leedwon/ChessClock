@@ -1,7 +1,7 @@
 package com.ledwon.jakub.chessclock.data.repository
 
 import com.ledwon.jakub.chessclock.data.persistance.SettingsDataStore
-import com.ledwon.jakub.chessclock.feature.clock.ClockType
+import com.ledwon.jakub.chessclock.feature.common.ClockDisplay
 import com.ledwon.jakub.chessclock.ui.ColorTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -36,8 +36,11 @@ class SettingsRepository(private val settingsDataStore: SettingsDataStore) {
     private val _randomizePositionFlow = MutableStateFlow(settingsDataStore.randomizePosition)
     val randomizePosition: StateFlow<Boolean> = _randomizePositionFlow
 
-    private val _clockTypeFlow = MutableStateFlow(settingsDataStore.clockType)
-    val clockType: StateFlow<ClockType> = _clockTypeFlow
+    private val _clockTypeFlow = MutableStateFlow(settingsDataStore.clockDisplay)
+    val clockDisplay: StateFlow<ClockDisplay> = _clockTypeFlow
+
+    private val _pulsationEnabledFlow = MutableStateFlow(settingsDataStore.pulsationEnabled)
+    val pulsationEnabled: StateFlow<Boolean> = _pulsationEnabledFlow
 
     fun updateAppDarkTheme(appDarkTheme: AppDarkTheme) {
         settingsDataStore.appDarkTheme = appDarkTheme
@@ -54,8 +57,13 @@ class SettingsRepository(private val settingsDataStore: SettingsDataStore) {
         _randomizePositionFlow.tryEmit(settingsDataStore.randomizePosition)
     }
 
-    fun updateClockType(clockType: ClockType) {
-        settingsDataStore.clockType = clockType
-        _clockTypeFlow.tryEmit(clockType)
+    fun updateClockType(clockDisplay: ClockDisplay) {
+        settingsDataStore.clockDisplay = clockDisplay
+        _clockTypeFlow.tryEmit(clockDisplay)
+    }
+
+    fun updatePulsationEnabled(pulsationEnabled: Boolean) {
+        settingsDataStore.pulsationEnabled = pulsationEnabled
+        _pulsationEnabledFlow.tryEmit(pulsationEnabled)
     }
 }

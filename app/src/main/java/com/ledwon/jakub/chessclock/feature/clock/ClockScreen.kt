@@ -9,13 +9,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import com.ledwon.jakub.chessclock.feature.clock.ClockScreenMetrics.centerButtonSize
 import com.ledwon.jakub.chessclock.feature.clock.widget.*
+import com.ledwon.jakub.chessclock.feature.common.ClockDisplay
 import com.ledwon.jakub.chessclock.util.LocalWindowProvider
 
-sealed class ClockType {
-    data class OwnPlayerTimeClock(val rotations: Pair<Float, Float>) : ClockType()
-    data class CircleAnimatedClock(val rotations: Pair<Float, Float>) : ClockType()
-    object BothPlayersTimeClock : ClockType()
+//todo more elegant way?
+object ClockScreenMetrics {
+    const val centerButtonSize = 96f
 }
 
 @Composable
@@ -24,8 +26,16 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
 
     val state: State by clockViewModel.state.observeAsState(
         State(
-            PlayerDisplay.White("", 1.0f),
-            PlayerDisplay.Black("", 1.0f),
+            PlayerDisplay.White(
+                text = "",
+                percentageLeft = 1.0f,
+                isActive = false
+            ),
+            PlayerDisplay.Black(
+                text = "",
+                percentageLeft = 1.0f,
+                isActive = false
+            ),
             GameState.BeforeStarted
         )
     )
@@ -43,12 +53,13 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
         }
     })
 
-    val clockType = clockViewModel.clockType.collectAsState()
+    val clockType = clockViewModel.clockDisplay.collectAsState()
+    val pulsationEnabled = clockViewModel.pulsationEnabled.collectAsState()
 
     val rotations = when (val clockTypeValue = clockType.value) {
-        is ClockType.CircleAnimatedClock -> clockTypeValue.rotations
-        is ClockType.OwnPlayerTimeClock -> clockTypeValue.rotations
-        is ClockType.BothPlayersTimeClock -> 0f to 0f
+        is ClockDisplay.CircleAnimatedClock -> clockTypeValue.rotations
+        is ClockDisplay.OwnPlayerTimeClock -> clockTypeValue.rotations
+        is ClockDisplay.BothPlayersTimeClock -> 0f to 0f
     }
 
     Box(contentAlignment = Alignment.Center) {
@@ -56,21 +67,24 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
             state.gameState != GameState.Paused && state.gameState != GameState.RandomizingPositions
         val playersDisplay = state.first to state.second
         when (clockType.value) {
-            is ClockType.OwnPlayerTimeClock -> OwnPlayerTimeClock(
+            is ClockDisplay.OwnPlayerTimeClock -> OwnPlayerTimeClock(
                 playersDisplay = playersDisplay,
                 onClockButtonClick = clockViewModel::clockClicked,
                 rotations = rotations,
+                pulsationEnabled = pulsationEnabled.value,
                 enabled = clockEnabled
             )
-            is ClockType.BothPlayersTimeClock -> BothPlayersTimeClock(
+            is ClockDisplay.BothPlayersTimeClock -> BothPlayersTimeClock(
                 playersDisplay = playersDisplay,
                 onClockButtonClick = clockViewModel::clockClicked,
+                pulsationEnabled = pulsationEnabled.value,
                 enabled = clockEnabled
             )
-            is ClockType.CircleAnimatedClock -> CircleAnimatedClock(
+            is ClockDisplay.CircleAnimatedClock -> CircleAnimatedClock(
                 playersDisplay = playersDisplay,
                 rotations = rotations,
                 onClockButtonClick = clockViewModel::clockClicked,
+                pulsationEnabled = pulsationEnabled.value,
                 enabled = clockEnabled,
             )
         }
@@ -78,11 +92,14 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
         val centerButtonRotations = if (rotations.first == rotations.second) rotations.first else 0f
         when (state.gameState) {
             GameState.RandomizingPositions -> {
-                RotatingDice(onDiceClick = clockViewModel::cancelRandomization)
+                RotatingDice(
+                    modifier = Modifier.size(centerButtonSize.dp),
+                    onDiceClick = clockViewModel::cancelRandomization
+                )
             }
             GameState.BeforeStarted -> {
                 ClockCenterButton(
-                    modifier = Modifier.rotate(centerButtonRotations),
+                    modifier = Modifier.size(centerButtonSize.dp),
                     onClick = { clockViewModel.swapSides() },
                     icon = painterResource(
                         id = com.ledwon.jakub.chessclock.R.drawable.ic_swap_48
@@ -92,7 +109,7 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
             }
             GameState.Running -> {
                 ClockCenterButton(
-                    modifier = Modifier.rotate(centerButtonRotations),
+                    modifier = Modifier.size(centerButtonSize.dp).rotate(centerButtonRotations),
                     onClick = { clockViewModel.stopTimer() },
                     icon = painterResource(
                         id = com.ledwon.jakub.chessclock.R.drawable.ic_pause_48
@@ -105,7 +122,8 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     ClockCenterButton(
-                        modifier = Modifier.weight(1f, fill = false).rotate(centerButtonRotations),
+                        modifier = Modifier.size(centerButtonSize.dp).weight(1f, fill = false)
+                            .rotate(centerButtonRotations),
                         onClick = { clockViewModel.startTimer() },
                         icon = painterResource(
                             id = com.ledwon.jakub.chessclock.R.drawable.ic_play_48
@@ -113,7 +131,8 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
                         iconTint = Color.Green
                     )
                     ClockCenterButton(
-                        modifier = Modifier.weight(1f, fill = false).rotate(centerButtonRotations),
+                        modifier = Modifier.size(centerButtonSize.dp).weight(1f, fill = false)
+                            .rotate(centerButtonRotations),
                         onClick = { clockViewModel.restartGame() },
                         icon = painterResource(
                             id = com.ledwon.jakub.chessclock.R.drawable.ic_replay_48
@@ -124,7 +143,7 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
             }
             GameState.Over -> {
                 ClockCenterButton(
-                    modifier = Modifier.rotate(centerButtonRotations),
+                    modifier = Modifier.size(centerButtonSize.dp).rotate(centerButtonRotations),
                     onClick = { clockViewModel.restartGame() },
                     icon = painterResource(
                         id = com.ledwon.jakub.chessclock.R.drawable.ic_replay_48

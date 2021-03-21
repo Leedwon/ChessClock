@@ -6,6 +6,6 @@ import org.koin.dsl.module
 
 val settingsModule = module {
     viewModel {
-        SettingsViewModel(settingsRepository = get())
+        SettingsViewModel(settingsRepository = get(), clockTypesRepository = get())
     }
 }

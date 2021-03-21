@@ -2,6 +2,7 @@ package com.ledwon.jakub.chessclock.feature.clock
 
 import androidx.lifecycle.*
 import com.ledwon.jakub.chessclock.data.repository.SettingsRepository
+import com.ledwon.jakub.chessclock.feature.common.ClockDisplay
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.ticker
@@ -73,20 +74,38 @@ sealed class Player(
 //todo is this needed? Mb Player is enough? although display doesn't allow for time left to change so it is kinda justified?
 sealed class PlayerDisplay(
     val text: String,
-    val percentageLeft: Float
+    val percentageLeft: Float,
+    val isActive: Boolean
 ) {
-    class White(text: String, percentageLeft: Float) : PlayerDisplay(text, percentageLeft)
-    class Black(text: String, percentageLeft: Float) : PlayerDisplay(text, percentageLeft)
+    class White(
+        text: String,
+        percentageLeft: Float,
+        isActive: Boolean
+    ) : PlayerDisplay(text, percentageLeft, isActive)
+
+    class Black(
+        text: String,
+        percentageLeft: Float,
+        isActive: Boolean
+    ) : PlayerDisplay(text, percentageLeft, isActive)
 
     fun isFor(player: Player): Boolean =
         this is White && player is Player.White || this is Black && player is Player.Black
 
 
     companion object {
-        fun from(player: Player): PlayerDisplay {
+        fun from(player: Player, isActive: Boolean): PlayerDisplay {
             return when (player) {
-                is Player.White -> White(player.text, player.percentageLeft)
-                is Player.Black -> Black(player.text, player.percentageLeft)
+                is Player.White -> White(
+                    player.text,
+                    player.percentageLeft,
+                    isActive
+                )
+                is Player.Black -> Black(
+                    player.text,
+                    player.percentageLeft,
+                    isActive
+                )
             }
         }
     }
@@ -114,7 +133,7 @@ data class InitialData(
 )
 
 class ClockViewModel(
-     initialData: InitialData,
+    initialData: InitialData,
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
@@ -134,12 +153,12 @@ class ClockViewModel(
 
     private var playersInOrder: Pair<Player, Player> = white to black
 
-    private var currentPlayer: Player = white
+    private var currentPlayer: Player? = null
 
     private var gameState: GameState = GameState.RandomizingPositions
         get() =
             if (white.hasLost || black.hasLost) {
-                GameState.Over
+                GameState.Over.also { currentPlayer = null }
             } else {
                 field
             }
@@ -147,12 +166,14 @@ class ClockViewModel(
     private val _state: MutableLiveData<State> = MutableLiveData(createState())
     val state: LiveData<State> = _state
 
-    val clockType: StateFlow<ClockType> = settingsRepository.clockType
+    val clockDisplay: StateFlow<ClockDisplay> = settingsRepository.clockDisplay
+
+    val pulsationEnabled: StateFlow<Boolean> = settingsRepository.pulsationEnabled
 
     private val timer: ReceiveChannel<Unit> = ticker(
         delayMillis = INTERVAL_MILLIS,
         initialDelayMillis = 0,
-        context = viewModelScope.coroutineContext
+        context = Dispatchers.Default
     )
 
     init {
@@ -162,7 +183,7 @@ class ClockViewModel(
     private var randomizingJob: Job? = null
 
     private fun randomizePositions() {
-        randomizingJob = viewModelScope.launch {
+        randomizingJob = viewModelScope.launch(Dispatchers.Default) {
             settingsRepository.randomizePosition.take(1).collect { randomizeEnabled ->
                 if (randomizeEnabled) {
                     val randomRounds = (random() * 100 % 2 + MIN_RANDOM_ROUNDS).toInt()
@@ -192,11 +213,12 @@ class ClockViewModel(
 
     fun startTimer() {
         gameState = GameState.Running
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             for (tick in timer) {
                 val currentMillis = System.currentTimeMillis()
-                if (gameState != GameState.Over && gameState != GameState.Paused) {
-                    currentPlayer.millisLeft -= (INTERVAL_MILLIS + (System.currentTimeMillis() - currentMillis))
+                val player = currentPlayer
+                if (player != null && gameState != GameState.Paused) {
+                    player.millisLeft -= (INTERVAL_MILLIS + (System.currentTimeMillis() - currentMillis))
                 } else {
                     cancel()
                 }
@@ -208,7 +230,7 @@ class ClockViewModel(
     fun restartGame() {
         white.resetTime()
         black.resetTime()
-        gameState = GameState.BeforeStarted
+        gameState = GameState.BeforeStarted.also { currentPlayer = null }
         _state.value = createState()
     }
 
@@ -218,29 +240,38 @@ class ClockViewModel(
 
     fun cancelRandomization() {
         randomizingJob?.cancel()
-        gameState = GameState.BeforeStarted
+        gameState = GameState.BeforeStarted.also { currentPlayer = null }
         _state.postValue(createState())
     }
 
     private fun createState(): State = State(
-        first = PlayerDisplay.from(playersInOrder.first),
-        second = PlayerDisplay.from(playersInOrder.second),
+        first = PlayerDisplay.from(
+            player = playersInOrder.first,
+            isActive = currentPlayer == playersInOrder.first
+        ),
+        second = PlayerDisplay.from(
+            player = playersInOrder.second,
+            isActive = currentPlayer == playersInOrder.second
+        ),
         gameState = gameState
     )
 
     fun clockClicked(player: PlayerDisplay) {
-        if (gameState == GameState.BeforeStarted && player.isFor(black)) {
-            currentPlayer = white
-            startTimer()
+        if (gameState == GameState.Paused || gameState == GameState.Over) {
             return
         }
 
-        if (gameState == GameState.Paused) {
-            return
+        val nonMutableCurrentPlayer = currentPlayer
+        if (gameState == GameState.BeforeStarted && nonMutableCurrentPlayer == null) {
+            if (player.isFor(black)) {
+                currentPlayer = white
+                startTimer()
+            }
         }
 
-        if (player.isFor(currentPlayer)) {
-            currentPlayer.incrementTime()
+
+        if (nonMutableCurrentPlayer != null && player.isFor(nonMutableCurrentPlayer)) {
+            nonMutableCurrentPlayer.incrementTime()
             currentPlayer = when (player) {
                 is PlayerDisplay.White -> black
                 is PlayerDisplay.Black -> white
