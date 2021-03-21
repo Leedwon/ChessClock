@@ -33,3 +33,44 @@ class EnumPreferencesDelegate<T : Enum<*>>(
         preferences.edit().putString(key, value.name).apply()
     }
 }
+
+class StringPreferencesDelegate(
+    private val preferences: SharedPreferences,
+    private val key: String,
+    private val defaultValue: String
+) : ReadWriteProperty<Any, String> {
+    override fun setValue(thisRef: Any, property: KProperty<*>, value: String) {
+        preferences.edit().putString(key, value).apply()
+    }
+
+    override fun getValue(thisRef: Any, property: KProperty<*>): String {
+        return preferences.getString(key, defaultValue) ?: defaultValue
+    }
+}
+
+class FloatPreferencesDelegate(
+    private val preferences: SharedPreferences,
+    private val key: String,
+    private val defaultValue: Float
+) : ReadWriteProperty<Any, Float> {
+    override fun setValue(thisRef: Any, property: KProperty<*>, value: Float) {
+        preferences.edit().putFloat(key, value).apply()
+    }
+
+    override fun getValue(thisRef: Any, property: KProperty<*>): Float {
+        return preferences.getFloat(key, defaultValue)
+    }
+}
+
+class NullableStringSetPreferencesDelegate(
+    private val preferences: SharedPreferences,
+    private val key: String
+) : ReadWriteProperty<Any, Set<String>?> {
+    override fun setValue(thisRef: Any, property: KProperty<*>, value: Set<String>?) {
+        preferences.edit().putStringSet(key, value).apply()
+    }
+
+    override fun getValue(thisRef: Any, property: KProperty<*>): Set<String>? {
+        return preferences.getStringSet(key, null)
+    }
+}

@@ -5,11 +5,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ledwon.jakub.chessclock.data.repository.AppColorThemeType
 import com.ledwon.jakub.chessclock.data.repository.AppDarkTheme
+import com.ledwon.jakub.chessclock.data.repository.ClockTypesRepository
 import com.ledwon.jakub.chessclock.data.repository.SettingsRepository
-import com.ledwon.jakub.chessclock.feature.clock.ClockType
-import com.ledwon.jakub.chessclock.ui.ColorTheme
+import com.ledwon.jakub.chessclock.feature.common.ClockDisplay
+import kotlinx.coroutines.flow.StateFlow
 
-class SettingsViewModel(private val settingsRepository: SettingsRepository) : ViewModel() {
+class SettingsViewModel(
+    private val settingsRepository: SettingsRepository,
+    clockTypesRepository: ClockTypesRepository
+) : ViewModel() {
 
     private val _command: MutableLiveData<Command> = MutableLiveData()
     val command: LiveData<Command> = _command
@@ -26,55 +30,47 @@ class SettingsViewModel(private val settingsRepository: SettingsRepository) : Vi
         AppColorThemeType.Pink
     )
 
-    //todo with names
-    val clockTypes = listOf(
-        ClockType.OwnPlayerTimeClock(180f to 0f),
-        ClockType.OwnPlayerTimeClock(90f to 90f),
-        ClockType.OwnPlayerTimeClock(270f to 270f),
-        ClockType.BothPlayersTimeClock,
-        ClockType.CircleAnimatedClock(180f to 0f),
-        ClockType.CircleAnimatedClock(90f to 90f),
-        ClockType.CircleAnimatedClock(270f to 270f),
-    )
+    val clockTypes = clockTypesRepository.clockTypes
 
-    val appDarkThemeFlow = settingsRepository.appDarkTheme
-    val appColorThemeFlow = settingsRepository.appColorTheme
-    val randomizePosition = settingsRepository.randomizePosition
-    val clockType = settingsRepository.clockType
+    val appDarkTheme: StateFlow<AppDarkTheme> = settingsRepository.appDarkTheme
+    val appColorTheme: StateFlow<AppColorThemeType> = settingsRepository.appColorTheme
+    val randomizePosition: StateFlow<Boolean> = settingsRepository.randomizePosition
+    val clockType: StateFlow<ClockDisplay> = settingsRepository.clockDisplay
+    val pulsationEnabled: StateFlow<Boolean> = settingsRepository.pulsationEnabled
 
-    fun updateAppDarkTheme(appDarkTheme: AppDarkTheme) {
-        settingsRepository.updateAppDarkTheme(appDarkTheme)
+    fun updateAppDarkTheme(appDarkTheme: AppDarkTheme) = settingsRepository.updateAppDarkTheme(appDarkTheme)
+
+    fun updateAppColorTheme(appColorThemeType: AppColorThemeType) = settingsRepository.updateAppColorTheme(appColorThemeType)
+
+    fun updateRandomizePosition(randomizePosition: Boolean) = settingsRepository.updateRandomizePosition(randomizePosition)
+
+    fun updateClockType(namedClockDisplay: ClockTypesRepository.NamedClockDisplayType) =
+        settingsRepository.updateClockType(clockDisplay = namedClockDisplay.display)
+
+    fun updatePulsationEnabled(pulsationEnabled: Boolean) = settingsRepository.updatePulsationEnabled(pulsationEnabled)
+
+    fun onClockTypePreviewClick(namedClockDisplay: ClockTypesRepository.NamedClockDisplayType) {
+        _command.value = Command.OpenClockPreview(namedClockDisplay.name)
+        _command.value = Command.Noop
     }
 
-    fun updateAppColorTheme(appColorThemeType: AppColorThemeType) {
-        settingsRepository.updateAppColorTheme(appColorThemeType)
-    }
-
-    fun updateRandomizePosition(randomizePosition: Boolean) {
-        settingsRepository.updateRandomizePosition(randomizePosition)
-    }
-
-    fun updateClockType(clockType: ClockType) {
-        settingsRepository.updateClockType(clockType = clockType)
-    }
-
-    fun onBackClick() {
-        _command.postValue(Command.NavigateBack)
-    }
+    fun onBackClick() = _command.postValue(Command.NavigateBack)
 
     fun onBuyMeACoffeeClick() {
         _command.value = Command.OpenBuyMeACoffee
-        _command.value = null
+        _command.value = Command.Noop
     }
 
     fun onRateAppClick() {
         _command.value = Command.RateApp
-        _command.value = null
+        _command.value = Command.Noop
     }
 
     sealed class Command {
         object NavigateBack : Command()
         object OpenBuyMeACoffee : Command()
         object RateApp : Command()
+        data class OpenClockPreview(val clockDisplayTypeName: String) : Command()
+        object Noop : Command()
     }
 }

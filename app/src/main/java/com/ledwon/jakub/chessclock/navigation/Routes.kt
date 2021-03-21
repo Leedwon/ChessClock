@@ -12,6 +12,7 @@ object Routes {
         const val BlackSeconds = "blackSeconds"
         const val WhiteIncrementSeconds = "whiteIncrementSeconds"
         const val BlackIncrementSeconds = "blackIncrementSeconds"
+        const val ClockDisplayName = "clockPreviewTypeName"
     }
 
     const val TimerChooserRoute = "TimerChooser"
@@ -19,6 +20,7 @@ object Routes {
         "Clock/{${ClockRouteArgs.WhiteSeconds}}/{${ClockRouteArgs.BlackSeconds}}/{${ClockRouteArgs.WhiteIncrementSeconds}}/{${ClockRouteArgs.BlackIncrementSeconds}}"
     const val CreateTimerRoute = "CreateTimer"
     const val SettingsRoute = "Settings"
+    const val ClockPreviewRoute = "ClockPreview/{${ClockRouteArgs.ClockDisplayName}}"
 }
 
 data class OpenClockPayload(
@@ -41,5 +43,9 @@ class Actions(navController: NavController) {
 
     val openSettings: () -> Unit = {
         navController.navigate(SettingsRoute)
+    }
+
+    val openClockDisplayPreview: (clockName: String) -> Unit = {
+        navController.navigate("ClockPreview/${it}")
     }
 }

@@ -28,16 +28,16 @@ fun ClockButton(
         content = content
     )
 }
-
-@Preview
-@Composable
-fun ClockButtonPreview() {
-    ClockButton(
-        modifier = Modifier.fillMaxWidth(),
-        player = PlayerDisplay.White("01:00", 1.0f),
-        onClick = { },
-        enabled = true
-    ) {
-        Text("01:00")
-    }
-}
+//
+//@Preview
+//@Composable
+//fun ClockButtonPreview() {
+//    ClockButton(
+//        modifier = Modifier.fillMaxWidth(),
+//        player = PlayerDisplay.White("01:00", 1.0f, true),
+//        onClick = { },
+//        enabled = true
+//    ) {
+//        Text("01:00")
+//    }
+//}

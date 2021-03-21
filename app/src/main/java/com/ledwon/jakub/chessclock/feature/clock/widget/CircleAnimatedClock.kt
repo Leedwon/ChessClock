@@ -1,29 +1,55 @@
 package com.ledwon.jakub.chessclock.feature.clock.widget
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ledwon.jakub.chessclock.feature.clock.ClockScreenMetrics
 import com.ledwon.jakub.chessclock.feature.clock.PlayerDisplay
 import com.ledwon.jakub.chessclock.ui.*
+import kotlin.math.min
 
 @Composable
 fun CircleAnimatedClock(
     playersDisplay: Pair<PlayerDisplay, PlayerDisplay>,
     rotations: Pair<Float, Float>,
     onClockButtonClick: (PlayerDisplay) -> Unit,
+    pulsationEnabled: Boolean,
     enabled: Boolean = true
 ) {
+    val infiniteTransition = rememberInfiniteTransition()
+
+    val firstClockFontSize: Float = if (pulsationEnabled) {
+        infiniteTransition.animateClockFontSize(isActive = playersDisplay.first.isActive).value
+    } else {
+        35f
+    }
+    val secondClockFontSize: Float = if (pulsationEnabled) {
+        infiniteTransition.animateClockFontSize(isActive = playersDisplay.second.isActive).value
+    } else {
+        35f
+    }
+
+    val height = LocalConfiguration.current.screenHeightDp
+    val width = LocalConfiguration.current.screenWidthDp
+
+    val circleSize = min(width, height) / 2
+
+    val padding = remember { ClockScreenMetrics.centerButtonSize.dp / 2 }
+
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceAround) {
         val btnModifier = Modifier.weight(1f).fillMaxWidth()
         ClockButton(
@@ -33,18 +59,20 @@ fun CircleAnimatedClock(
             enabled = enabled
         ) {
             Box(
-                modifier = Modifier.fillMaxSize().padding(bottom = 64.dp).rotate(rotations.first),
+                modifier = Modifier.fillMaxSize()
+                    .padding(bottom = padding)
+                    .rotate(rotations.first),
                 contentAlignment = Alignment.Center
             ) {
                 FilledCircle(
-                    modifier = Modifier.size(250.dp),
+                    modifier = Modifier.size(circleSize.dp),
                     filledPercentage = playersDisplay.first.percentageLeft,
                     borderColor = playersDisplay.first.contentColor()
                 )
                 Text(
                     text = playersDisplay.first.text,
                     color = playersDisplay.first.contentColor(),
-                    fontSize = 35.sp
+                    fontSize = firstClockFontSize.sp
                 )
             }
         }
@@ -55,18 +83,20 @@ fun CircleAnimatedClock(
             enabled = enabled
         ) {
             Box(
-                modifier = Modifier.fillMaxSize().padding(top = 64.dp).rotate(rotations.second),
+                modifier = Modifier.fillMaxSize()
+                    .padding(top = padding)
+                    .rotate(rotations.second),
                 contentAlignment = Alignment.Center
             ) {
                 FilledCircle(
-                    modifier = Modifier.size(250.dp),
+                    modifier = Modifier.size(circleSize.dp),
                     filledPercentage = playersDisplay.second.percentageLeft,
                     borderColor = playersDisplay.second.contentColor()
                 )
                 Text(
                     text = playersDisplay.second.text,
                     color = playersDisplay.second.contentColor(),
-                    fontSize = 35.sp
+                    fontSize = secondClockFontSize.sp
                 )
             }
         }
@@ -100,7 +130,12 @@ fun FilledCircle(modifier: Modifier = Modifier, filledPercentage: Float, borderC
 fun FilledCirclePrev() {
     CircleAnimatedClock(
         rotations = 180f to 0f,
-        playersDisplay = PlayerDisplay.White("01:00", 1.0f) to PlayerDisplay.Black("00:30", 0.5f),
-        onClockButtonClick = { }
+        playersDisplay = PlayerDisplay.White("01:00", 1.0f, true) to PlayerDisplay.Black(
+            "00:30",
+            0.5f,
+            false
+        ),
+        onClockButtonClick = { },
+        pulsationEnabled = true
     )
 }

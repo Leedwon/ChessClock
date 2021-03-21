@@ -2,9 +2,11 @@ package com.ledwon.jakub.chessclock.data.repository
 
 import com.ledwon.jakub.chessclock.data.persistance.TimerDao
 import com.ledwon.jakub.chessclock.data.model.Timer
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.withContext
 
 class TimerRepository(private val timerDao: TimerDao) {
 
@@ -16,39 +18,51 @@ class TimerRepository(private val timerDao: TimerDao) {
         }
 
     suspend fun getTimerById(id: Int, allowCache: Boolean = true): Timer {
-        return if (allowCache && timersCache[id] != null) {
-            timersCache[id]!!
-        } else {
-            val timer = timerDao.getById(id)
-            timersCache[id] = timer
-            timer
+        return withContext(Dispatchers.Default) {
+            if (allowCache && timersCache[id] != null) {
+                timersCache[id]!!
+            } else {
+                val timer = timerDao.getById(id)
+                timersCache[id] = timer
+                timer
+            }
         }
     }
 
     suspend fun addTimer(timer: Timer) {
-        timerDao.insertTimers(listOf(timer))
-        timersCache[timer.id] = timer
+        withContext(Dispatchers.Default) {
+            timerDao.insertTimers(listOf(timer))
+            timersCache[timer.id] = timer
+        }
     }
 
     suspend fun addTimers(timers: List<Timer>) {
-        timerDao.insertTimers(timers)
-        timersCache.putAll(timers.associateBy { it.id })
+        withContext(Dispatchers.Default) {
+            timerDao.insertTimers(timers)
+            timersCache.putAll(timers.associateBy { it.id })
+        }
     }
 
     suspend fun deleteTimer(timer: Timer) {
-        timerDao.deleteTimer(timer)
-        timersCache.remove(timer.id)
-    }
-
-    suspend fun deleteTimers(timers: List<Timer>) {
-        timerDao.deleteTimers(timers)
-        timers.forEach { timer ->
+        withContext(Dispatchers.Default) {
+            timerDao.deleteTimer(timer)
             timersCache.remove(timer.id)
         }
     }
 
+    suspend fun deleteTimers(timers: List<Timer>) {
+        withContext(Dispatchers.Default) {
+            timerDao.deleteTimers(timers)
+            timers.forEach { timer ->
+                timersCache.remove(timer.id)
+            }
+        }
+    }
+
     suspend fun updateFavouriteStatus(timer: Timer) {
-        timerDao.updateFavouriteStatus(timer.id, timer.isFavourite)
+        withContext(Dispatchers.Default) {
+            timerDao.updateFavouriteStatus(timer.id, timer.isFavourite)
+        }
     }
 
 }
