@@ -1,46 +1,43 @@
 package com.ledwon.jakub.chessclock.feature.clock.widget
 
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
 import com.ledwon.jakub.chessclock.feature.clock.PlayerDisplay
 
 @Composable
 fun ClockButton(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     player: PlayerDisplay,
-    onClick: () -> Unit,
-    rotateDegrees: Float = 0f,
-    enabled: Boolean = true
+    onClick: (PlayerDisplay) -> Unit,
+    enabled: Boolean,
+    content: @Composable RowScope.() -> Unit
 ) {
     Button(
         enabled = enabled,
         modifier = modifier,
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = when (player) {
-                is PlayerDisplay.White -> Color.White
-                is PlayerDisplay.Black -> Color.Black
-            },
-            contentColor = when (player) {
-                is PlayerDisplay.White -> Color.Black
-                is PlayerDisplay.Black -> Color.White
-            },
-            disabledBackgroundColor = when (player) {
-                is PlayerDisplay.White -> Color.White
-                is PlayerDisplay.Black -> Color.Black
-            }
+            backgroundColor = player.backgroundColor(),
+            contentColor = player.contentColor(),
+            disabledBackgroundColor = player.backgroundColor()
         ),
-        onClick = onClick,
+        onClick = { onClick.invoke(player) },
+        content = content
+    )
+}
+
+@Preview
+@Composable
+fun ClockButtonPreview() {
+    ClockButton(
+        modifier = Modifier.fillMaxWidth(),
+        player = PlayerDisplay.White("01:00", 1.0f, true),
+        onClick = { },
+        enabled = true
     ) {
-        Text(
-            modifier = Modifier.rotate(rotateDegrees),
-            text = player.text, fontSize = 35.sp, color = when (player) {
-                is PlayerDisplay.White -> Color.Black
-                is PlayerDisplay.Black -> Color.White
-            }
-        )
+        Text("01:00")
     }
 }

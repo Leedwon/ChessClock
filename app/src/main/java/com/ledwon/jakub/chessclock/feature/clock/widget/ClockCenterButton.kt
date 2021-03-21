@@ -22,7 +22,7 @@ fun ClockCenterButton(
     modifier: Modifier = Modifier
 ) {
     OutlinedButton(
-        modifier = modifier.height(96.dp).width(96.dp),
+        modifier = modifier,
         onClick = onClick,
         colors = ButtonDefaults.outlinedButtonColors(
             backgroundColor = Color.Black,

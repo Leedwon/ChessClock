@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -19,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ledwon.jakub.chessclock.R
 import com.ledwon.jakub.chessclock.data.repository.AppDarkTheme
+import com.ledwon.jakub.chessclock.feature.common.exhaustive
 import com.ledwon.jakub.chessclock.navigation.Actions
 import com.ledwon.jakub.chessclock.util.LocalIsDarkMode
 
@@ -26,9 +28,11 @@ import com.ledwon.jakub.chessclock.util.LocalIsDarkMode
 @Composable
 fun SettingsScreen(actions: Actions, settingsViewModel: SettingsViewModel) {
 
-    val appDarkTheme = settingsViewModel.appDarkThemeFlow.collectAsState()
-    val appColorTheme = settingsViewModel.appColorThemeFlow.collectAsState()
+    val appDarkTheme = settingsViewModel.appDarkTheme.collectAsState()
+    val appColorTheme = settingsViewModel.appColorTheme.collectAsState()
     val randomizePosition = settingsViewModel.randomizePosition.collectAsState()
+    val selectedClockType = settingsViewModel.clockType.collectAsState()
+    val pulsationEnabled = settingsViewModel.pulsationEnabled.collectAsState()
 
     val isDarkMode: Boolean = LocalIsDarkMode.current
 
@@ -44,12 +48,20 @@ fun SettingsScreen(actions: Actions, settingsViewModel: SettingsViewModel) {
                 context.startActivity(intent)
             }
             is SettingsViewModel.Command.RateApp -> {
-                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.ledwon.jakub.chessclock")))
+                context.startActivity(
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("market://details?id=com.ledwon.jakub.chessclock")
+                    )
+                )
             }
-            else -> {
-                //noop
+            is SettingsViewModel.Command.OpenClockPreview -> {
+                actions.openClockDisplayPreview(it.clockDisplayTypeName)
             }
-        }
+            is SettingsViewModel.Command.Noop -> {
+
+            }
+        }.exhaustive
     })
 
     Scaffold(
@@ -97,8 +109,8 @@ fun SettingsScreen(actions: Actions, settingsViewModel: SettingsViewModel) {
                 )
             }
 
-            val rows = settingsViewModel.themes.chunked(3)
-            items(rows) { row ->
+            val colorThemeRows = settingsViewModel.themes.chunked(3)
+            items(colorThemeRows) { row ->
                 Row(
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     modifier = Modifier.padding(vertical = 16.dp).fillMaxWidth()
@@ -109,12 +121,59 @@ fun SettingsScreen(actions: Actions, settingsViewModel: SettingsViewModel) {
                                 selected = theme == appColorTheme.value,
                                 onClick = { settingsViewModel.updateAppColorTheme(theme) })
                             Box(
-                                modifier = Modifier.height(64.dp).width(64.dp).padding(start = 8.dp)
+                                modifier = Modifier
+                                    .height(64.dp)
+                                    .width(64.dp)
+                                    .padding(start = 8.dp)
+                                    .clickable { settingsViewModel.updateAppColorTheme(theme) }
                                     .background(if (isDarkMode) theme.value.colorTheme.darkColors.primary else theme.value.colorTheme.lightColors.primary)
                             )
                         }
                     }
 
+                }
+            }
+
+            item {
+                SettingHeader(text = "Clock display type")
+            }
+
+            items(settingsViewModel.clockTypes) { clockType ->
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.padding(vertical = 16.dp).fillMaxWidth()
+                ) {
+                    TextButton(
+                        onClick = { settingsViewModel.updateClockType(clockType) },
+                    ) {
+                        Text(clockType.name)
+                    }
+                    Button(onClick = { settingsViewModel.onClockTypePreviewClick(clockType) }) {
+                        Text("Preview")
+                    }
+                    RadioButton(
+                        selected = clockType.display == selectedClockType.value,
+                        onClick = { settingsViewModel.updateClockType(clockType) }
+                    )
+                }
+            }
+
+            item {
+                SettingHeader(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    text = "Active player's pulsation enabled"
+                )
+            }
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Switch(
+                        modifier = Modifier.width(32.dp).height(32.dp),
+                        checked = pulsationEnabled.value,
+                        onCheckedChange = settingsViewModel::updatePulsationEnabled
+                    )
                 }
             }
 

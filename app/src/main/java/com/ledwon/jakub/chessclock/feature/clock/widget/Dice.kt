@@ -24,7 +24,7 @@ import com.ledwon.jakub.chessclock.R
 
 @SuppressLint("Range")
 @Composable
-fun RotatingDice(onDiceClick: (() -> Unit)? = null) {
+fun RotatingDice(modifier: Modifier = Modifier, onDiceClick: (() -> Unit)? = null) {
     val infiniteTransition = rememberInfiniteTransition()
 
     val diceIndex = infiniteTransition.animateFloat(
@@ -53,9 +53,7 @@ fun RotatingDice(onDiceClick: (() -> Unit)? = null) {
     )
 
     Row(
-        modifier = Modifier
-            .height(96.dp)
-            .width(96.dp)
+        modifier = modifier
             .clip(CircleShape)
             .background(Color.Black)
             .border(width = 2.dp, color = Color.White, shape = CircleShape)
