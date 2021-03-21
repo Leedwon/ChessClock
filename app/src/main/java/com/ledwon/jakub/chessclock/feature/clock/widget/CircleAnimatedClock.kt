@@ -30,14 +30,14 @@ fun CircleAnimatedClock(
     pulsationEnabled: Boolean,
     enabled: Boolean = true
 ) {
-    val infiniteTransition = rememberInfiniteTransition()
+    val infiniteTransition: InfiniteTransition? = if (pulsationEnabled) rememberInfiniteTransition() else null
 
-    val firstClockFontSize: Float = if (pulsationEnabled) {
+    val firstClockFontSize: Float = if (pulsationEnabled && infiniteTransition != null) {
         infiniteTransition.animateClockFontSize(isActive = playersDisplay.first.isActive).value
     } else {
         35f
     }
-    val secondClockFontSize: Float = if (pulsationEnabled) {
+    val secondClockFontSize: Float = if (pulsationEnabled && infiniteTransition != null) {
         infiniteTransition.animateClockFontSize(isActive = playersDisplay.second.isActive).value
     } else {
         35f
@@ -46,7 +46,7 @@ fun CircleAnimatedClock(
     val height = LocalConfiguration.current.screenHeightDp
     val width = LocalConfiguration.current.screenWidthDp
 
-    val circleSize = min(width, height) * 0.6f
+    val circleSize = remember { min(width, height) * 0.6f }
 
     val padding = remember { ClockScreenMetrics.centerButtonSize.dp / 2 }
 

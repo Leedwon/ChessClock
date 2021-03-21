@@ -1,5 +1,6 @@
 package com.ledwon.jakub.chessclock.feature.clock_preview
 
+import androidx.compose.animation.core.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
@@ -49,14 +50,27 @@ fun ClockPreviewScreen(actions: Actions, clockPreviewViewModel: ClockPreviewView
             return@Scaffold
         }
 
+        val durationMillis = remember { 1000 * 45 }
+        val infiniteTransition = rememberInfiniteTransition()
+
+        val testPercentageAnimation = infiniteTransition.animateFloat(
+            initialValue = durationMillis.toFloat(),
+            targetValue = 0f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(durationMillis = durationMillis, easing = LinearEasing),
+                repeatMode = RepeatMode.Restart
+            )
+        )
+
+
         val playersDisplay =
             PlayerDisplay.White(
                 text = "White's time",
-                percentageLeft = 65f,
+                percentageLeft = testPercentageAnimation.value / durationMillis,
                 isActive = true
             ) to PlayerDisplay.Black(
                 text = "Black's time",
-                percentageLeft = 50f,
+                percentageLeft = 1f,
                 isActive = false
             )
 

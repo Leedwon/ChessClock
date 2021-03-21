@@ -1,5 +1,6 @@
 package com.ledwon.jakub.chessclock.feature.clock
 
+import androidx.annotation.FloatRange
 import androidx.lifecycle.*
 import com.ledwon.jakub.chessclock.data.repository.SettingsRepository
 import com.ledwon.jakub.chessclock.feature.common.ClockDisplay
@@ -15,7 +16,7 @@ sealed class Player(
     private val initialMillis: Float,
     private val incrementMillis: Int = 0
 ) {
-    var millisLeft: Float = initialMillis //todo make private?
+    var millisLeft: Float = initialMillis
 
     private val seconds: Int
         get() = millisLeft.toInt() / 1000 % 60
@@ -71,9 +72,9 @@ sealed class Player(
     }
 }
 
-//todo is this needed? Mb Player is enough? although display doesn't allow for time left to change so it is kinda justified?
 sealed class PlayerDisplay(
     val text: String,
+    @FloatRange(from = 0.0, to = 1.0)
     val percentageLeft: Float,
     val isActive: Boolean
 ) {
@@ -216,7 +217,7 @@ class ClockViewModel(
             for (tick in timer) {
                 val currentMillis = System.currentTimeMillis()
                 val player = currentPlayer
-                if (player != null && gameState != GameState.Paused) {
+                if (player != null && gameState != GameState.Over && gameState != GameState.Paused) {
                     player.millisLeft -= (INTERVAL_MILLIS + (System.currentTimeMillis() - currentMillis))
                 } else {
                     cancel()
