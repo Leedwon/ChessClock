@@ -26,17 +26,16 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
 
     val state: State by clockViewModel.state.observeAsState(
         State(
-            PlayerDisplay.White(
+            playersDisplay = PlayerDisplay.White(
+                text = "",
+                percentageLeft = 1.0f,
+                isActive = false
+            ) to PlayerDisplay.Black(
                 text = "",
                 percentageLeft = 1.0f,
                 isActive = false
             ),
-            PlayerDisplay.Black(
-                text = "",
-                percentageLeft = 1.0f,
-                isActive = false
-            ),
-            GameState.BeforeStarted
+            gameState = GameState.BeforeStarted
         )
     )
 
@@ -65,23 +64,22 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
     Box(contentAlignment = Alignment.Center) {
         val clockEnabled =
             state.gameState != GameState.Paused && state.gameState != GameState.RandomizingPositions
-        val playersDisplay = state.first to state.second
         when (clockType.value) {
             is ClockDisplay.OwnPlayerTimeClock -> OwnPlayerTimeClock(
-                playersDisplay = playersDisplay,
+                playersDisplay = state.playersDisplay,
                 onClockButtonClick = clockViewModel::clockClicked,
                 rotations = rotations,
                 pulsationEnabled = pulsationEnabled.value,
                 enabled = clockEnabled
             )
             is ClockDisplay.BothPlayersTimeClock -> BothPlayersTimeClock(
-                playersDisplay = playersDisplay,
+                playersDisplay = state.playersDisplay,
                 onClockButtonClick = clockViewModel::clockClicked,
                 pulsationEnabled = pulsationEnabled.value,
                 enabled = clockEnabled
             )
             is ClockDisplay.CircleAnimatedClock -> CircleAnimatedClock(
-                playersDisplay = playersDisplay,
+                playersDisplay = state.playersDisplay,
                 rotations = rotations,
                 onClockButtonClick = clockViewModel::clockClicked,
                 pulsationEnabled = pulsationEnabled.value,
