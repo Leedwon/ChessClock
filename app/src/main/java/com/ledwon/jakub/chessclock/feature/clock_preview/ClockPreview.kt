@@ -50,7 +50,7 @@ fun ClockPreviewScreen(actions: Actions, clockPreviewViewModel: ClockPreviewView
             return@Scaffold
         }
 
-        val durationMillis = remember { 1000 * 45 }
+        val durationMillis = remember { 1000 * 60 }
         val infiniteTransition = rememberInfiniteTransition()
 
         val testPercentageAnimation = infiniteTransition.animateFloat(
