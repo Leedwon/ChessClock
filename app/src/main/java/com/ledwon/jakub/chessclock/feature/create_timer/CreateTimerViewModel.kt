@@ -27,10 +27,16 @@ class CreateTimerViewModel(
     private val _command = MutableLiveData<Command>(Command.Noop)
     val command: LiveData<Command> = _command
 
+    private val _timersMerged = MutableStateFlow<Boolean>(true)
+    val timersMerged: StateFlow<Boolean> = _timersMerged
+
+    fun onTimersMergeClick(timerMerged: Boolean) = _timersMerged.tryEmit(timerMerged)
+
     fun onWhiteHoursChanged(value: Int) {
         _state.tryUpdate {
             it.copy(
-                whiteClock = it.whiteClock.copy(hours = value)
+                whiteClock = it.whiteClock.copy(hours = value),
+                blackClock = if (timersMerged.value) it.blackClock.copy(hours = value) else it.blackClock
             )
         }
     }
@@ -38,7 +44,8 @@ class CreateTimerViewModel(
     fun onWhiteMinutesChanged(value: Int) {
         _state.tryUpdate {
             it.copy(
-                whiteClock = it.whiteClock.copy(minutes = value)
+                whiteClock = it.whiteClock.copy(minutes = value),
+                blackClock = if (timersMerged.value) it.blackClock.copy(minutes = value) else it.blackClock
             )
         }
     }
@@ -46,7 +53,8 @@ class CreateTimerViewModel(
     fun onWhiteSecondsChanged(value: Int) {
         _state.tryUpdate {
             it.copy(
-                whiteClock = it.whiteClock.copy(seconds = value)
+                whiteClock = it.whiteClock.copy(seconds = value),
+                blackClock = if (timersMerged.value) it.blackClock.copy(seconds = value) else it.blackClock
             )
         }
     }
@@ -54,7 +62,8 @@ class CreateTimerViewModel(
     fun onWhiteIncrementChanged(value: Int) {
         _state.tryUpdate {
             it.copy(
-                whiteClock = it.whiteClock.copy(increment = value)
+                whiteClock = it.whiteClock.copy(increment = value),
+                blackClock = if (timersMerged.value) it.blackClock.copy(increment = value) else it.blackClock
             )
         }
     }
