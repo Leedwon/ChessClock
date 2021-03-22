@@ -84,6 +84,8 @@ fun CreateTimerScreen(actions: Actions, createTimerViewModel: CreateTimerViewMod
         }
     }
 
+    val timersMerged = createTimerViewModel.timersMerged.collectAsState()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -101,7 +103,24 @@ fun CreateTimerScreen(actions: Actions, createTimerViewModel: CreateTimerViewMod
             modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            item { Text(text = "White's clock: ", fontSize = 24.sp) }
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(8.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                        text = "Same timer for white and black"
+                    )
+                    Switch(
+                        modifier = Modifier.width(32.dp).height(32.dp),
+                        checked = timersMerged.value,
+                        onCheckedChange = createTimerViewModel::onTimersMergeClick
+                    )
+                }
+            }
+            item { Text(text = if (timersMerged.value) "Clock: " else "White's clock: ", fontSize = 24.sp) }
             item {
                 ClockPicker(
                     clockPickerData = ClockPickerData(
@@ -116,21 +135,23 @@ fun CreateTimerScreen(actions: Actions, createTimerViewModel: CreateTimerViewMod
                     onIncrementChanged = createTimerViewModel::onWhiteIncrementChanged
                 )
             }
-            item { Text(text = "Black's clock: ", fontSize = 24.sp) }
-            item {
-                ClockPicker(
-                    clockPickerData = ClockPickerData(
-                        hoursPickerState = state.blackHoursState,
-                        minutesPickerState = state.blackMinutesState,
-                        secondsPickerState = state.blackSecondsState,
-                        incrementPickerState = state.blackIncrementState
-                    ),
-                    onHoursChanged = createTimerViewModel::onBlackHoursChanged,
-                    onMinutesChanged = createTimerViewModel::onBlackMinutesChanged,
-                    onSecondsChanged = createTimerViewModel::onBlackSecondsChanged,
-                    onIncrementChanged = createTimerViewModel::onBlackIncrementChanged
+            if (!timersMerged.value) {
+                item { Text(text = "Black's clock: ", fontSize = 24.sp) }
+                item {
+                    ClockPicker(
+                        clockPickerData = ClockPickerData(
+                            hoursPickerState = state.blackHoursState,
+                            minutesPickerState = state.blackMinutesState,
+                            secondsPickerState = state.blackSecondsState,
+                            incrementPickerState = state.blackIncrementState
+                        ),
+                        onHoursChanged = createTimerViewModel::onBlackHoursChanged,
+                        onMinutesChanged = createTimerViewModel::onBlackMinutesChanged,
+                        onSecondsChanged = createTimerViewModel::onBlackSecondsChanged,
+                        onIncrementChanged = createTimerViewModel::onBlackIncrementChanged
 
-                )
+                    )
+                }
             }
             item {
                 Row(
