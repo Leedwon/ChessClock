@@ -30,7 +30,16 @@ class CreateTimerViewModel(
     private val _timersMerged = MutableStateFlow<Boolean>(true)
     val timersMerged: StateFlow<Boolean> = _timersMerged
 
-    fun onTimersMergeClick(timerMerged: Boolean) = _timersMerged.tryEmit(timerMerged)
+    fun onTimersMergeClick(timersMerged: Boolean) {
+        _timersMerged.tryEmit(timersMerged)
+        if (timersMerged) {
+            _state.tryUpdate {
+                it.copy(
+                    blackClock = it.whiteClock
+                )
+            }
+        }
+    }
 
     fun onWhiteHoursChanged(value: Int) {
         _state.tryUpdate {
