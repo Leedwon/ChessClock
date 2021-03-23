@@ -6,9 +6,9 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.ledwon.jakub.chessclock.feature.clock.ClockScreenMetrics
 import com.ledwon.jakub.chessclock.feature.clock.PlayerDisplay
 
 @Composable
@@ -17,7 +17,8 @@ fun OwnPlayerTimeClock(
     rotations: Pair<Float, Float>,
     onClockButtonClick: (PlayerDisplay) -> Unit,
     pulsationEnabled: Boolean,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    paddingFromCenter: Dp = 0.dp
 ) {
     val infiniteTransition: InfiniteTransition? = if (pulsationEnabled) rememberInfiniteTransition() else null
 
@@ -41,7 +42,7 @@ fun OwnPlayerTimeClock(
             enabled = enabled
         ) {
             Text(
-                modifier = Modifier.padding(bottom = ClockScreenMetrics.centerButtonSize.dp / 2)
+                modifier = Modifier.padding(bottom = paddingFromCenter)
                     .rotate(rotations.first),
                 fontSize = firstClockFontSize.sp,
                 text = playersDisplay.first.text,
@@ -55,7 +56,7 @@ fun OwnPlayerTimeClock(
             enabled = enabled,
         ) {
             Text(
-                modifier = Modifier.padding(top = ClockScreenMetrics.centerButtonSize.dp / 2)
+                modifier = Modifier.padding(top = paddingFromCenter)
                     .rotate(rotations.second),
                 fontSize = secondClockFontSize.sp,
                 text = playersDisplay.second.text,
