@@ -111,7 +111,7 @@ fun CreateTimerScreen(actions: Actions, createTimerViewModel: CreateTimerViewMod
                 ) {
                     Text(
                         modifier = Modifier.padding(horizontal = 8.dp),
-                        text = "Same timer for white and black"
+                        text = "Same clock for white and black"
                     )
                     Switch(
                         modifier = Modifier.width(32.dp).height(32.dp),
