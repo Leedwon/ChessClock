@@ -15,12 +15,11 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.ledwon.jakub.chessclock.feature.clock.ClockScreenMetrics
 import com.ledwon.jakub.chessclock.feature.clock.PlayerDisplay
 import com.ledwon.jakub.chessclock.ui.*
-import kotlin.math.min
 
 @Composable
 fun CircleAnimatedClock(
@@ -28,7 +27,8 @@ fun CircleAnimatedClock(
     rotations: Pair<Float, Float>,
     onClockButtonClick: (PlayerDisplay) -> Unit,
     pulsationEnabled: Boolean,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    circlePaddingFromCenter: Dp = 0.dp
 ) {
     val infiniteTransition: InfiniteTransition? = if (pulsationEnabled) rememberInfiniteTransition() else null
 
@@ -44,11 +44,8 @@ fun CircleAnimatedClock(
     }
 
     val height = LocalConfiguration.current.screenHeightDp
-    val width = LocalConfiguration.current.screenWidthDp
 
-    val circleSize = remember { min(width, height) * 0.6f }
-
-    val padding = remember { ClockScreenMetrics.centerButtonSize.dp / 2 }
+    val circleSize = remember { height / 2 * 0.75f }
 
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceAround) {
         val btnModifier = Modifier.weight(1f).fillMaxWidth()
@@ -60,7 +57,7 @@ fun CircleAnimatedClock(
         ) {
             Box(
                 modifier = Modifier.fillMaxSize()
-                    .padding(bottom = padding)
+                    .padding(bottom = circlePaddingFromCenter)
                     .rotate(rotations.first),
                 contentAlignment = Alignment.Center
             ) {
@@ -84,7 +81,7 @@ fun CircleAnimatedClock(
         ) {
             Box(
                 modifier = Modifier.fillMaxSize()
-                    .padding(top = padding)
+                    .padding(top = circlePaddingFromCenter)
                     .rotate(rotations.second),
                 contentAlignment = Alignment.Center
             ) {
