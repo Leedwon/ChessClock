@@ -50,7 +50,7 @@ fun ClockPreviewScreen(actions: Actions, clockPreviewViewModel: ClockPreviewView
             return@Scaffold
         }
 
-        val durationMillis = remember { 1000 * 60 }
+        val durationMillis = remember { 1000 * 45 } //todo change to 60 when compose version is >= beta02
         val infiniteTransition = rememberInfiniteTransition()
 
         val testPercentageAnimation = infiniteTransition.animateFloat(
