@@ -8,6 +8,7 @@ import com.ledwon.jakub.chessclock.data.model.Timer
 import com.ledwon.jakub.chessclock.data.persistance.PrepopulateDataStore
 import com.ledwon.jakub.chessclock.data.repository.TimerRepository
 import com.ledwon.jakub.chessclock.util.PredefinedTimers
+import com.ledwon.jakub.chessclock.util.postUpdate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -73,18 +74,28 @@ class ChooseTimerViewModel(
     }
 
     fun onTimerLongClicked() {
-        val state = _chooseTimerState.value!!
-        _chooseTimerState.postValue(state.copy(isSelectableModeOn = !state.isSelectableModeOn))
+        _chooseTimerState.postUpdate { currentState ->
+            currentState.copy(
+                isSelectableModeOn = !currentState.isSelectableModeOn,
+                timersToSelected = if (currentState.isSelectableModeOn) {
+                    currentState.timersToSelected.toMutableMap().mapValues {
+                        false
+                    }
+                } else {
+                    currentState.timersToSelected
+                }
+            )
+        }
     }
 
     fun onSelectTimerClick(timer: Timer) {
-        val state = _chooseTimerState.value!!
-
-        _chooseTimerState.postValue(state.copy(
-            timersToSelected = state.timersToSelected.toMutableMap().apply {
-                this[timer] = !this[timer]!!
-            }
-        ))
+        _chooseTimerState.postUpdate { currentState ->
+            currentState.copy(
+                timersToSelected = currentState.timersToSelected.toMutableMap().apply {
+                    this[timer] = !this[timer]!!
+                }
+            )
+        }
     }
 
     fun onStarClicked(timer: Timer) {
