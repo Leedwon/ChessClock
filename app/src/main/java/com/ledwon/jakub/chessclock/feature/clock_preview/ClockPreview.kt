@@ -14,16 +14,16 @@ import com.ledwon.jakub.chessclock.feature.clock.widget.CircleAnimatedClock
 import com.ledwon.jakub.chessclock.feature.clock.widget.OwnPlayerTimeClock
 import com.ledwon.jakub.chessclock.feature.common.ClockDisplay
 import com.ledwon.jakub.chessclock.feature.common.exhaustive
-import com.ledwon.jakub.chessclock.navigation.Actions
+import com.ledwon.jakub.chessclock.navigation.NavigationActions
 import kotlinx.coroutines.launch
 
 @Composable
-fun ClockPreviewScreen(actions: Actions, clockPreviewViewModel: ClockPreviewViewModel) {
+fun ClockPreviewScreen(navigationActions: NavigationActions, clockPreviewViewModel: ClockPreviewViewModel) {
     val clockType = clockPreviewViewModel.clockType
 
     clockPreviewViewModel.command.observe(LocalLifecycleOwner.current) {
         when (it) {
-            is ClockPreviewViewModel.Command.NavigateBack -> actions.navigateBack()
+            is ClockPreviewViewModel.Command.NavigateBack -> navigationActions.navigateBack()
         }.exhaustive
     }
 
