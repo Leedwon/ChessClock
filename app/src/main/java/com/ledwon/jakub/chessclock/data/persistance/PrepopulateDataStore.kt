@@ -4,7 +4,7 @@ import android.content.SharedPreferences
 import com.ledwon.jakub.chessclock.util.BooleanPreferencesDelegate
 
 //todo remove it and introduce pre population asset
-class PrepopulateDataStore(private val preferences: SharedPreferences) {
+class PrepopulateDataStore(preferences: SharedPreferences) {
 
     companion object {
         private const val SHOULD_PREPOPULATE_DB = "PREPOPULATE_KEY"

@@ -12,9 +12,8 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.lifecycleScope
 import com.ledwon.jakub.chessclock.R
-import com.ledwon.jakub.chessclock.navigation.Actions
+import com.ledwon.jakub.chessclock.navigation.NavigationActions
 import com.ledwon.jakub.chessclock.navigation.OpenClockPayload
 import com.ledwon.jakub.chessclock.ui.widgets.OutlinePrimaryButton
 import kotlinx.coroutines.flow.collect
@@ -32,7 +31,7 @@ data class NumberPickerStates(
 )
 
 @Composable
-fun CreateTimerScreen(actions: Actions, createTimerViewModel: CreateTimerViewModel) {
+fun CreateTimerScreen(navigationActions: NavigationActions, createTimerViewModel: CreateTimerViewModel) {
 
     val hoursRange = 0..23
     val minutesRange = 0..59
@@ -42,7 +41,7 @@ fun CreateTimerScreen(actions: Actions, createTimerViewModel: CreateTimerViewMod
     createTimerViewModel.command.observe(LocalLifecycleOwner.current, {
         when (it) {
             is CreateTimerViewModel.Command.NavigateToClock -> {
-                actions.openClock(
+                navigationActions.openClock(
                     OpenClockPayload(
                         whiteClock = it.state.whiteClock,
                         blackCLock = it.state.blackClock
@@ -50,7 +49,7 @@ fun CreateTimerScreen(actions: Actions, createTimerViewModel: CreateTimerViewMod
                 )
             }
             is CreateTimerViewModel.Command.NavigateBack -> {
-                actions.navigateBack()
+                navigationActions.navigateBack()
             }
             is CreateTimerViewModel.Command.Noop -> {
                 //noop
@@ -71,16 +70,20 @@ fun CreateTimerScreen(actions: Actions, createTimerViewModel: CreateTimerViewMod
         )
     }
 
-    LocalLifecycleOwner.current.lifecycleScope.launch {
-        createTimerViewModel.state.collect {
-            state.blackHoursState.updateCurrentOffset(it.blackClock.hours.toFloat())
-            state.blackMinutesState.updateCurrentOffset(it.blackClock.minutes.toFloat())
-            state.blackSecondsState.updateCurrentOffset(it.blackClock.seconds.toFloat())
-            state.blackIncrementState.updateCurrentOffset(it.blackClock.increment.toFloat())
-            state.whiteHoursState.updateCurrentOffset(it.whiteClock.hours.toFloat())
-            state.whiteMinutesState.updateCurrentOffset(it.whiteClock.minutes.toFloat())
-            state.whiteSecondsState.updateCurrentOffset(it.whiteClock.seconds.toFloat())
-            state.whiteIncrementState.updateCurrentOffset(it.whiteClock.increment.toFloat())
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect("constKey") {
+        scope.launch {
+            createTimerViewModel.state.collect {
+                state.blackHoursState.updateCurrentOffset(it.blackClock.hours.toFloat())
+                state.blackMinutesState.updateCurrentOffset(it.blackClock.minutes.toFloat())
+                state.blackSecondsState.updateCurrentOffset(it.blackClock.seconds.toFloat())
+                state.blackIncrementState.updateCurrentOffset(it.blackClock.increment.toFloat())
+                state.whiteHoursState.updateCurrentOffset(it.whiteClock.hours.toFloat())
+                state.whiteMinutesState.updateCurrentOffset(it.whiteClock.minutes.toFloat())
+                state.whiteSecondsState.updateCurrentOffset(it.whiteClock.seconds.toFloat())
+                state.whiteIncrementState.updateCurrentOffset(it.whiteClock.increment.toFloat())
+            }
         }
     }
 
@@ -100,12 +103,16 @@ fun CreateTimerScreen(actions: Actions, createTimerViewModel: CreateTimerViewMod
         }
     ) {
         LazyColumn(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -114,7 +121,9 @@ fun CreateTimerScreen(actions: Actions, createTimerViewModel: CreateTimerViewMod
                         text = "Same clock for white and black"
                     )
                     Switch(
-                        modifier = Modifier.width(32.dp).height(32.dp),
+                        modifier = Modifier
+                            .width(32.dp)
+                            .height(32.dp),
                         checked = timersMerged.value,
                         onCheckedChange = createTimerViewModel::onTimersMergeClick
                     )
@@ -155,7 +164,8 @@ fun CreateTimerScreen(actions: Actions, createTimerViewModel: CreateTimerViewMod
             }
             item {
                 Row(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
                         .padding(16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
@@ -225,7 +235,9 @@ fun TimerPickerWithDescription(
     backgroundColor: Color? = null
 ) {
     val modifier = if (backgroundColor != null) {
-        Modifier.padding(8.dp).background(color = backgroundColor)
+        Modifier
+            .padding(8.dp)
+            .background(color = backgroundColor)
     } else {
         Modifier.padding(8.dp)
     }

@@ -37,12 +37,8 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
 
     val window = LocalWindowProvider.current
 
-    LaunchedEffect(key1 = launchedEffectKey, block = {
-        window.addFlags((WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON))
-
-    })
-
     DisposableEffect(key1 = launchedEffectKey, effect = {
+        window.addFlags((WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON))
         onDispose {
             window.clearFlags((WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON))
         }
@@ -115,6 +111,7 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
             }
             GameState.Paused -> {
                 Row(
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     ClockCenterButton(
