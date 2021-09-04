@@ -2,7 +2,6 @@ package com.ledwon.jakub.chessclock.feature.settings
 
 import android.content.Intent
 import android.net.Uri
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -21,12 +20,11 @@ import androidx.compose.ui.unit.sp
 import com.ledwon.jakub.chessclock.R
 import com.ledwon.jakub.chessclock.data.repository.AppDarkTheme
 import com.ledwon.jakub.chessclock.feature.common.exhaustive
-import com.ledwon.jakub.chessclock.navigation.Actions
+import com.ledwon.jakub.chessclock.navigation.NavigationActions
 import com.ledwon.jakub.chessclock.util.LocalIsDarkMode
 
-@ExperimentalFoundationApi
 @Composable
-fun SettingsScreen(actions: Actions, settingsViewModel: SettingsViewModel) {
+fun SettingsScreen(navigationActions: NavigationActions, settingsViewModel: SettingsViewModel) {
 
     val appDarkTheme = settingsViewModel.appDarkTheme.collectAsState()
     val appColorTheme = settingsViewModel.appColorTheme.collectAsState()
@@ -41,7 +39,7 @@ fun SettingsScreen(actions: Actions, settingsViewModel: SettingsViewModel) {
     settingsViewModel.command.observe(LocalLifecycleOwner.current, {
         //todo move links to build config
         when (it) {
-            is SettingsViewModel.Command.NavigateBack -> actions.navigateBack()
+            is SettingsViewModel.Command.NavigateBack -> navigationActions.navigateBack()
             is SettingsViewModel.Command.OpenBuyMeACoffee -> {
                 val intent = Intent(Intent.ACTION_VIEW)
                 intent.data = Uri.parse("https://www.buymeacoffee.com/leedwon")
@@ -56,7 +54,7 @@ fun SettingsScreen(actions: Actions, settingsViewModel: SettingsViewModel) {
                 )
             }
             is SettingsViewModel.Command.OpenClockPreview -> {
-                actions.openClockDisplayPreview(it.clockDisplayTypeName)
+                navigationActions.openClockDisplayPreview(it.clockDisplayTypeName)
             }
             is SettingsViewModel.Command.Noop -> {
 

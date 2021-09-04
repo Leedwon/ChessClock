@@ -43,13 +43,6 @@ class TimerRepository(private val timerDao: TimerDao) {
         }
     }
 
-    suspend fun deleteTimer(timer: Timer) {
-        withContext(Dispatchers.Default) {
-            timerDao.deleteTimer(timer)
-            timersCache.remove(timer.id)
-        }
-    }
-
     suspend fun deleteTimers(timers: List<Timer>) {
         withContext(Dispatchers.Default) {
             timerDao.deleteTimers(timers)

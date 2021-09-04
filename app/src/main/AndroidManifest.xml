@@ -12,6 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ChessClock">
         <activity
+            android:exported="true"
             android:name="com.ledwon.jakub.chessclock.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/Theme.ChessClock.NoActionBar">
