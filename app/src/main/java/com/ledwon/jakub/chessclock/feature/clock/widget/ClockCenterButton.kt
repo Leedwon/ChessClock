@@ -1,8 +1,6 @@
 package com.ledwon.jakub.chessclock.feature.clock.widget
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon

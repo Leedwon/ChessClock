@@ -22,13 +22,13 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.ledwon.jakub.chessclock.R
 import com.ledwon.jakub.chessclock.data.model.ClockTime
 import com.ledwon.jakub.chessclock.data.model.Timer
-import com.ledwon.jakub.chessclock.navigation.Actions
+import com.ledwon.jakub.chessclock.navigation.NavigationActions
 import com.ledwon.jakub.chessclock.navigation.OpenClockPayload
 import com.ledwon.jakub.chessclock.ui.widgets.OutlinePrimaryButton
 
 @ExperimentalFoundationApi
 @Composable
-fun ChooseTimerScreen(actions: Actions, chooseTimerViewModel: ChooseTimerViewModel) {
+fun ChooseTimerScreen(navigationActions: NavigationActions, chooseTimerViewModel: ChooseTimerViewModel) {
 
     val chooseTimerState: ChooseTimerState by chooseTimerViewModel.chooseTimerState.observeAsState(
         initial = ChooseTimerState(
@@ -42,14 +42,14 @@ fun ChooseTimerScreen(actions: Actions, chooseTimerViewModel: ChooseTimerViewMod
             return@observe
         }
         when (it) {
-            is ChooseTimerViewModel.Command.NavigateToClock -> actions.openClock(
+            is ChooseTimerViewModel.Command.NavigateToClock -> navigationActions.openClock(
                 OpenClockPayload(
                     whiteClock = it.timer.whiteClockTime,
                     blackCLock = it.timer.blackClockTime,
                 )
             )
-            is ChooseTimerViewModel.Command.NavigateToCreateTimer -> actions.openCreateTimer()
-            is ChooseTimerViewModel.Command.NavigateToSettings -> actions.openSettings()
+            is ChooseTimerViewModel.Command.NavigateToCreateTimer -> navigationActions.openCreateTimer()
+            is ChooseTimerViewModel.Command.NavigateToSettings -> navigationActions.openSettings()
         }
     })
 
