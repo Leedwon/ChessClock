@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1046819312433",
+    "project_id": "chessclock-ab51a",
+    "storage_bucket": "chessclock-ab51a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1046819312433:android:607275a0a40908d2af5610",
+        "android_client_info": {
+          "package_name": "com.ledwon.jakub.chessclock"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1046819312433-5d50jceon7l15e1738fgom53pdvrhmp3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ledwon.jakub.chessclock",
+            "certificate_hash": "3b0a31ba930c5f3b1eec3f42afd6c4b3ea21c3fa"
+          }
+        },
+        {
+          "client_id": "1046819312433-tndc5k3vqbe7g7ncijbmu4g0m4e23lqt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfcNmO8QDi8GxhPh1ZyTbULK790NFbf10"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1046819312433-tndc5k3vqbe7g7ncijbmu4g0m4e23lqt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

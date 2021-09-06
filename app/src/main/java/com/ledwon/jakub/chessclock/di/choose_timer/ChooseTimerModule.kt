@@ -8,6 +8,7 @@ val chooseTimerModule = module {
     viewModel {
         ChooseTimerViewModel(
             timerRepository = get(),
+            analyticsManager = get(),
             prepopulateDataStore = get()
         )
     }

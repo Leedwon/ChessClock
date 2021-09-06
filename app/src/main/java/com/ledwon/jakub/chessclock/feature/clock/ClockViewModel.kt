@@ -125,7 +125,7 @@ enum class GameState {
     Over
 }
 
-data class InitialData(
+data class ClockInitialData(
     val whiteSeconds: Int,
     val whiteIncrementSeconds: Int = 0,
     val blackSeconds: Int,
@@ -133,7 +133,7 @@ data class InitialData(
 )
 
 class ClockViewModel(
-    initialData: InitialData,
+    clockInitialData: ClockInitialData,
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
@@ -143,12 +143,12 @@ class ClockViewModel(
     }
 
     private val white = Player.White(
-        initialMillis = initialData.whiteSeconds * 1000f,
-        increment = initialData.whiteIncrementSeconds * 1000
+        initialMillis = clockInitialData.whiteSeconds * 1000f,
+        increment = clockInitialData.whiteIncrementSeconds * 1000
     )
     private val black = Player.Black(
-        initialMillis = initialData.blackSeconds * 1000f,
-        increment = initialData.blackIncrementSeconds * 1000
+        initialMillis = clockInitialData.blackSeconds * 1000f,
+        increment = clockInitialData.blackIncrementSeconds * 1000
     )
 
     private var playersInOrder: Pair<Player, Player> = white to black
