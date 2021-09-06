@@ -17,7 +17,7 @@ import com.ledwon.jakub.chessclock.feature.choose_timer.ChooseTimerViewModel
 import com.ledwon.jakub.chessclock.feature.choose_timer.ChooseTimerScreen
 import com.ledwon.jakub.chessclock.feature.clock.ClockScreen
 import com.ledwon.jakub.chessclock.feature.clock.ClockViewModel
-import com.ledwon.jakub.chessclock.feature.clock.InitialData
+import com.ledwon.jakub.chessclock.feature.clock.ClockInitialData
 import com.ledwon.jakub.chessclock.feature.clock_preview.ClockPreviewScreen
 import com.ledwon.jakub.chessclock.feature.clock_preview.ClockPreviewViewModel
 import com.ledwon.jakub.chessclock.feature.create_timer.CreateTimerScreen
@@ -111,7 +111,7 @@ class MainActivity : AppCompatActivity() {
                                     val blackIncrementSeconds =
                                         navBackStackEntry.arguments!!.getInt(Routes.ClockArgs.BlackIncrementSeconds)
 
-                                    val initialData = InitialData(
+                                    val initialData = ClockInitialData(
                                         whiteSeconds = whiteSeconds,
                                         blackSeconds = blackSeconds,
                                         whiteIncrementSeconds = whiteIncrementSeconds,
