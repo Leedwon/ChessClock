@@ -10,6 +10,10 @@ sealed class AnalyticsEvent {
     abstract val eventName: String
     open val params: Bundle? = null
 
+    companion object {
+        private const val clockOpenedFromKey = "openedFrom"
+    }
+
     object OpenSettings : AnalyticsEvent() {
         override val eventName: String = "OpenSettings"
     }
@@ -19,8 +23,8 @@ sealed class AnalyticsEvent {
     }
 
     data class OpenClockFromChooseTimer(val timer: Timer) : AnalyticsEvent() {
-        override val eventName: String = "OpenClockFromChooseTimer"
-        override val params: Bundle = timer.toBundle()
+        override val eventName: String = "OpenClock"
+        override val params: Bundle = timer.toBundle().apply { putString(clockOpenedFromKey, "Choose Timer") }
     }
 
     data class AddClock(val timer: Timer) : AnalyticsEvent() {
@@ -34,8 +38,8 @@ sealed class AnalyticsEvent {
     }
 
     data class OpenClockFromCreateTimer(val timer: Timer) : AnalyticsEvent() {
-        override val eventName: String = "OpenClockFromCreateTimer"
-        override val params: Bundle = timer.toBundle()
+        override val eventName: String = "OpenClock"
+        override val params: Bundle = timer.toBundle().apply { putString(clockOpenedFromKey, "Create Timer") }
     }
 
     data class RemoveClocks(val clockDescriptions: List<String>) : AnalyticsEvent() {
