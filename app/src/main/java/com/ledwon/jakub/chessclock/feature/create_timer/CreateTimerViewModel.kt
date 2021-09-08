@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ledwon.jakub.chessclock.analytics.AnalyticsEvent
+import com.ledwon.jakub.chessclock.analytics.AnalyticsManager
 import com.ledwon.jakub.chessclock.data.model.*
 import com.ledwon.jakub.chessclock.data.repository.TimerRepository
 import com.ledwon.jakub.chessclock.util.TimerNameProvider
@@ -19,7 +21,8 @@ data class State(
 )
 
 class CreateTimerViewModel(
-    private val timerRepository: TimerRepository
+    private val timerRepository: TimerRepository,
+    private val analyticsManager: AnalyticsManager
 ) : ViewModel() {
     private val _state = MutableStateFlow(State())
     val state: StateFlow<State> = _state
@@ -109,38 +112,46 @@ class CreateTimerViewModel(
         }
     }
 
-    fun onStartGameClick() {
+    private fun navigateToClock() {
         _command.value = Command.NavigateToClock(_state.value)
         _command.value = Command.Noop
     }
 
-    private suspend fun saveTimer() {
+    fun onStartGameClick() {
+        navigateToClock()
+        analyticsManager.logEvent(AnalyticsEvent.OpenClockFromCreateTimer(timer = buildTimerFromState()))
+    }
+
+    private fun buildTimerFromState(): Timer {
         val state = _state.value
-        timerRepository.addTimer(
-            Timer(
-                description = TimerNameProvider.createTimerName(
-                    whiteClockTime = state.whiteClock,
-                    blackClockTime = state.blackClock
-                ),
+        return Timer(
+            description = TimerNameProvider.createTimerName(
                 whiteClockTime = state.whiteClock,
-                blackClockTime = state.blackClock,
-                isFavourite = false
-            )
+                blackClockTime = state.blackClock
+            ),
+            whiteClockTime = state.whiteClock,
+            blackClockTime = state.blackClock,
+            isFavourite = false
         )
     }
 
     fun onSaveTimerClick() {
         viewModelScope.launch(Dispatchers.IO) {
-            saveTimer()
+            val timer = buildTimerFromState()
+            timerRepository.addTimer(timer)
+            analyticsManager.logEvent(AnalyticsEvent.AddClock(timer))
+
             _command.postValue(Command.NavigateBack)
         }
     }
 
     fun onStartGameAndSaveTimerClick() {
+        val timer = buildTimerFromState()
         viewModelScope.launch(Dispatchers.IO) {
-            saveTimer()
+            timerRepository.addTimer(timer)
+            analyticsManager.logEvent(AnalyticsEvent.OpenAndAddClock(timer))
         }
-        onStartGameClick()
+        navigateToClock()
     }
 
     fun onBackClick() {

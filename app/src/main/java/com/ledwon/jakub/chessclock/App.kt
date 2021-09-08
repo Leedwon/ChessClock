@@ -1,6 +1,7 @@
 package com.ledwon.jakub.chessclock
 
 import android.app.Application
+import com.ledwon.jakub.chessclock.analytics.analyticsModule
 import com.ledwon.jakub.chessclock.data.persistance.persistenceModule
 import com.ledwon.jakub.chessclock.data.repository.repositoryModule
 import com.ledwon.jakub.chessclock.di.choose_timer.chooseTimerModule
@@ -27,7 +28,8 @@ class App : Application() {
                 repositoryModule,
                 mainModule,
                 settingsModule,
-                clockPreviewModule
+                clockPreviewModule,
+                analyticsModule
             )
         }
 

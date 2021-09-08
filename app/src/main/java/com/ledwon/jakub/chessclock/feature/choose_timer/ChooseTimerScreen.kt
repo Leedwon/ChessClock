@@ -66,20 +66,26 @@ fun ChooseTimerScreen(navigationActions: NavigationActions, chooseTimerViewModel
             )
         }
     ) { paddingValues ->
-        ConstraintLayout(modifier = Modifier.fillMaxHeight().padding(paddingValues)) {
+        ConstraintLayout(modifier = Modifier
+            .fillMaxHeight()
+            .padding(paddingValues)) {
 
             val (column, removeSelectedButton) = createRefs()
             //this padding is a hack for bottom.linkTo(removeSelectedButton.top) causing Create new timer button to move up and be below TopAppBar
             LazyColumn(
-                modifier = Modifier.padding(
-                    bottom = if (chooseTimerState.isSelectableModeOn) 48.dp else
-                        0.dp
-                ).constrainAs(column) {
-                    top.linkTo(parent.top)
-                }, content = {
+                modifier = Modifier
+                    .padding(
+                        bottom = if (chooseTimerState.isSelectableModeOn) 48.dp else
+                            0.dp
+                    )
+                    .constrainAs(column) {
+                        top.linkTo(parent.top)
+                    }, content = {
                     item {
                         OutlinePrimaryButton(
-                            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .fillMaxWidth(),
                             onClick = chooseTimerViewModel::onCreateTimerClicked
                         ) {
                             Text("Create new clock", fontSize = 21.sp)
@@ -96,7 +102,8 @@ fun ChooseTimerScreen(navigationActions: NavigationActions, chooseTimerViewModel
                                 )
                             }
                             TimeCard(
-                                modifier = Modifier.padding(vertical = 12.dp, horizontal = 16.dp)
+                                modifier = Modifier
+                                    .padding(vertical = 12.dp, horizontal = 16.dp)
                                     .fillMaxWidth()
                                     .combinedClickable(
                                         onClick = {
@@ -121,11 +128,13 @@ fun ChooseTimerScreen(navigationActions: NavigationActions, chooseTimerViewModel
                         backgroundColor = MaterialTheme.colors.primaryVariant,
                         contentColor = MaterialTheme.colors.onSurface
                     ),
-                    modifier = Modifier.fillMaxWidth().constrainAs(
-                        removeSelectedButton
-                    ) {
-                        bottom.linkTo(parent.bottom)
-                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .constrainAs(
+                            removeSelectedButton
+                        ) {
+                            bottom.linkTo(parent.bottom)
+                        },
                     onClick = chooseTimerViewModel::onRemoveTimers
                 ) {
                     Text(
@@ -160,7 +169,9 @@ fun TimeCard(
                 fontSize = 19.sp
             )
             Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -169,7 +180,9 @@ fun TimeCard(
                 val star = painterResource(id = R.drawable.ic_star_24)
                 val starOutline = painterResource(id = R.drawable.ic_star_border_24)
                 IconButton(
-                    modifier = Modifier.height(24.dp).width(24.dp)
+                    modifier = Modifier
+                        .height(24.dp)
+                        .width(24.dp)
                         .align(alignment = Alignment.CenterVertically),
                     onClick = { onStarClicked(timer) }) {
                     Icon(

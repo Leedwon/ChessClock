@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ledwon.jakub.chessclock.analytics.AnalyticsEvent
+import com.ledwon.jakub.chessclock.analytics.AnalyticsManager
 import com.ledwon.jakub.chessclock.data.model.Timer
 import com.ledwon.jakub.chessclock.data.persistance.PrepopulateDataStore
 import com.ledwon.jakub.chessclock.data.repository.TimerRepository
@@ -20,6 +22,7 @@ data class ChooseTimerState(
 
 class ChooseTimerViewModel(
     private val timerRepository: TimerRepository,
+    private val analyticsManager: AnalyticsManager,
     prepopulateDataStore: PrepopulateDataStore
 ) : ViewModel() {
 
@@ -51,25 +54,28 @@ class ChooseTimerViewModel(
     }
 
     fun onTimerClicked(timer: Timer) {
-        _command.value = Command.NavigateToClock(timer)
+        _command.value = Command.NavigateToClock(timer).also { analyticsManager.logEvent(AnalyticsEvent.OpenClockFromChooseTimer(timer)) }
         _command.value = null
     }
 
     fun onCreateTimerClicked() {
-        _command.value = Command.NavigateToCreateTimer
+        _command.value = Command.NavigateToCreateTimer.also { analyticsManager.logEvent(AnalyticsEvent.OpenCreateClock) }
         _command.value = null
     }
 
     fun onRemoveTimers() {
         val state = _chooseTimerState.value!!
         viewModelScope.launch(Dispatchers.IO) {
-            timerRepository.deleteTimers(state.timersToSelected.filter { it.value }.keys.toList())
+            val timersToRemove = state.timersToSelected.filter { it.value }.keys.toList()
+            timerRepository.deleteTimers(timersToRemove).also {
+                analyticsManager.logEvent(AnalyticsEvent.RemoveClocks(timersToRemove.map { it.description }))
+            }
         }
         _chooseTimerState.postValue(state.copy(isSelectableModeOn = false))
     }
 
     fun onOpenSettingsClicked() {
-        _command.value = Command.NavigateToSettings
+        _command.value = Command.NavigateToSettings.also { analyticsManager.logEvent(AnalyticsEvent.OpenSettings) }
         _command.value = null
     }
 

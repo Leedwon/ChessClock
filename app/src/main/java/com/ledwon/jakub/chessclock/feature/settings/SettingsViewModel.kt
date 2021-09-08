@@ -3,6 +3,8 @@ package com.ledwon.jakub.chessclock.feature.settings
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.ledwon.jakub.chessclock.analytics.AnalyticsEvent
+import com.ledwon.jakub.chessclock.analytics.AnalyticsManager
 import com.ledwon.jakub.chessclock.data.repository.AppColorThemeType
 import com.ledwon.jakub.chessclock.data.repository.AppDarkTheme
 import com.ledwon.jakub.chessclock.data.repository.ClockTypesRepository
@@ -12,6 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 class SettingsViewModel(
     private val settingsRepository: SettingsRepository,
+    private val analyticsManager: AnalyticsManager,
     clockTypesRepository: ClockTypesRepository
 ) : ViewModel() {
 
@@ -41,13 +44,17 @@ class SettingsViewModel(
     fun updateAppDarkTheme(appDarkTheme: AppDarkTheme) = settingsRepository.updateAppDarkTheme(appDarkTheme)
 
     fun updateAppColorTheme(appColorThemeType: AppColorThemeType) = settingsRepository.updateAppColorTheme(appColorThemeType)
+        .also { analyticsManager.logEvent(AnalyticsEvent.UpdateAppColorTheme(appColorThemeType)) }
 
     fun updateRandomizePosition(randomizePosition: Boolean) = settingsRepository.updateRandomizePosition(randomizePosition)
+        .also { analyticsManager.logEvent(AnalyticsEvent.UpdateRandomizePlayersPositions(randomizePosition)) }
 
     fun updateClockType(namedClockDisplay: ClockTypesRepository.NamedClockDisplayType) =
         settingsRepository.updateClockType(clockDisplay = namedClockDisplay.display)
+            .also { analyticsManager.logEvent(AnalyticsEvent.UpdateClockType(namedClockDisplay)) }
 
     fun updatePulsationEnabled(pulsationEnabled: Boolean) = settingsRepository.updatePulsationEnabled(pulsationEnabled)
+        .also { analyticsManager.logEvent(AnalyticsEvent.UpdatePulsationEnabled(pulsationEnabled)) }
 
     fun onClockTypePreviewClick(namedClockDisplay: ClockTypesRepository.NamedClockDisplayType) {
         _command.value = Command.OpenClockPreview(namedClockDisplay.name)
