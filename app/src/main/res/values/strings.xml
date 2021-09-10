@@ -1,3 +1,58 @@
 <resources>
     <string name="app_name">Chess Clock</string>
+
+    <string name="choose_timer_title">Chess Clock</string>
+    <string name="clock_preview_title">Clock Preview</string>
+    <string name="create_clock_title">Create Clock</string>
+    <string name="settings_title">Settings</string>
+    <string name="create_new_clock">Create new clock</string>
+    <string name="delete_selected_timers">Delete selected</string>
+    <string name="turn_pulsation_on">You can turn on active player\'s pulsation in settings</string>
+    <string name="turn_pulsation_off">You can turn off active player\'s pulsation in settings</string>
+    <string name="white_time">White\'s time</string>
+    <string name="black_time">Black\'s time</string>
+    <string name="create_timer_same_clock">Same clock for white and black</string>
+    <string name="create_timer_clock">Clock: </string>
+    <string name="create_timer_white_clock">White\'s clock: </string>
+    <string name="create_timer_black_clock">Black\'s clock: </string>
+    <string name="start">Start</string>
+    <string name="start_and_save">Start &amp; save</string>
+    <string name="save">Save</string>
+    <string name="dark_mode_option">Dark mode</string>
+    <string name="dark">Dark</string>
+    <string name="light">Light</string>
+    <string name="system">System</string>
+    <string name="color_theme_option">Color theme</string>
+    <string name="clock_display_type_option">Clock display type</string>
+    <string name="preview">Preview</string>
+    <string name="active_players_pulsation_enabled_option">Active player\'s pulsation enabled</string>
+    <string name="randomize_initial_position_option">Randomize white &amp; black clock initial position</string>
+    <string name="stop_randomize_animation_hint">Note: you can always stop the animation by clicking on rotating dice</string>
+    <string name="do_you_like_the_app">Do you like the app?</string>
+    <string name="rate_app">rate it</string>
+    <string name="or">or</string>
+    <string name="buy_me_a_coffee">buy me a coffee</string>
+    <string name="hours">Hours</string>
+    <string name="minutes">Minutes</string>
+    <string name="seconds">Seconds</string>
+    <string name="increment">Increment (s)</string>
+
+    <string name="classic_clock">Classic clock</string>
+    <string name="classic_clock_90">Classic clock 90°</string>
+    <string name="classic_clock_270">Classic clock 270°</string>
+    <string name="both_players_time_clock">Both players time clock</string>
+    <string name="circle_animation_clock">Circle animation clock</string>
+    <string name="circle_animation_clock_90">Circle animation clock 90°</string>
+    <string name="circle_animation_clock_270">Circle animation clock 270°</string>
+
+    <!-- content descriptions -->
+    <string name="navigate_back_content_description">navigate back</string>
+    <string name="settings_content_description">settings</string>
+    <string name="clock_content_description">clock</string>
+    <string name="increment_content_description">increment per move</string>
+    <string name="favourite_clock_content_description">is favourite clock</string>
+    <string name="swap_sides_content_description">swap sides</string>
+    <string name="pause_clock_content_description">pause clock</string>
+    <string name="resume_clock_content_description">resume clock</string>
+    <string name="restart_clock_content_description">restart clock</string>
 </resources>

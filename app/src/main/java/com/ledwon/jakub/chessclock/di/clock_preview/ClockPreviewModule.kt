@@ -7,7 +7,7 @@ import org.koin.dsl.module
 val clockPreviewModule = module {
     viewModel { parameters ->
         ClockPreviewViewModel(
-            clockName = parameters[0],
+            clockId = parameters[0],
             clockTypesRepository = get(),
             settingsRepository = get()
         )

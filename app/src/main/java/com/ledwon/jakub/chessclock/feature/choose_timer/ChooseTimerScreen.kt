@@ -25,6 +25,7 @@ import com.ledwon.jakub.chessclock.data.model.Timer
 import com.ledwon.jakub.chessclock.navigation.NavigationActions
 import com.ledwon.jakub.chessclock.navigation.OpenClockPayload
 import com.ledwon.jakub.chessclock.ui.widgets.OutlinePrimaryButton
+import com.ledwon.jakub.chessclock.util.rememberString
 
 @ExperimentalFoundationApi
 @Composable
@@ -55,20 +56,14 @@ fun ChooseTimerScreen(navigationActions: NavigationActions, chooseTimerViewModel
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(text = "Chess clock") },
-                actions = {
-                    val icon = painterResource(id = R.drawable.ic_settings_24)
-                    IconButton(onClick = chooseTimerViewModel::onOpenSettingsClicked) {
-                        Icon(painter = icon, contentDescription = "settings")
-                    }
-                }
-            )
+            ChooseTimerTopBar(onSettingsIconClick = chooseTimerViewModel::onOpenSettingsClicked)
         }
     ) { paddingValues ->
-        ConstraintLayout(modifier = Modifier
-            .fillMaxHeight()
-            .padding(paddingValues)) {
+        ConstraintLayout(
+            modifier = Modifier
+                .fillMaxHeight()
+                .padding(paddingValues)
+        ) {
 
             val (column, removeSelectedButton) = createRefs()
             //this padding is a hack for bottom.linkTo(removeSelectedButton.top) causing Create new timer button to move up and be below TopAppBar
@@ -88,7 +83,7 @@ fun ChooseTimerScreen(navigationActions: NavigationActions, chooseTimerViewModel
                                 .fillMaxWidth(),
                             onClick = chooseTimerViewModel::onCreateTimerClicked
                         ) {
-                            Text("Create new clock", fontSize = 21.sp)
+                            Text(rememberString(R.string.create_new_clock), fontSize = 21.sp)
                         }
                     }
 
@@ -139,7 +134,7 @@ fun ChooseTimerScreen(navigationActions: NavigationActions, chooseTimerViewModel
                 ) {
                     Text(
                         modifier = Modifier.padding(vertical = 8.dp),
-                        text = "Delete selected",
+                        text = rememberString(R.string.delete_selected_timers),
                         fontSize = 18.sp
                     )
                 }
@@ -147,6 +142,21 @@ fun ChooseTimerScreen(navigationActions: NavigationActions, chooseTimerViewModel
         }
 
     }
+}
+
+@Composable
+fun ChooseTimerTopBar(
+    onSettingsIconClick: () -> Unit
+) {
+    TopAppBar(
+        title = { Text(text = rememberString(resId = R.string.choose_timer_title)) },
+        actions = {
+            val icon = painterResource(id = R.drawable.ic_settings_24)
+            IconButton(onClick = onSettingsIconClick) {
+                Icon(painter = icon, contentDescription = rememberString(resId = R.string.settings_content_description))
+            }
+        }
+    )
 }
 
 @Composable
@@ -187,7 +197,7 @@ fun TimeCard(
                     onClick = { onStarClicked(timer) }) {
                     Icon(
                         painter = if (timer.isFavourite) star else starOutline,
-                        contentDescription = "is favourite timer",
+                        contentDescription = rememberString(resId = R.string.favourite_clock_content_description),
                         tint = Color.Yellow
                     )
                 }
@@ -204,7 +214,7 @@ fun ClockIconsColumn(clockTime: ClockTime, modifier: Modifier = Modifier, isWhit
             Image(
                 modifier = Modifier.padding(end = 8.dp),
                 painter = clockImage,
-                contentDescription = "clock",
+                contentDescription = rememberString(resId = R.string.clock_content_description),
                 colorFilter = ColorFilter.tint(if (isWhite) Color.White else Color.Black)
             )
             Text(
@@ -222,7 +232,7 @@ fun ClockIconsColumn(clockTime: ClockTime, modifier: Modifier = Modifier, isWhit
                 Image(
                     modifier = Modifier.padding(end = 8.dp),
                     painter = incrementImage,
-                    contentDescription = "increment per move",
+                    contentDescription = rememberString(resId = R.string.increment_content_description),
                     colorFilter = ColorFilter.tint(if (isWhite) Color.White else Color.Black)
                 )
                 Text(
