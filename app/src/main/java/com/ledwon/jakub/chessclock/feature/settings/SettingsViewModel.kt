@@ -57,7 +57,7 @@ class SettingsViewModel(
         .also { analyticsManager.logEvent(AnalyticsEvent.UpdatePulsationEnabled(pulsationEnabled)) }
 
     fun onClockTypePreviewClick(namedClockDisplay: ClockTypesRepository.NamedClockDisplayType) {
-        _command.value = Command.OpenClockPreview(namedClockDisplay.name)
+        _command.value = Command.OpenClockPreview(namedClockDisplay.id)
         _command.value = Command.Noop
     }
 
@@ -77,7 +77,7 @@ class SettingsViewModel(
         object NavigateBack : Command()
         object OpenBuyMeACoffee : Command()
         object RateApp : Command()
-        data class OpenClockPreview(val clockDisplayTypeName: String) : Command()
+        data class OpenClockPreview(val clockDisplayTypeId: String) : Command()
         object Noop : Command()
     }
 }

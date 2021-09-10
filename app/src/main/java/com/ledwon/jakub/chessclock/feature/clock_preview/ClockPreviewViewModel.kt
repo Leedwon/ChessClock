@@ -8,7 +8,7 @@ import com.ledwon.jakub.chessclock.data.repository.SettingsRepository
 import kotlinx.coroutines.flow.StateFlow
 
 class ClockPreviewViewModel(
-    private val clockName: String,
+    private val clockId: String,
     clockTypesRepository: ClockTypesRepository,
     settingsRepository: SettingsRepository
 ) : ViewModel() {
@@ -19,7 +19,7 @@ class ClockPreviewViewModel(
     val pulsationEnabled: StateFlow<Boolean> = settingsRepository.pulsationEnabled
 
     val clockType: ClockTypesRepository.NamedClockDisplayType? =
-        clockTypesRepository.clockTypes.firstOrNull { it.name == clockName }.also {
+        clockTypesRepository.clockTypes.firstOrNull { it.id == clockId }.also {
             if (it == null) {
                 _command.value = Command.NavigateBack
             }
