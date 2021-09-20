@@ -7,7 +7,6 @@ import androidx.room.PrimaryKey
 @Entity
 data class Timer(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val description: String,
     @Embedded(prefix = "white_")
     val whiteClockTime: ClockTime,
     @Embedded(prefix = "black_")

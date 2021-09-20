@@ -15,6 +15,7 @@ import com.ledwon.jakub.chessclock.feature.clock.widget.OwnPlayerTimeClock
 import com.ledwon.jakub.chessclock.feature.common.ClockDisplay
 import com.ledwon.jakub.chessclock.feature.common.exhaustive
 import com.ledwon.jakub.chessclock.navigation.NavigationActions
+import com.ledwon.jakub.chessclock.util.rememberString
 import kotlinx.coroutines.launch
 
 @Composable
@@ -28,7 +29,9 @@ fun ClockPreviewScreen(navigationActions: NavigationActions, clockPreviewViewMod
     }
 
     val pulsationEnabled = clockPreviewViewModel.pulsationEnabled.collectAsState()
-    val pulsateOnOrOff = if (pulsationEnabled.value) "off" else "on"
+
+    val turnPulsationOnText = rememberString(R.string.turn_pulsation_on)
+    val turnPulsationOffText = rememberString(R.string.turn_pulsation_off)
 
     val scaffoldState = rememberScaffoldState()
 
@@ -36,11 +39,11 @@ fun ClockPreviewScreen(navigationActions: NavigationActions, clockPreviewViewMod
         scaffoldState = scaffoldState,
         topBar = {
             TopAppBar(
-                title = { Text("Clock preview") },
+                title = { Text(rememberString(R.string.clock_preview_title)) },
                 navigationIcon = {
                     val backIcon = painterResource(id = R.drawable.ic_arrow_back_24)
                     IconButton(onClick = clockPreviewViewModel::onBackClick) {
-                        Icon(painter = backIcon, contentDescription = "navigate back")
+                        Icon(painter = backIcon, contentDescription = rememberString(R.string.navigate_back_content_description))
                     }
                 }
             )
@@ -65,11 +68,11 @@ fun ClockPreviewScreen(navigationActions: NavigationActions, clockPreviewViewMod
 
         val playersDisplay =
             PlayerDisplay.White(
-                text = "White's time",
+                text = rememberString(R.string.white_time),
                 percentageLeft = testPercentageAnimation.value / durationMillis,
                 isActive = true
             ) to PlayerDisplay.Black(
-                text = "Black's time",
+                text = rememberString(R.string.black_time),
                 percentageLeft = 1f,
                 isActive = false
             )
@@ -102,8 +105,8 @@ fun ClockPreviewScreen(navigationActions: NavigationActions, clockPreviewViewMod
 
         LocalLifecycleOwner.current.lifecycleScope.launch {
             scaffoldState.snackbarHostState.showSnackbar(
-                message = "You can turn $pulsateOnOrOff active player's pulsation in settings",
-                duration = SnackbarDuration.Long,
+                message = if (pulsationEnabled.value) turnPulsationOffText else turnPulsationOnText,
+                duration = SnackbarDuration.Indefinite,
             )
         }
     }

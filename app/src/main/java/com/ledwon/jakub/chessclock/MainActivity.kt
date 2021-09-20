@@ -124,11 +124,11 @@ class MainActivity : AppCompatActivity() {
                                 }
                                 composable(
                                     Routes.ClockPreviewRoute,
-                                    arguments = listOf(navArgument(Routes.ClockPreviewArgs.ClockDisplayName) {
+                                    arguments = listOf(navArgument(Routes.ClockPreviewArgs.ClockDisplayId) {
                                         type = NavType.StringType
                                     })
                                 ) { navBackStackEntry ->
-                                    val clockPreviewName = navBackStackEntry.arguments!!.getString(Routes.ClockPreviewArgs.ClockDisplayName)
+                                    val clockPreviewName = navBackStackEntry.arguments!!.getString(Routes.ClockPreviewArgs.ClockDisplayId)
 
                                     val clockPreviewViewModel: ClockPreviewViewModel =
                                         provideNavViewModel(parameters = {

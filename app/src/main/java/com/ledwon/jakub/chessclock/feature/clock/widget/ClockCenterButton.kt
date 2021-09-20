@@ -17,6 +17,7 @@ fun ClockCenterButton(
     onClick: () -> Unit,
     icon: Painter,
     iconTint: Color,
+    iconContentDescription: String,
     modifier: Modifier = Modifier
 ) {
     OutlinedButton(
@@ -30,7 +31,7 @@ fun ClockCenterButton(
     ) {
         Icon(
             painter = icon,
-            contentDescription = "clock center action",
+            contentDescription = iconContentDescription,
             tint = iconTint
         )
     }
