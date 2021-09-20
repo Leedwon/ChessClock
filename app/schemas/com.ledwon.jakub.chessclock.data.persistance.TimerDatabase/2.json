@@ -1,0 +1,88 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 2,
+    "identityHash": "e6a266787f543ecfaee5aadb3f5bf79b",
+    "entities": [
+      {
+        "tableName": "Timer",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `isFavourite` INTEGER NOT NULL, `white_seconds` INTEGER NOT NULL, `white_minutes` INTEGER NOT NULL, `white_hours` INTEGER NOT NULL, `white_increment` INTEGER NOT NULL, `black_seconds` INTEGER NOT NULL, `black_minutes` INTEGER NOT NULL, `black_hours` INTEGER NOT NULL, `black_increment` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isFavourite",
+            "columnName": "isFavourite",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "whiteClockTime.seconds",
+            "columnName": "white_seconds",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "whiteClockTime.minutes",
+            "columnName": "white_minutes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "whiteClockTime.hours",
+            "columnName": "white_hours",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "whiteClockTime.increment",
+            "columnName": "white_increment",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "blackClockTime.seconds",
+            "columnName": "black_seconds",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "blackClockTime.minutes",
+            "columnName": "black_minutes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "blackClockTime.hours",
+            "columnName": "black_hours",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "blackClockTime.increment",
+            "columnName": "black_increment",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e6a266787f543ecfaee5aadb3f5bf79b')"
+    ]
+  }
+}
