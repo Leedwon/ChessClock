@@ -14,6 +14,7 @@ val persistenceModule = module {
             TimerDatabase::class.java,
             "timers_db"
         )
+            .addMigrations(Migrations.Migration_1_2)
             .build()
     }
 

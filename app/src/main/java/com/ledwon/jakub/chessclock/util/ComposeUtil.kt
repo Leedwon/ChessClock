@@ -1,6 +1,6 @@
 package com.ledwon.jakub.chessclock.util
 
- import android.view.Window
+import android.view.Window
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.compositionLocalOf
@@ -12,10 +12,21 @@ val LocalNavController = compositionLocalOf<NavController>(defaultFactory = { er
 val LocalIsDarkMode = compositionLocalOf<Boolean>(defaultFactory = { false })
 val LocalWindowProvider = compositionLocalOf<Window>(defaultFactory = { error("no window available") })
 
+class DeferrableString(
+    @StringRes private val resId: Int,
+    private val formatArgs: List<Any> = emptyList()
+) {
+    @Composable
+    fun get(): String = LocalContext.current.getString(resId, *formatArgs.toTypedArray())
+
+    @Composable
+    fun getAndRemember(): String = rememberString(resId, formatArgs)
+}
+
 @Composable
-fun rememberString(@StringRes resId: Int, vararg formatArgs: Any): String {
+fun rememberString(@StringRes resId: Int, formatArgs: List<Any> = emptyList()): String {
     val context = LocalContext.current
     return remember {
-        context.getString(resId, formatArgs)
+        context.getString(resId, *formatArgs.toTypedArray())
     }
 }

@@ -12,9 +12,9 @@
     <string name="white_time">Czas białych</string>
     <string name="black_time">Czas czarnych</string>
     <string name="create_timer_same_clock">Taki sam czas dla białych i czarnych</string>
-    <string name="create_timer_clock">"Zegar: "</string>
-    <string name="create_timer_white_clock">"Zegar białych: "</string>
-    <string name="create_timer_black_clock">"Zegar czarnych: "</string>
+    <string name="create_timer_clock">"Czas: "</string>
+    <string name="create_timer_white_clock">"Czas białych: "</string>
+    <string name="create_timer_black_clock">"Czas czarnych: "</string>
     <string name="start">Start</string>
     <string name="start_and_save">Start &amp; zapisz</string>
     <string name="save">Zapisz</string>
@@ -25,11 +25,11 @@
     <string name="color_theme_option">Motyw kolorystyczny</string>
     <string name="clock_display_type_option">Wyświetlanie zegara</string>
     <string name="preview">Podgląd</string>
-    <string name="active_players_pulsation_enabled_option">Pulsowanie aktywnego gracza</string>
+    <string name="active_players_pulsation_enabled_option">Pulsowanie zegara aktywnego gracza</string>
     <string name="randomize_initial_position_option">Losowanie kolorów</string>
-    <string name="stop_randomize_animation_hint">Uwaga: możesz zawsze zatrzymać losowanie klikając na obracającą się kostkę</string>
+    <string name="stop_randomize_animation_hint">Uwaga: możesz zatrzymać losowanie klikając na obracającą się kostkę</string>
     <string name="do_you_like_the_app">Czy podoba Ci się aplikacja?</string>
-    <string name="rate_app">Oceń aplikację</string>
+    <string name="rate_app">oceń ją</string>
     <string name="or">lub</string>
     <string name="buy_me_a_coffee">wesprzyj mnie</string>
     <string name="hours">Godziny</string>
@@ -52,4 +52,9 @@
     <string name="pause_clock_content_description">zatrzymaj zegar</string>
     <string name="resume_clock_content_description">wznów zegar</string>
     <string name="restart_clock_content_description">zrestartuj zegar</string>
+    <string name="clock_name_bullet">Bullet %1$s</string>
+    <string name="clock_name_blitz">Błyskawiczny %1$s</string>
+    <string name="clock_name_rapid">Szybki %1$s</string>
+    <string name="clock_name_classic">Klasyczny %1$s</string>
+    <string name="clock_name_custom">Niestandardowy</string>
 </resources>

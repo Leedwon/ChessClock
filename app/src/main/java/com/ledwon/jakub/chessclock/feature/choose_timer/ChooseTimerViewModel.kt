@@ -68,7 +68,7 @@ class ChooseTimerViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             val timersToRemove = state.timersToSelected.filter { it.value }.keys.toList()
             timerRepository.deleteTimers(timersToRemove).also {
-                analyticsManager.logEvent(AnalyticsEvent.RemoveClocks(timersToRemove.map { it.description }))
+                timersToRemove.forEach { analyticsManager.logEvent(AnalyticsEvent.RemoveClock(it)) }
             }
         }
         _chooseTimerState.postValue(state.copy(isSelectableModeOn = false))
