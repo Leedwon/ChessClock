@@ -1,42 +1,51 @@
 package com.ledwon.jakub.chessclock.data.repository
 
+import androidx.annotation.StringRes
+import com.ledwon.jakub.chessclock.R
 import com.ledwon.jakub.chessclock.feature.common.ClockDisplay
 
 class ClockTypesRepository {
     data class NamedClockDisplayType(
+        val id: String,
         val display: ClockDisplay,
-        val name: String
+        @StringRes val name: Int
     )
-
 
     val clockTypes = listOf(
         NamedClockDisplayType(
+            id = "classic",
             display = ClockDisplay.OwnPlayerTimeClock(180f to 0f),
-            name = "Classic clock"
+            name = R.string.classic_clock
         ),
         NamedClockDisplayType(
+            id = "classic90",
             display = ClockDisplay.OwnPlayerTimeClock(90f to 90f),
-            name = "Classic clock 90°"
+            name = R.string.classic_clock_90
         ),
         NamedClockDisplayType(
+            id = "classic270",
             display = ClockDisplay.OwnPlayerTimeClock(270f to 270f),
-            name = "Classic clock 270°"
+            name = R.string.classic_clock_270
         ),
         NamedClockDisplayType(
+            id = "bothPlayers",
             display = ClockDisplay.BothPlayersTimeClock,
-            name = "Both players time clock"
+            name = R.string.both_players_time_clock
         ),
         NamedClockDisplayType(
+            id = "circle",
             display = ClockDisplay.CircleAnimatedClock(180f to 0f),
-            name = "Circle animation clock"
+            name = R.string.circle_animation_clock
         ),
         NamedClockDisplayType(
+            id = "circle90",
             display = ClockDisplay.CircleAnimatedClock(90f to 90f),
-            name = "Circle animation clock 90°"
+            name = R.string.circle_animation_clock_90
         ),
         NamedClockDisplayType(
+            id = "circle270",
             display = ClockDisplay.CircleAnimatedClock(270f to 270f),
-            name = "Circle animation clock 270°"
+            name = R.string.circle_animation_clock_270
         )
     )
 }

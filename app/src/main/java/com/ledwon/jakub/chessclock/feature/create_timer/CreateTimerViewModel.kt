@@ -8,7 +8,6 @@ import com.ledwon.jakub.chessclock.analytics.AnalyticsEvent
 import com.ledwon.jakub.chessclock.analytics.AnalyticsManager
 import com.ledwon.jakub.chessclock.data.model.*
 import com.ledwon.jakub.chessclock.data.repository.TimerRepository
-import com.ledwon.jakub.chessclock.util.TimerNameProvider
 import com.ledwon.jakub.chessclock.util.tryUpdate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -125,10 +124,6 @@ class CreateTimerViewModel(
     private fun buildTimerFromState(): Timer {
         val state = _state.value
         return Timer(
-            description = TimerNameProvider.createTimerName(
-                whiteClockTime = state.whiteClock,
-                blackClockTime = state.blackClock
-            ),
             whiteClockTime = state.whiteClock,
             blackClockTime = state.blackClock,
             isFavourite = false

@@ -22,6 +22,7 @@ import com.ledwon.jakub.chessclock.data.repository.AppDarkTheme
 import com.ledwon.jakub.chessclock.feature.common.exhaustive
 import com.ledwon.jakub.chessclock.navigation.NavigationActions
 import com.ledwon.jakub.chessclock.util.LocalIsDarkMode
+import com.ledwon.jakub.chessclock.util.rememberString
 
 @Composable
 fun SettingsScreen(navigationActions: NavigationActions, settingsViewModel: SettingsViewModel) {
@@ -54,7 +55,7 @@ fun SettingsScreen(navigationActions: NavigationActions, settingsViewModel: Sett
                 )
             }
             is SettingsViewModel.Command.OpenClockPreview -> {
-                navigationActions.openClockDisplayPreview(it.clockDisplayTypeName)
+                navigationActions.openClockDisplayPreview(it.clockDisplayTypeId)
             }
             is SettingsViewModel.Command.Noop -> {
 
@@ -65,18 +66,18 @@ fun SettingsScreen(navigationActions: NavigationActions, settingsViewModel: Sett
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Settings") },
+                title = { Text(text = rememberString(R.string.settings_title)) },
                 navigationIcon = {
                     val backIcon = painterResource(id = R.drawable.ic_arrow_back_24)
                     IconButton(onClick = settingsViewModel::onBackClick) {
-                        Icon(painter = backIcon, contentDescription = "navigate back")
+                        Icon(painter = backIcon, contentDescription = rememberString(R.string.navigate_back_content_description))
                     }
                 }
             )
         }
     ) {
         LazyColumn(modifier = Modifier.padding(16.dp)) {
-            item { SettingHeader(modifier = Modifier.padding(bottom = 8.dp), text = "Dark mode") }
+            item { SettingHeader(modifier = Modifier.padding(bottom = 8.dp), text = rememberString(R.string.dark_mode_option)) }
             item {
                 Row(
                     modifier = Modifier.fillMaxSize(),
@@ -84,18 +85,18 @@ fun SettingsScreen(navigationActions: NavigationActions, settingsViewModel: Sett
                 ) {
                     TextRadioButton(
                         modifier = Modifier.padding(8.dp),
-                        text = "Light",
+                        text = rememberString(R.string.light),
                         selected = appDarkTheme.value == AppDarkTheme.Light,
                         onClick = { settingsViewModel.updateAppDarkTheme(AppDarkTheme.Light) }
                     )
                     TextRadioButton(
                         modifier = Modifier.padding(8.dp),
-                        text = "Dark",
+                        text = rememberString(R.string.dark),
                         selected = appDarkTheme.value == AppDarkTheme.Dark,
                         onClick = { settingsViewModel.updateAppDarkTheme(AppDarkTheme.Dark) })
                     TextRadioButton(
                         modifier = Modifier.padding(8.dp),
-                        text = "System",
+                        text = rememberString(R.string.system),
                         selected = appDarkTheme.value == AppDarkTheme.SystemDefault,
                         onClick = { settingsViewModel.updateAppDarkTheme(AppDarkTheme.SystemDefault) })
                 }
@@ -103,7 +104,7 @@ fun SettingsScreen(navigationActions: NavigationActions, settingsViewModel: Sett
             item {
                 SettingHeader(
                     modifier = Modifier.padding(vertical = 8.dp),
-                    text = "Color theme"
+                    text = rememberString(R.string.color_theme_option)
                 )
             }
 
@@ -111,7 +112,9 @@ fun SettingsScreen(navigationActions: NavigationActions, settingsViewModel: Sett
             items(colorThemeRows) { row ->
                 Row(
                     horizontalArrangement = Arrangement.SpaceEvenly,
-                    modifier = Modifier.padding(vertical = 16.dp).fillMaxWidth()
+                    modifier = Modifier
+                        .padding(vertical = 16.dp)
+                        .fillMaxWidth()
                 ) {
                     row.forEach { theme ->
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -133,21 +136,23 @@ fun SettingsScreen(navigationActions: NavigationActions, settingsViewModel: Sett
             }
 
             item {
-                SettingHeader(text = "Clock display type")
+                SettingHeader(text = rememberString(R.string.clock_display_type_option))
             }
 
             items(settingsViewModel.clockTypes) { clockType ->
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.padding(vertical = 16.dp).fillMaxWidth()
+                    modifier = Modifier
+                        .padding(vertical = 16.dp)
+                        .fillMaxWidth()
                 ) {
                     TextButton(
                         onClick = { settingsViewModel.updateClockType(clockType) },
                     ) {
-                        Text(clockType.name)
+                        Text(LocalContext.current.getString(clockType.name))
                     }
                     Button(onClick = { settingsViewModel.onClockTypePreviewClick(clockType) }) {
-                        Text("Preview")
+                        Text(rememberString(R.string.preview))
                     }
                     RadioButton(
                         selected = clockType.display == selectedClockType.value,
@@ -159,7 +164,7 @@ fun SettingsScreen(navigationActions: NavigationActions, settingsViewModel: Sett
             item {
                 SettingHeader(
                     modifier = Modifier.padding(vertical = 8.dp),
-                    text = "Active player's pulsation enabled"
+                    text = rememberString(R.string.active_players_pulsation_enabled_option)
                 )
             }
             item {
@@ -168,7 +173,9 @@ fun SettingsScreen(navigationActions: NavigationActions, settingsViewModel: Sett
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Switch(
-                        modifier = Modifier.width(32.dp).height(32.dp),
+                        modifier = Modifier
+                            .width(32.dp)
+                            .height(32.dp),
                         checked = pulsationEnabled.value,
                         onCheckedChange = settingsViewModel::updatePulsationEnabled
                     )
@@ -178,12 +185,12 @@ fun SettingsScreen(navigationActions: NavigationActions, settingsViewModel: Sett
             item {
                 SettingHeader(
                     modifier = Modifier.padding(vertical = 8.dp),
-                    text = "Randomize white & black clock initial position"
+                    text = rememberString(R.string.randomize_initial_position_option)
                 )
             }
             item {
                 Text(
-                    text = "Note: you can always stop the animation by clicking on rotating dice",
+                    text = rememberString(R.string.stop_randomize_animation_hint),
                     fontSize = 13.sp,
                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
                 )
@@ -194,7 +201,9 @@ fun SettingsScreen(navigationActions: NavigationActions, settingsViewModel: Sett
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Switch(
-                        modifier = Modifier.width(32.dp).height(32.dp),
+                        modifier = Modifier
+                            .width(32.dp)
+                            .height(32.dp),
                         checked = randomizePosition.value,
                         onCheckedChange = settingsViewModel::updateRandomizePosition
                     )
@@ -202,7 +211,7 @@ fun SettingsScreen(navigationActions: NavigationActions, settingsViewModel: Sett
             }
             item {
                 SettingHeader(
-                    text = "Do you like the app?",
+                    text = rememberString(R.string.do_you_like_the_app),
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
             }
@@ -213,11 +222,11 @@ fun SettingsScreen(navigationActions: NavigationActions, settingsViewModel: Sett
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     TextButton(onClick = settingsViewModel::onRateAppClick) {
-                        Text("rate it", fontSize = 18.sp)
+                        Text(rememberString(R.string.rate_app), fontSize = 18.sp)
                     }
-                    Text("or", fontSize = 18.sp)
+                    Text(rememberString(R.string.or), fontSize = 18.sp)
                     TextButton(onClick = settingsViewModel::onBuyMeACoffeeClick) {
-                        Text("buy me a coffee", fontSize = 18.sp)
+                        Text(rememberString(R.string.buy_me_a_coffee), fontSize = 18.sp)
                     }
                 }
 
