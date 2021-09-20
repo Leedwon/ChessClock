@@ -42,9 +42,9 @@ sealed class AnalyticsEvent {
         override val params: Bundle = timer.toBundle().apply { putString(clockOpenedFromKey, "Create Timer") }
     }
 
-    data class RemoveClocks(val clockDescriptions: List<String>) : AnalyticsEvent() {
-        override val eventName: String = "RemoveClocks"
-        override val params: Bundle = bundleOf("clockNames" to clockDescriptions.joinToString())
+    data class RemoveClock(val clock: Timer) : AnalyticsEvent() {
+        override val eventName: String = "RemoveClock"
+        override val params: Bundle = clock.toBundle()
     }
 
     data class UpdateClockType(val clockType: ClockTypesRepository.NamedClockDisplayType) : AnalyticsEvent() {

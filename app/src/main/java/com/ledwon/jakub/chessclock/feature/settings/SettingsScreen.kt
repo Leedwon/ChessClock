@@ -77,7 +77,7 @@ fun SettingsScreen(navigationActions: NavigationActions, settingsViewModel: Sett
         }
     ) {
         LazyColumn(modifier = Modifier.padding(16.dp)) {
-            item { SettingHeader(modifier = Modifier.padding(bottom = 8.dp), text = "Dark mode") }
+            item { SettingHeader(modifier = Modifier.padding(bottom = 8.dp), text = rememberString(R.string.dark_mode_option)) }
             item {
                 Row(
                     modifier = Modifier.fillMaxSize(),

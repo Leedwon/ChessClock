@@ -45,6 +45,12 @@
     <string name="circle_animation_clock_90">Circle animation clock 90°</string>
     <string name="circle_animation_clock_270">Circle animation clock 270°</string>
 
+    <string name="clock_name_bullet">Bullet %1$s</string>
+    <string name="clock_name_blitz">Blitz %1$s</string>
+    <string name="clock_name_rapid">Rapid %1$s</string>
+    <string name="clock_name_classic">Classic %1$s</string>
+    <string name="clock_name_custom">Custom</string>
+
     <!-- content descriptions -->
     <string name="navigate_back_content_description">navigate back</string>
     <string name="settings_content_description">settings</string>
