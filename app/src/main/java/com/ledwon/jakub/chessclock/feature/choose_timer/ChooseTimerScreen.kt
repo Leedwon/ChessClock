@@ -175,7 +175,7 @@ fun TimeCard(
         Column(modifier = Modifier.padding(8.dp), horizontalAlignment = Alignment.Start) {
             Text(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
-                text = timer.obtainName().getAndRemember(),
+                text = timer.obtainName().get(),
                 color = MaterialTheme.colors.onSurface,
                 fontSize = 19.sp
             )
