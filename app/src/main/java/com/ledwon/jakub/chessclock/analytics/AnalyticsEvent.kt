@@ -22,6 +22,10 @@ sealed class AnalyticsEvent {
         override val eventName: String = "OpenCreateClock"
     }
 
+    object OpenStats : AnalyticsEvent() {
+        override val eventName: String = "OpenStats"
+    }
+
     data class OpenClockFromChooseTimer(val timer: Timer) : AnalyticsEvent() {
         override val eventName: String = "OpenClock"
         override val params: Bundle = timer.toBundle().apply { putString(clockOpenedFromKey, "Choose Timer") }

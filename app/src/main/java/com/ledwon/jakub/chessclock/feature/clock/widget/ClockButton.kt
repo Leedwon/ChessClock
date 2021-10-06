@@ -6,7 +6,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.ledwon.jakub.chessclock.feature.clock.PlayerDisplay
+import com.ledwon.jakub.chessclock.feature.clock.model.PlayerDisplay
 
 @Composable
 fun ClockButton(

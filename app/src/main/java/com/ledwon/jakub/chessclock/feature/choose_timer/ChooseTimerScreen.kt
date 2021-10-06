@@ -25,7 +25,7 @@ import com.ledwon.jakub.chessclock.data.model.Timer
 import com.ledwon.jakub.chessclock.navigation.NavigationActions
 import com.ledwon.jakub.chessclock.navigation.OpenClockPayload
 import com.ledwon.jakub.chessclock.ui.widgets.OutlinePrimaryButton
-import com.ledwon.jakub.chessclock.util.TimerNameProvider.obtainName
+import com.ledwon.jakub.chessclock.util.TimerNameProvider.obtainDeferrableName
 import com.ledwon.jakub.chessclock.util.rememberString
 
 @ExperimentalFoundationApi
@@ -175,7 +175,7 @@ fun TimeCard(
         Column(modifier = Modifier.padding(8.dp), horizontalAlignment = Alignment.Start) {
             Text(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
-                text = timer.obtainName().get(),
+                text = timer.obtainDeferrableName().getString(),
                 color = MaterialTheme.colors.onSurface,
                 fontSize = 19.sp
             )

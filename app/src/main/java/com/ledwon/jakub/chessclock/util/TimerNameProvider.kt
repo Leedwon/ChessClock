@@ -6,7 +6,7 @@ import com.ledwon.jakub.chessclock.data.model.Timer
 
 object TimerNameProvider {
 
-    fun Timer.obtainName(): DeferrableString = createTimerName(
+    fun Timer.obtainDeferrableName(): DeferrableString = createTimerName(
         whiteClockTime = this.whiteClockTime,
         blackClockTime = this.blackClockTime
     )
