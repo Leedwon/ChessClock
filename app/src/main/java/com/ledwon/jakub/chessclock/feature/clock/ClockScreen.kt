@@ -8,20 +8,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.ledwon.jakub.chessclock.R
+import com.ledwon.jakub.chessclock.feature.clock.model.GameState
+import com.ledwon.jakub.chessclock.feature.clock.model.PlayerDisplay
 import com.ledwon.jakub.chessclock.feature.clock.widget.*
 import com.ledwon.jakub.chessclock.feature.common.ClockDisplay
+import com.ledwon.jakub.chessclock.navigation.NavigationActions
 import com.ledwon.jakub.chessclock.util.LocalWindowProvider
 import com.ledwon.jakub.chessclock.util.rememberString
 
 @Composable
-fun ClockScreen(clockViewModel: ClockViewModel) {
+fun ClockScreen(actions: NavigationActions, clockViewModel: ClockViewModel) {
     val centerButtonSize = remember { 96.dp }
 
-    val state: State by clockViewModel.state.observeAsState(
-        State(
+    val state: ClockViewModel.State by clockViewModel.state.observeAsState(
+        ClockViewModel.State(
             playersDisplay = PlayerDisplay.White(
                 text = "",
                 percentageLeft = 1.0f,
@@ -43,6 +47,14 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
             window.clearFlags((WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON))
         }
     })
+
+    clockViewModel.command.observe(LocalLifecycleOwner.current) { command ->
+        command?.let {
+            when (it) {
+                is ClockViewModel.Command.NavigateToStats -> actions.openStats(it.moves)
+            }
+        }
+    }
 
     val clockType = clockViewModel.clockDisplay.collectAsState()
     val pulsationEnabled = clockViewModel.pulsationEnabled.collectAsState()
@@ -117,7 +129,6 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
                     ClockCenterButton(
                         modifier = Modifier
                             .size(centerButtonSize)
-                            .weight(1f, fill = false)
                             .rotate(centerButtonRotations),
                         onClick = { clockViewModel.startTimer() },
                         icon = painterResource(id = R.drawable.ic_play_48),
@@ -127,7 +138,15 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
                     ClockCenterButton(
                         modifier = Modifier
                             .size(centerButtonSize)
-                            .weight(1f, fill = false)
+                            .rotate(centerButtonRotations),
+                        onClick = { clockViewModel.showStats() },
+                        icon = painterResource(id = R.drawable.ic_stats_32),
+                        iconTint = Color.Green,
+                        iconContentDescription = ""
+                    )
+                    ClockCenterButton(
+                        modifier = Modifier
+                            .size(centerButtonSize)
                             .rotate(centerButtonRotations),
                         onClick = { clockViewModel.restartGame() },
                         icon = painterResource(id = R.drawable.ic_replay_48),
@@ -137,15 +156,29 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
                 }
             }
             GameState.Over -> {
-                ClockCenterButton(
-                    modifier = Modifier
-                        .size(centerButtonSize)
-                        .rotate(centerButtonRotations),
-                    onClick = { clockViewModel.restartGame() },
-                    icon = painterResource(id = R.drawable.ic_replay_48),
-                    iconTint = Color.Green,
-                    iconContentDescription = rememberString(resId = R.string.restart_clock_content_description)
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    ClockCenterButton(
+                        modifier = Modifier
+                            .size(centerButtonSize)
+                            .rotate(centerButtonRotations),
+                        onClick = { clockViewModel.showStats() },
+                        icon = painterResource(id = R.drawable.ic_stats_32),
+                        iconTint = Color.Green,
+                        iconContentDescription = ""
+                    )
+                    ClockCenterButton(
+                        modifier = Modifier
+                            .size(centerButtonSize)
+                            .rotate(centerButtonRotations),
+                        onClick = { clockViewModel.restartGame() },
+                        icon = painterResource(id = R.drawable.ic_replay_48),
+                        iconTint = Color.Green,
+                        iconContentDescription = rememberString(resId = R.string.restart_clock_content_description)
+                    )
+                }
             }
         }
     }

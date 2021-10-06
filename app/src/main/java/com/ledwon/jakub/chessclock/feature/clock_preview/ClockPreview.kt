@@ -8,7 +8,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.lifecycleScope
 import com.ledwon.jakub.chessclock.R
-import com.ledwon.jakub.chessclock.feature.clock.PlayerDisplay
+import com.ledwon.jakub.chessclock.feature.clock.model.PlayerDisplay
 import com.ledwon.jakub.chessclock.feature.clock.widget.BothPlayersTimeClock
 import com.ledwon.jakub.chessclock.feature.clock.widget.CircleAnimatedClock
 import com.ledwon.jakub.chessclock.feature.clock.widget.OwnPlayerTimeClock

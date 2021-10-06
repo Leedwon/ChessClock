@@ -11,7 +11,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.ledwon.jakub.chessclock.feature.clock.PlayerDisplay
+import com.ledwon.jakub.chessclock.feature.clock.model.PlayerDisplay
 
 @Composable
 fun BothPlayersTimeClock(
