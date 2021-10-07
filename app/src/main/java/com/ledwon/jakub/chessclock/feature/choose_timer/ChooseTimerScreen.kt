@@ -84,7 +84,7 @@ fun ChooseTimerScreen(navigationActions: NavigationActions, chooseTimerViewModel
                                 .fillMaxWidth(),
                             onClick = chooseTimerViewModel::onCreateTimerClicked
                         ) {
-                            Text(com.ledwon.jakub.chessclock.util.getString(R.string.create_new_clock), fontSize = 21.sp)
+                            Text(getString(R.string.create_new_clock), fontSize = 21.sp)
                         }
                     }
 
