@@ -12,21 +12,17 @@ val LocalNavController = compositionLocalOf<NavController>(defaultFactory = { er
 val LocalIsDarkMode = compositionLocalOf<Boolean>(defaultFactory = { false })
 val LocalWindowProvider = compositionLocalOf<Window>(defaultFactory = { error("no window available") })
 
+
+@Composable
+fun getString(@StringRes resId: Int, formatArgs: List<Any> = emptyList()): String {
+    return LocalContext.current.getString(resId, *formatArgs.toTypedArray())
+}
+
 class DeferrableString(
     @StringRes private val resId: Int,
     private val formatArgs: List<Any> = emptyList()
 ) {
     @Composable
-    fun get(): String = LocalContext.current.getString(resId, *formatArgs.toTypedArray())
-
-    @Composable
-    fun getAndRemember(): String = rememberString(resId, formatArgs)
+    fun getString(): String = getString(resId = resId, formatArgs)
 }
 
-@Composable
-fun rememberString(@StringRes resId: Int, formatArgs: List<Any> = emptyList()): String {
-    val context = LocalContext.current
-    return remember {
-        context.getString(resId, *formatArgs.toTypedArray())
-    }
-}

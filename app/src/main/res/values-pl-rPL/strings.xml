@@ -36,13 +36,13 @@
     <string name="minutes">Minuty</string>
     <string name="seconds">Sekundy</string>
     <string name="increment">Inkrement (s)</string>
-    <string name="classic_clock">Klasyczny zegar</string>
-    <string name="classic_clock_90">Klasyczny zegar 90°</string>
-    <string name="classic_clock_270">Klasyczny zegar 270°</string>
-    <string name="both_players_time_clock">Zegar z czasami obydwu graczy</string>
-    <string name="circle_animation_clock">Okrągły zegar z animacją</string>
-    <string name="circle_animation_clock_90">Okrągły zegar z animacją 90°</string>
-    <string name="circle_animation_clock_270">Okrągły zegar z animacją 270°</string>
+    <string name="classic_clock">Klasyczny</string>
+    <string name="classic_clock_90">Klasyczny 90°</string>
+    <string name="classic_clock_270">Klasyczny 270°</string>
+    <string name="both_players_time_clock">Z czasami obydwu graczy</string>
+    <string name="circle_animation_clock">Okrągły z animacją</string>
+    <string name="circle_animation_clock_90">Okrągły z animacją 90°</string>
+    <string name="circle_animation_clock_270">Okrągły z animacją 270°</string>
     <string name="navigate_back_content_description">wstecz</string>
     <string name="settings_content_description">ustawienia</string>
     <string name="clock_content_description">zegar</string>
@@ -57,4 +57,16 @@
     <string name="clock_name_rapid">Szybki %1$s</string>
     <string name="clock_name_classic">Klasyczny %1$s</string>
     <string name="clock_name_custom">Niestandardowy</string>
+    <string name="stats">Statystyki gry</string>
+    <string name="slowest_move">Najwolniejszy</string>
+    <string name="average_move">Średni</string>
+    <string name="fastest_move">Najszybszy</string>
+    <string name="moves_count">Liczba ruchów: %1$d</string>
+    <string name="stats_white_move">Białe:\n%1$s</string>
+    <string name="stats_black_move">Czarne:\n%1$s</string>
+    <string name="stats_general_move">Ogółem:\n%1$s</string>
+    <string name="stats_empty">Statystyki pojawią się tutaj, gdy wykonasz przynajmniej jeden ruch.</string>
+    <string name="moves_list">Lista ruchów:</string>
+    <string name="stats_no_moves_yet">Brak ruchów</string>
+    <string name="stats_content_description">statystyki gry</string>
 </resources>

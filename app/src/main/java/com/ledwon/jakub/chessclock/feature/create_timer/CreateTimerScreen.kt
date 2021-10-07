@@ -16,7 +16,7 @@ import com.ledwon.jakub.chessclock.R
 import com.ledwon.jakub.chessclock.navigation.NavigationActions
 import com.ledwon.jakub.chessclock.navigation.OpenClockPayload
 import com.ledwon.jakub.chessclock.ui.widgets.OutlinePrimaryButton
-import com.ledwon.jakub.chessclock.util.rememberString
+import com.ledwon.jakub.chessclock.util.getString
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -93,11 +93,11 @@ fun CreateTimerScreen(navigationActions: NavigationActions, createTimerViewModel
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = rememberString(R.string.create_clock_title)) },
+                title = { Text(text = getString(R.string.create_clock_title)) },
                 navigationIcon = {
                     val backIcon = painterResource(id = R.drawable.ic_arrow_back_24)
                     IconButton(onClick = createTimerViewModel::onBackClick) {
-                        Icon(painter = backIcon, contentDescription = rememberString(R.string.navigate_back_content_description))
+                        Icon(painter = backIcon, contentDescription = getString(R.string.navigate_back_content_description))
                     }
                 }
             )
@@ -119,7 +119,7 @@ fun CreateTimerScreen(navigationActions: NavigationActions, createTimerViewModel
                 ) {
                     Text(
                         modifier = Modifier.padding(horizontal = 8.dp),
-                        text = rememberString(R.string.create_timer_same_clock)
+                        text = getString(R.string.create_timer_same_clock)
                     )
                     Switch(
                         modifier = Modifier
@@ -132,7 +132,7 @@ fun CreateTimerScreen(navigationActions: NavigationActions, createTimerViewModel
             }
             item {
                 Text(
-                    text = if (timersMerged.value) rememberString(R.string.create_timer_clock) else rememberString(R.string.create_timer_white_clock),
+                    text = if (timersMerged.value) getString(R.string.create_timer_clock) else getString(R.string.create_timer_white_clock),
                     fontSize = 24.sp
                 )
             }
@@ -151,7 +151,7 @@ fun CreateTimerScreen(navigationActions: NavigationActions, createTimerViewModel
                 )
             }
             if (!timersMerged.value) {
-                item { Text(text = rememberString(R.string.create_timer_black_clock), fontSize = 24.sp) }
+                item { Text(text = getString(R.string.create_timer_black_clock), fontSize = 24.sp) }
                 item {
                     ClockPicker(
                         clockPickerData = ClockPickerData(
@@ -176,15 +176,15 @@ fun CreateTimerScreen(navigationActions: NavigationActions, createTimerViewModel
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     OutlinePrimaryButton(onClick = createTimerViewModel::onStartGameClick) {
-                        Text(rememberString(R.string.start), fontSize = 19.sp)
+                        Text(getString(R.string.start), fontSize = 19.sp)
                     }
                     OutlinePrimaryButton(
                         onClick = createTimerViewModel::onStartGameAndSaveTimerClick
                     ) {
-                        Text(rememberString(R.string.start_and_save), fontSize = 19.sp)
+                        Text(getString(R.string.start_and_save), fontSize = 19.sp)
                     }
                     OutlinePrimaryButton(onClick = createTimerViewModel::onSaveTimerClick) {
-                        Text(rememberString(R.string.save), fontSize = 19.sp)
+                        Text(getString(R.string.save), fontSize = 19.sp)
                     }
                 }
             }
@@ -211,22 +211,22 @@ fun ClockPicker(
     Row {
         TimerPickerWithDescription(
             numberPickerState = clockPickerData.hoursPickerState,
-            text = rememberString(R.string.hours),
+            text = getString(R.string.hours),
             onValueChangedListener = onHoursChanged
         )
         TimerPickerWithDescription(
             numberPickerState = clockPickerData.minutesPickerState,
-            text = rememberString(R.string.minutes),
+            text = getString(R.string.minutes),
             onValueChangedListener = onMinutesChanged
         )
         TimerPickerWithDescription(
             numberPickerState = clockPickerData.secondsPickerState,
-            text = rememberString(R.string.seconds),
+            text = getString(R.string.seconds),
             onValueChangedListener = onSecondsChanged
         )
         TimerPickerWithDescription(
             numberPickerState = clockPickerData.incrementPickerState,
-            text = rememberString(R.string.increment),
+            text = getString(R.string.increment),
             onValueChangedListener = onIncrementChanged
         )
     }

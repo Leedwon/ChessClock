@@ -53,6 +53,9 @@ val accentForRed = Color(0xFF76e0de)
 val yellow700 = Color(0xFFFBC02D)
 val yellow500 = Color(0xFFFFEB3B)
 
+val lightGray = Color(0xffd3d3d3)
+val darkGray = Color(0xff8a8a8a)
+
 class SimpleColorTheme(
     val primary: Color,
     val primaryVariant: Color,
@@ -138,7 +141,7 @@ sealed class ColorTheme(val colorTheme: DarkModeAwareSimpleColorTheme) {
         )
     )
 
-    object DarkBlue: ColorTheme(
+    object DarkBlue : ColorTheme(
         DarkModeAwareSimpleColorTheme(
             light = SimpleColorTheme(
                 primary = darkBlue500,

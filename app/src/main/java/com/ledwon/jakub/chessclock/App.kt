@@ -10,6 +10,7 @@ import com.ledwon.jakub.chessclock.di.clock_preview.clockPreviewModule
 import com.ledwon.jakub.chessclock.di.create_timer.createTimerModule
 import com.ledwon.jakub.chessclock.di.main.mainModule
 import com.ledwon.jakub.chessclock.di.settings.settingsModule
+import com.ledwon.jakub.chessclock.feature.stats.statsModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import timber.log.Timber
@@ -29,7 +30,8 @@ class App : Application() {
                 mainModule,
                 settingsModule,
                 clockPreviewModule,
-                analyticsModule
+                analyticsModule,
+                statsModule
             )
         }
 

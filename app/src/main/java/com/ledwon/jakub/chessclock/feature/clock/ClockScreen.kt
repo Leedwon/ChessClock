@@ -8,20 +8,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.ledwon.jakub.chessclock.R
+import com.ledwon.jakub.chessclock.feature.clock.model.GameState
+import com.ledwon.jakub.chessclock.feature.clock.model.PlayerDisplay
 import com.ledwon.jakub.chessclock.feature.clock.widget.*
 import com.ledwon.jakub.chessclock.feature.common.ClockDisplay
+import com.ledwon.jakub.chessclock.navigation.NavigationActions
 import com.ledwon.jakub.chessclock.util.LocalWindowProvider
-import com.ledwon.jakub.chessclock.util.rememberString
+import com.ledwon.jakub.chessclock.util.getString
 
 @Composable
-fun ClockScreen(clockViewModel: ClockViewModel) {
+fun ClockScreen(actions: NavigationActions, clockViewModel: ClockViewModel) {
     val centerButtonSize = remember { 96.dp }
 
-    val state: State by clockViewModel.state.observeAsState(
-        State(
+    val state: ClockViewModel.State by clockViewModel.state.observeAsState(
+        ClockViewModel.State(
             playersDisplay = PlayerDisplay.White(
                 text = "",
                 percentageLeft = 1.0f,
@@ -43,6 +47,14 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
             window.clearFlags((WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON))
         }
     })
+
+    clockViewModel.command.observe(LocalLifecycleOwner.current) {
+        it?.let { command ->
+            when (command) {
+                is ClockViewModel.Command.NavigateToStats -> actions.openStats(command.moves)
+            }
+        }
+    }
 
     val clockType = clockViewModel.clockDisplay.collectAsState()
     val pulsationEnabled = clockViewModel.pulsationEnabled.collectAsState()
@@ -95,7 +107,7 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
                     onClick = { clockViewModel.swapSides() },
                     icon = painterResource(id = R.drawable.ic_swap_48),
                     iconTint = Color.Green,
-                    iconContentDescription = rememberString(resId = R.string.swap_sides_content_description)
+                    iconContentDescription = getString(resId = R.string.swap_sides_content_description)
                 )
             }
             GameState.Running -> {
@@ -106,7 +118,7 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
                     onClick = { clockViewModel.stopTimer() },
                     icon = painterResource(id = R.drawable.ic_pause_48),
                     iconTint = Color.Red,
-                    iconContentDescription = rememberString(resId = R.string.pause_clock_content_description)
+                    iconContentDescription = getString(resId = R.string.pause_clock_content_description)
                 )
             }
             GameState.Paused -> {
@@ -117,35 +129,56 @@ fun ClockScreen(clockViewModel: ClockViewModel) {
                     ClockCenterButton(
                         modifier = Modifier
                             .size(centerButtonSize)
-                            .weight(1f, fill = false)
                             .rotate(centerButtonRotations),
-                        onClick = { clockViewModel.startTimer() },
+                        onClick = { clockViewModel.startGameTimer() },
                         icon = painterResource(id = R.drawable.ic_play_48),
                         iconTint = Color.Green,
-                        iconContentDescription = rememberString(resId = R.string.resume_clock_content_description)
+                        iconContentDescription = getString(resId = R.string.resume_clock_content_description)
                     )
                     ClockCenterButton(
                         modifier = Modifier
                             .size(centerButtonSize)
-                            .weight(1f, fill = false)
+                            .rotate(centerButtonRotations),
+                        onClick = { clockViewModel.showStats() },
+                        icon = painterResource(id = R.drawable.ic_stats_32),
+                        iconTint = Color.Green,
+                        iconContentDescription = getString(resId = R.string.stats_content_description)
+                    )
+                    ClockCenterButton(
+                        modifier = Modifier
+                            .size(centerButtonSize)
                             .rotate(centerButtonRotations),
                         onClick = { clockViewModel.restartGame() },
                         icon = painterResource(id = R.drawable.ic_replay_48),
                         iconTint = Color.Green,
-                        iconContentDescription = rememberString(resId = R.string.restart_clock_content_description)
+                        iconContentDescription = getString(resId = R.string.restart_clock_content_description)
                     )
                 }
             }
             GameState.Over -> {
-                ClockCenterButton(
-                    modifier = Modifier
-                        .size(centerButtonSize)
-                        .rotate(centerButtonRotations),
-                    onClick = { clockViewModel.restartGame() },
-                    icon = painterResource(id = R.drawable.ic_replay_48),
-                    iconTint = Color.Green,
-                    iconContentDescription = rememberString(resId = R.string.restart_clock_content_description)
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    ClockCenterButton(
+                        modifier = Modifier
+                            .size(centerButtonSize)
+                            .rotate(centerButtonRotations),
+                        onClick = { clockViewModel.showStats() },
+                        icon = painterResource(id = R.drawable.ic_stats_32),
+                        iconTint = Color.Green,
+                        iconContentDescription = getString(resId = R.string.stats_content_description)
+                    )
+                    ClockCenterButton(
+                        modifier = Modifier
+                            .size(centerButtonSize)
+                            .rotate(centerButtonRotations),
+                        onClick = { clockViewModel.restartGame() },
+                        icon = painterResource(id = R.drawable.ic_replay_48),
+                        iconTint = Color.Green,
+                        iconContentDescription = getString(resId = R.string.restart_clock_content_description)
+                    )
+                }
             }
         }
     }

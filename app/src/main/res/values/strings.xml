@@ -36,6 +36,17 @@
     <string name="minutes">Minutes</string>
     <string name="seconds">Seconds</string>
     <string name="increment">Increment (s)</string>
+    <string name="stats">Game statistics</string>
+    <string name="slowest_move">Slowest move</string>
+    <string name="average_move">Average move</string>
+    <string name="fastest_move">Fastest move</string>
+    <string name="moves_count">Moves count: %1$d</string>
+    <string name="stats_white_move">White\'s:\n%1$s</string>
+    <string name="stats_black_move">Black\'s:\n%1$s</string>
+    <string name="stats_general_move">Overall:\n%1$s</string>
+    <string name="stats_no_moves_yet">No moves yet</string>
+    <string name="stats_empty">Game statistics will appear here when you make at least one move.</string>
+    <string name="moves_list">"Moves list: "</string>
 
     <string name="classic_clock">Classic clock</string>
     <string name="classic_clock_90">Classic clock 90°</string>
@@ -61,4 +72,5 @@
     <string name="pause_clock_content_description">pause clock</string>
     <string name="resume_clock_content_description">resume clock</string>
     <string name="restart_clock_content_description">restart clock</string>
+    <string name="stats_content_description">game statistics</string>
 </resources>

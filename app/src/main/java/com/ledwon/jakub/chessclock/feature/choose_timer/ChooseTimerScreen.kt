@@ -25,8 +25,8 @@ import com.ledwon.jakub.chessclock.data.model.Timer
 import com.ledwon.jakub.chessclock.navigation.NavigationActions
 import com.ledwon.jakub.chessclock.navigation.OpenClockPayload
 import com.ledwon.jakub.chessclock.ui.widgets.OutlinePrimaryButton
-import com.ledwon.jakub.chessclock.util.TimerNameProvider.obtainName
-import com.ledwon.jakub.chessclock.util.rememberString
+import com.ledwon.jakub.chessclock.util.TimerNameProvider.obtainDeferrableName
+import com.ledwon.jakub.chessclock.util.getString
 
 @ExperimentalFoundationApi
 @Composable
@@ -84,7 +84,7 @@ fun ChooseTimerScreen(navigationActions: NavigationActions, chooseTimerViewModel
                                 .fillMaxWidth(),
                             onClick = chooseTimerViewModel::onCreateTimerClicked
                         ) {
-                            Text(rememberString(R.string.create_new_clock), fontSize = 21.sp)
+                            Text(getString(R.string.create_new_clock), fontSize = 21.sp)
                         }
                     }
 
@@ -135,7 +135,7 @@ fun ChooseTimerScreen(navigationActions: NavigationActions, chooseTimerViewModel
                 ) {
                     Text(
                         modifier = Modifier.padding(vertical = 8.dp),
-                        text = rememberString(R.string.delete_selected_timers),
+                        text = getString(R.string.delete_selected_timers),
                         fontSize = 18.sp
                     )
                 }
@@ -150,11 +150,11 @@ fun ChooseTimerTopBar(
     onSettingsIconClick: () -> Unit
 ) {
     TopAppBar(
-        title = { Text(text = rememberString(resId = R.string.choose_timer_title)) },
+        title = { Text(text = getString(resId = R.string.choose_timer_title)) },
         actions = {
             val icon = painterResource(id = R.drawable.ic_settings_24)
             IconButton(onClick = onSettingsIconClick) {
-                Icon(painter = icon, contentDescription = rememberString(resId = R.string.settings_content_description))
+                Icon(painter = icon, contentDescription = getString(resId = R.string.settings_content_description))
             }
         }
     )
@@ -175,7 +175,7 @@ fun TimeCard(
         Column(modifier = Modifier.padding(8.dp), horizontalAlignment = Alignment.Start) {
             Text(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
-                text = timer.obtainName().get(),
+                text = timer.obtainDeferrableName().getString(),
                 color = MaterialTheme.colors.onSurface,
                 fontSize = 19.sp
             )
@@ -198,7 +198,7 @@ fun TimeCard(
                     onClick = { onStarClicked(timer) }) {
                     Icon(
                         painter = if (timer.isFavourite) star else starOutline,
-                        contentDescription = rememberString(resId = R.string.favourite_clock_content_description),
+                        contentDescription = getString(resId = R.string.favourite_clock_content_description),
                         tint = Color.Yellow
                     )
                 }
@@ -215,7 +215,7 @@ fun ClockIconsColumn(clockTime: ClockTime, modifier: Modifier = Modifier, isWhit
             Image(
                 modifier = Modifier.padding(end = 8.dp),
                 painter = clockImage,
-                contentDescription = rememberString(resId = R.string.clock_content_description),
+                contentDescription = getString(resId = R.string.clock_content_description),
                 colorFilter = ColorFilter.tint(if (isWhite) Color.White else Color.Black)
             )
             Text(
@@ -233,7 +233,7 @@ fun ClockIconsColumn(clockTime: ClockTime, modifier: Modifier = Modifier, isWhit
                 Image(
                     modifier = Modifier.padding(end = 8.dp),
                     painter = incrementImage,
-                    contentDescription = rememberString(resId = R.string.increment_content_description),
+                    contentDescription = getString(resId = R.string.increment_content_description),
                     colorFilter = ColorFilter.tint(if (isWhite) Color.White else Color.Black)
                 )
                 Text(
