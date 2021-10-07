@@ -68,4 +68,5 @@
     <string name="stats_empty">Statystyki pojawią się tutaj, gdy wykonasz przynajmniej jeden ruch.</string>
     <string name="moves_list">Lista ruchów:</string>
     <string name="stats_no_moves_yet">Brak ruchów</string>
+    <string name="stats_content_description">statystyki gry</string>
 </resources>

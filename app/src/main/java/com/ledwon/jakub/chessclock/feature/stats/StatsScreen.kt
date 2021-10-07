@@ -16,7 +16,7 @@ import com.ledwon.jakub.chessclock.feature.stats.widget.MovesStats
 import com.ledwon.jakub.chessclock.navigation.NavigationActions
 import com.ledwon.jakub.chessclock.ui.darkGray
 import com.ledwon.jakub.chessclock.ui.lightGray
-import com.ledwon.jakub.chessclock.util.rememberString
+import com.ledwon.jakub.chessclock.util.getString
 
 @Composable
 fun StatsScreen(actions: NavigationActions, viewModel: StatsViewModel) {
@@ -26,11 +26,11 @@ fun StatsScreen(actions: NavigationActions, viewModel: StatsViewModel) {
         backgroundColor = darkGray,
         topBar = {
             TopAppBar(
-                title = { Text(text = rememberString(R.string.stats)) },
+                title = { Text(text = getString(R.string.stats)) },
                 navigationIcon = {
                     val backIcon = painterResource(id = R.drawable.ic_arrow_back_24)
                     IconButton(onClick = actions.navigateBack) {
-                        Icon(painter = backIcon, contentDescription = rememberString(R.string.navigate_back_content_description))
+                        Icon(painter = backIcon, contentDescription = getString(R.string.navigate_back_content_description))
                     }
                 }
             )
@@ -71,7 +71,7 @@ fun Stats(
         StatsDivider()
         Text(
             modifier = Modifier.padding(8.dp),
-            text = rememberString(resId = R.string.moves_list), fontSize = 21 .sp
+            text = getString(resId = R.string.moves_list), fontSize = 21.sp
         )
         StatsDivider()
         MoveBars(
@@ -92,7 +92,7 @@ fun EmptyStats() {
     ) {
         Text(
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp),
-            text = rememberString(resId = R.string.stats_empty), fontSize = 21.sp
+            text = getString(resId = R.string.stats_empty), fontSize = 21.sp
         )
     }
 }

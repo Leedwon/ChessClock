@@ -18,7 +18,6 @@ import com.ledwon.jakub.chessclock.R
 import com.ledwon.jakub.chessclock.feature.stats.data.Move
 import com.ledwon.jakub.chessclock.feature.stats.data.Moves
 import com.ledwon.jakub.chessclock.util.getString
-import com.ledwon.jakub.chessclock.util.rememberString
 
 @Composable
 fun MovesStats(
@@ -28,9 +27,9 @@ fun MovesStats(
     fastestMoves: Moves,
     movesCount: Int
 ) {
-    val slowestMoveText = rememberString(resId = R.string.slowest_move)
-    val averageMoveText = rememberString(resId = R.string.average_move)
-    val fastestMoveText = rememberString(resId = R.string.fastest_move)
+    val slowestMoveText = getString(resId = R.string.slowest_move)
+    val averageMoveText = getString(resId = R.string.average_move)
+    val fastestMoveText = getString(resId = R.string.fastest_move)
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally

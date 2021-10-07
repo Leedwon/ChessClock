@@ -11,10 +11,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.ledwon.jakub.chessclock.R
 import com.ledwon.jakub.chessclock.feature.stats.data.Move
 import com.ledwon.jakub.chessclock.feature.stats.data.PlayerColor
-import com.ledwon.jakub.chessclock.util.rememberString
 
 @Composable
 fun MoveBar(widthFraction: Float, move: Move) {

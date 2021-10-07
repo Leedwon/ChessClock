@@ -18,7 +18,7 @@ import com.ledwon.jakub.chessclock.feature.clock.widget.*
 import com.ledwon.jakub.chessclock.feature.common.ClockDisplay
 import com.ledwon.jakub.chessclock.navigation.NavigationActions
 import com.ledwon.jakub.chessclock.util.LocalWindowProvider
-import com.ledwon.jakub.chessclock.util.rememberString
+import com.ledwon.jakub.chessclock.util.getString
 
 @Composable
 fun ClockScreen(actions: NavigationActions, clockViewModel: ClockViewModel) {
@@ -48,10 +48,10 @@ fun ClockScreen(actions: NavigationActions, clockViewModel: ClockViewModel) {
         }
     })
 
-    clockViewModel.command.observe(LocalLifecycleOwner.current) { command ->
-        command?.let {
-            when (it) {
-                is ClockViewModel.Command.NavigateToStats -> actions.openStats(it.moves)
+    clockViewModel.command.observe(LocalLifecycleOwner.current) {
+        it?.let { command ->
+            when (command) {
+                is ClockViewModel.Command.NavigateToStats -> actions.openStats(command.moves)
             }
         }
     }
@@ -107,7 +107,7 @@ fun ClockScreen(actions: NavigationActions, clockViewModel: ClockViewModel) {
                     onClick = { clockViewModel.swapSides() },
                     icon = painterResource(id = R.drawable.ic_swap_48),
                     iconTint = Color.Green,
-                    iconContentDescription = rememberString(resId = R.string.swap_sides_content_description)
+                    iconContentDescription = getString(resId = R.string.swap_sides_content_description)
                 )
             }
             GameState.Running -> {
@@ -118,7 +118,7 @@ fun ClockScreen(actions: NavigationActions, clockViewModel: ClockViewModel) {
                     onClick = { clockViewModel.stopTimer() },
                     icon = painterResource(id = R.drawable.ic_pause_48),
                     iconTint = Color.Red,
-                    iconContentDescription = rememberString(resId = R.string.pause_clock_content_description)
+                    iconContentDescription = getString(resId = R.string.pause_clock_content_description)
                 )
             }
             GameState.Paused -> {
@@ -130,10 +130,10 @@ fun ClockScreen(actions: NavigationActions, clockViewModel: ClockViewModel) {
                         modifier = Modifier
                             .size(centerButtonSize)
                             .rotate(centerButtonRotations),
-                        onClick = { clockViewModel.startTimer() },
+                        onClick = { clockViewModel.startGameTimer() },
                         icon = painterResource(id = R.drawable.ic_play_48),
                         iconTint = Color.Green,
-                        iconContentDescription = rememberString(resId = R.string.resume_clock_content_description)
+                        iconContentDescription = getString(resId = R.string.resume_clock_content_description)
                     )
                     ClockCenterButton(
                         modifier = Modifier
@@ -142,7 +142,7 @@ fun ClockScreen(actions: NavigationActions, clockViewModel: ClockViewModel) {
                         onClick = { clockViewModel.showStats() },
                         icon = painterResource(id = R.drawable.ic_stats_32),
                         iconTint = Color.Green,
-                        iconContentDescription = ""
+                        iconContentDescription = getString(resId = R.string.stats_content_description)
                     )
                     ClockCenterButton(
                         modifier = Modifier
@@ -151,7 +151,7 @@ fun ClockScreen(actions: NavigationActions, clockViewModel: ClockViewModel) {
                         onClick = { clockViewModel.restartGame() },
                         icon = painterResource(id = R.drawable.ic_replay_48),
                         iconTint = Color.Green,
-                        iconContentDescription = rememberString(resId = R.string.restart_clock_content_description)
+                        iconContentDescription = getString(resId = R.string.restart_clock_content_description)
                     )
                 }
             }
@@ -167,7 +167,7 @@ fun ClockScreen(actions: NavigationActions, clockViewModel: ClockViewModel) {
                         onClick = { clockViewModel.showStats() },
                         icon = painterResource(id = R.drawable.ic_stats_32),
                         iconTint = Color.Green,
-                        iconContentDescription = ""
+                        iconContentDescription = getString(resId = R.string.stats_content_description)
                     )
                     ClockCenterButton(
                         modifier = Modifier
@@ -176,7 +176,7 @@ fun ClockScreen(actions: NavigationActions, clockViewModel: ClockViewModel) {
                         onClick = { clockViewModel.restartGame() },
                         icon = painterResource(id = R.drawable.ic_replay_48),
                         iconTint = Color.Green,
-                        iconContentDescription = rememberString(resId = R.string.restart_clock_content_description)
+                        iconContentDescription = getString(resId = R.string.restart_clock_content_description)
                     )
                 }
             }

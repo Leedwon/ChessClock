@@ -18,20 +18,11 @@ fun getString(@StringRes resId: Int, formatArgs: List<Any> = emptyList()): Strin
     return LocalContext.current.getString(resId, *formatArgs.toTypedArray())
 }
 
-@Composable
-fun rememberString(@StringRes resId: Int, formatArgs: List<Any> = emptyList()): String {
-    val value = getString(resId = resId, formatArgs = formatArgs)
-    return remember { value }
-}
-
 class DeferrableString(
     @StringRes private val resId: Int,
     private val formatArgs: List<Any> = emptyList()
 ) {
     @Composable
     fun getString(): String = getString(resId = resId, formatArgs)
-
-    @Composable
-    fun getAndRemember(): String = rememberString(resId, formatArgs)
 }
 
