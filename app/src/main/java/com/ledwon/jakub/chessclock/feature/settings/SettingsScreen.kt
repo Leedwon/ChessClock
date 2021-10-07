@@ -22,7 +22,7 @@ import com.ledwon.jakub.chessclock.data.repository.AppDarkTheme
 import com.ledwon.jakub.chessclock.feature.common.exhaustive
 import com.ledwon.jakub.chessclock.navigation.NavigationActions
 import com.ledwon.jakub.chessclock.util.LocalIsDarkMode
-import com.ledwon.jakub.chessclock.util.rememberString
+import com.ledwon.jakub.chessclock.util.getString
 
 @Composable
 fun SettingsScreen(navigationActions: NavigationActions, settingsViewModel: SettingsViewModel) {
@@ -66,18 +66,18 @@ fun SettingsScreen(navigationActions: NavigationActions, settingsViewModel: Sett
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = rememberString(R.string.settings_title)) },
+                title = { Text(text = getString(R.string.settings_title)) },
                 navigationIcon = {
                     val backIcon = painterResource(id = R.drawable.ic_arrow_back_24)
                     IconButton(onClick = settingsViewModel::onBackClick) {
-                        Icon(painter = backIcon, contentDescription = rememberString(R.string.navigate_back_content_description))
+                        Icon(painter = backIcon, contentDescription = getString(R.string.navigate_back_content_description))
                     }
                 }
             )
         }
     ) {
         LazyColumn(modifier = Modifier.padding(16.dp)) {
-            item { SettingHeader(modifier = Modifier.padding(bottom = 8.dp), text = rememberString(R.string.dark_mode_option)) }
+            item { SettingHeader(modifier = Modifier.padding(bottom = 8.dp), text = getString(R.string.dark_mode_option)) }
             item {
                 Row(
                     modifier = Modifier.fillMaxSize(),
@@ -85,18 +85,18 @@ fun SettingsScreen(navigationActions: NavigationActions, settingsViewModel: Sett
                 ) {
                     TextRadioButton(
                         modifier = Modifier.padding(8.dp),
-                        text = rememberString(R.string.light),
+                        text = getString(R.string.light),
                         selected = appDarkTheme.value == AppDarkTheme.Light,
                         onClick = { settingsViewModel.updateAppDarkTheme(AppDarkTheme.Light) }
                     )
                     TextRadioButton(
                         modifier = Modifier.padding(8.dp),
-                        text = rememberString(R.string.dark),
+                        text = getString(R.string.dark),
                         selected = appDarkTheme.value == AppDarkTheme.Dark,
                         onClick = { settingsViewModel.updateAppDarkTheme(AppDarkTheme.Dark) })
                     TextRadioButton(
                         modifier = Modifier.padding(8.dp),
-                        text = rememberString(R.string.system),
+                        text = getString(R.string.system),
                         selected = appDarkTheme.value == AppDarkTheme.SystemDefault,
                         onClick = { settingsViewModel.updateAppDarkTheme(AppDarkTheme.SystemDefault) })
                 }
@@ -104,7 +104,7 @@ fun SettingsScreen(navigationActions: NavigationActions, settingsViewModel: Sett
             item {
                 SettingHeader(
                     modifier = Modifier.padding(vertical = 8.dp),
-                    text = rememberString(R.string.color_theme_option)
+                    text = getString(R.string.color_theme_option)
                 )
             }
 
@@ -136,7 +136,7 @@ fun SettingsScreen(navigationActions: NavigationActions, settingsViewModel: Sett
             }
 
             item {
-                SettingHeader(text = rememberString(R.string.clock_display_type_option))
+                SettingHeader(text = getString(R.string.clock_display_type_option))
             }
 
             items(settingsViewModel.clockTypes) { clockType ->
@@ -152,7 +152,7 @@ fun SettingsScreen(navigationActions: NavigationActions, settingsViewModel: Sett
                         Text(LocalContext.current.getString(clockType.name))
                     }
                     Button(onClick = { settingsViewModel.onClockTypePreviewClick(clockType) }) {
-                        Text(rememberString(R.string.preview))
+                        Text(getString(R.string.preview))
                     }
                     RadioButton(
                         selected = clockType.display == selectedClockType.value,
@@ -164,7 +164,7 @@ fun SettingsScreen(navigationActions: NavigationActions, settingsViewModel: Sett
             item {
                 SettingHeader(
                     modifier = Modifier.padding(vertical = 8.dp),
-                    text = rememberString(R.string.active_players_pulsation_enabled_option)
+                    text = getString(R.string.active_players_pulsation_enabled_option)
                 )
             }
             item {
@@ -185,12 +185,12 @@ fun SettingsScreen(navigationActions: NavigationActions, settingsViewModel: Sett
             item {
                 SettingHeader(
                     modifier = Modifier.padding(vertical = 8.dp),
-                    text = rememberString(R.string.randomize_initial_position_option)
+                    text = getString(R.string.randomize_initial_position_option)
                 )
             }
             item {
                 Text(
-                    text = rememberString(R.string.stop_randomize_animation_hint),
+                    text = getString(R.string.stop_randomize_animation_hint),
                     fontSize = 13.sp,
                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
                 )
@@ -211,7 +211,7 @@ fun SettingsScreen(navigationActions: NavigationActions, settingsViewModel: Sett
             }
             item {
                 SettingHeader(
-                    text = rememberString(R.string.do_you_like_the_app),
+                    text = getString(R.string.do_you_like_the_app),
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
             }
@@ -222,11 +222,11 @@ fun SettingsScreen(navigationActions: NavigationActions, settingsViewModel: Sett
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     TextButton(onClick = settingsViewModel::onRateAppClick) {
-                        Text(rememberString(R.string.rate_app), fontSize = 18.sp)
+                        Text(getString(R.string.rate_app), fontSize = 18.sp)
                     }
-                    Text(rememberString(R.string.or), fontSize = 18.sp)
+                    Text(getString(R.string.or), fontSize = 18.sp)
                     TextButton(onClick = settingsViewModel::onBuyMeACoffeeClick) {
-                        Text(rememberString(R.string.buy_me_a_coffee), fontSize = 18.sp)
+                        Text(getString(R.string.buy_me_a_coffee), fontSize = 18.sp)
                     }
                 }
 

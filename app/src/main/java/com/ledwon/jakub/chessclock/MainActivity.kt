@@ -149,12 +149,9 @@ class MainActivity : AppCompatActivity() {
                                 }
                                 composable(
                                     Routes.StatsRoute,
-                                    arguments = listOf(navArgument(Routes.StatsArgs.MovesMillis) {
-                                        type =
-                                            NavType.StringType //csv long values, composable navigation model seem not to work with long arrays
-                                    })
+                                    arguments = listOf(navArgument(Routes.StatsArgs.MovesMillisCsv) { type = NavType.StringType })
                                 ) { navBackStackEntry ->
-                                    val movesCsv = navBackStackEntry.arguments!!.getString(Routes.StatsArgs.MovesMillis)
+                                    val movesCsv = navBackStackEntry.arguments!!.getString(Routes.StatsArgs.MovesMillisCsv)
                                     val movesMillis = movesCsv.orEmpty().split(",").mapNotNull { it.toLongOrNull() }
 
                                     val statsViewModel: StatsViewModel = provideNavViewModel(parameters = { parametersOf(movesMillis) })

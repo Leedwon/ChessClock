@@ -4,8 +4,6 @@ import androidx.navigation.NavController
 import com.ledwon.jakub.chessclock.data.model.ClockTime
 import com.ledwon.jakub.chessclock.navigation.Routes.CreateTimerRoute
 import com.ledwon.jakub.chessclock.navigation.Routes.SettingsRoute
-import timber.log.Timber
-import kotlin.io.path.createTempDirectory
 
 //todo simplify - so we don't rely on hardcoded values in NavActions
 object Routes {
@@ -21,7 +19,7 @@ object Routes {
     }
 
     object StatsArgs {
-        const val MovesMillis = "movesMillis"
+        const val MovesMillisCsv = "movesMillis"
     }
 
     const val TimerChooserRoute = "TimerChooser"
@@ -30,7 +28,7 @@ object Routes {
     const val CreateTimerRoute = "CreateTimer"
     const val SettingsRoute = "Settings"
     const val ClockPreviewRoute = "ClockPreview/{${ClockPreviewArgs.ClockDisplayId}}"
-    const val StatsRoute = "Stats/{${StatsArgs.MovesMillis}}"
+    const val StatsRoute = "Stats/{${StatsArgs.MovesMillisCsv}}"
 }
 
 data class OpenClockPayload(
@@ -60,7 +58,8 @@ class NavigationActions(navController: NavController) {
     }
 
     val openStats: (movesMillis: List<Long>) -> Unit = { movesMillis ->
-        val args = if (movesMillis.isEmpty()) "noMoves" else movesMillis.joinToString(separator = ",")
+        val args =
+            if (movesMillis.isEmpty()) "noMoves" else movesMillis.joinToString(separator = ",") //csv long values, composable navigation model seem not to work with long arrays
         navController.navigate("Stats/$args")
     }
 }

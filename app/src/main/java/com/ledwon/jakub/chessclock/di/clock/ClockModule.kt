@@ -12,7 +12,8 @@ val clockModule = module {
         ClockViewModel(
             clockInitialData = parameters[0],
             settingsRepository = get(),
-            pauseTimer = get()
+            pauseTimer = get(),
+            analyticsManager = get()
         )
     }
 }

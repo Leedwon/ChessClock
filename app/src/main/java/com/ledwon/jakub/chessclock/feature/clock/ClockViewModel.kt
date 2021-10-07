@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ledwon.jakub.chessclock.analytics.AnalyticsEvent
+import com.ledwon.jakub.chessclock.analytics.AnalyticsManager
 import com.ledwon.jakub.chessclock.data.repository.SettingsRepository
 import com.ledwon.jakub.chessclock.feature.clock.model.ClockInitialData
 import com.ledwon.jakub.chessclock.feature.clock.model.GameState
@@ -22,7 +24,8 @@ import java.lang.Math.random
 class ClockViewModel(
     clockInitialData: ClockInitialData,
     private val settingsRepository: SettingsRepository,
-    private val pauseTimer: PauseTimer
+    private val pauseTimer: PauseTimer,
+    private val analyticsManager: AnalyticsManager
 ) : ViewModel() {
 
     data class State(
@@ -45,7 +48,7 @@ class ClockViewModel(
     )
 
     private val movesMillis: MutableList<Long> = mutableListOf()
-    private var currentMoveStartMillis: Long? = null
+    private var currentMoveStartTimeMillis: Long? = null
 
     private var playersInOrder: Pair<Player, Player> = white to black
 
@@ -69,7 +72,7 @@ class ClockViewModel(
 
     val pulsationEnabled: StateFlow<Boolean> = settingsRepository.pulsationEnabled
 
-    private val timer: ReceiveChannel<Unit> = ticker(
+    private val gameTimer: ReceiveChannel<Unit> = ticker(
         delayMillis = INTERVAL_MILLIS,
         initialDelayMillis = 0,
         context = Dispatchers.Default
@@ -110,17 +113,17 @@ class ClockViewModel(
         _state.postValue(createState())
     }
 
-    fun startTimer() {
+    fun startGameTimer() {
         if (pauseTimer.started) {
             pauseTimer.stop()
         }
         gameState = GameState.Running
         viewModelScope.launch(Dispatchers.Default) {
-            for (tick in timer) {
-                val currentMillis = System.currentTimeMillis()
+            for (tick in gameTimer) {
+                val executionStartMillis = System.currentTimeMillis()
                 val player = currentPlayer
                 if (player != null && gameState != GameState.Over && gameState != GameState.Paused) {
-                    player.millisLeft -= (INTERVAL_MILLIS + (System.currentTimeMillis() - currentMillis))
+                    player.millisLeft -= (INTERVAL_MILLIS + (System.currentTimeMillis() - executionStartMillis))
                 } else {
                     cancel()
                 }
@@ -130,6 +133,7 @@ class ClockViewModel(
     }
 
     fun showStats() {
+        analyticsManager.logEvent(AnalyticsEvent.OpenStats)
         _command.value = Command.NavigateToStats(movesMillis)
         _command.value = null
     }
@@ -140,7 +144,7 @@ class ClockViewModel(
         gameState = GameState.BeforeStarted.also { currentPlayer = null }
         _state.value = createState()
         movesMillis.clear().also {
-            currentMoveStartMillis = null
+            currentMoveStartTimeMillis = null
             pauseTimer.restart()
         }
     }
@@ -173,16 +177,16 @@ class ClockViewModel(
         }
 
         val now = System.currentTimeMillis()
-        currentMoveStartMillis?.let {
+        currentMoveStartTimeMillis?.let { currentMoveStartTime ->
             val pauseTime = if (pauseTimer.canBeConsumed) pauseTimer.consume() else 0
-            movesMillis.add(now - it - pauseTime)
+            movesMillis.add(now - currentMoveStartTime - pauseTime)
         }
-        currentMoveStartMillis = now
+        currentMoveStartTimeMillis = now
         val currPlayer = currentPlayer
         if (gameState == GameState.BeforeStarted && currPlayer == null) {
             if (player.isFor(black)) {
                 currentPlayer = white
-                startTimer()
+                startGameTimer()
             }
         }
 
