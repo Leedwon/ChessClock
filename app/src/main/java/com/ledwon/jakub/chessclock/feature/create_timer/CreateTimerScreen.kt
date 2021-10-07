@@ -39,25 +39,6 @@ fun CreateTimerScreen(navigationActions: NavigationActions, createTimerViewModel
     val secondsRange = 0..59
     val incrementRange = 0..600
 
-    createTimerViewModel.command.observe(LocalLifecycleOwner.current, {
-        when (it) {
-            is CreateTimerViewModel.Command.NavigateToClock -> {
-                navigationActions.openClock(
-                    OpenClockPayload(
-                        whiteClock = it.state.whiteClock,
-                        blackCLock = it.state.blackClock
-                    )
-                )
-            }
-            is CreateTimerViewModel.Command.NavigateBack -> {
-                navigationActions.navigateBack()
-            }
-            is CreateTimerViewModel.Command.Noop -> {
-                //noop
-            }
-        }
-    })
-
     val state = remember {
         NumberPickerStates(
             whiteHoursState = NumberPickerState(range = hoursRange),
@@ -86,6 +67,29 @@ fun CreateTimerScreen(navigationActions: NavigationActions, createTimerViewModel
                 state.whiteIncrementState.updateCurrentOffset(it.whiteClock.increment.toFloat())
             }
         }
+    }
+
+    val lifecycleObserver = LocalLifecycleOwner.current
+
+    LaunchedEffect(Unit) {
+        createTimerViewModel.command.observe(lifecycleObserver, {
+            when (it) {
+                is CreateTimerViewModel.Command.NavigateToClock -> {
+                    navigationActions.openClock(
+                        OpenClockPayload(
+                            whiteClock = it.state.whiteClock,
+                            blackCLock = it.state.blackClock
+                        )
+                    )
+                }
+                is CreateTimerViewModel.Command.NavigateBack -> {
+                    navigationActions.navigateBack()
+                }
+                is CreateTimerViewModel.Command.Noop -> {
+                    //noop
+                }
+            }
+        })
     }
 
     val timersMerged = createTimerViewModel.timersMerged.collectAsState()
