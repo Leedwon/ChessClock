@@ -14,7 +14,7 @@ android {
     buildToolsVersion "30.0.3"
 
     def major = 1
-    def minor = 2
+    def minor = 3
     def patch = 0
 
     defaultConfig {
