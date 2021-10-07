@@ -48,13 +48,18 @@ fun ClockScreen(actions: NavigationActions, clockViewModel: ClockViewModel) {
         }
     })
 
-    clockViewModel.command.observe(LocalLifecycleOwner.current) {
-        it?.let { command ->
-            when (command) {
-                is ClockViewModel.Command.NavigateToStats -> actions.openStats(command.moves)
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    LaunchedEffect(Unit) {
+        clockViewModel.command.observe(lifecycleOwner) {
+            it?.let { command ->
+                when (command) {
+                    is ClockViewModel.Command.NavigateToStats -> actions.openStats(command.moves)
+                }
             }
         }
     }
+
 
     val clockType = clockViewModel.clockDisplay.collectAsState()
     val pulsationEnabled = clockViewModel.pulsationEnabled.collectAsState()

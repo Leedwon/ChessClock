@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -39,21 +40,25 @@ fun ChooseTimerScreen(navigationActions: NavigationActions, chooseTimerViewModel
         )
     )
 
-    chooseTimerViewModel.command.observe(LocalLifecycleOwner.current, {
-        if (it == null) {
-            return@observe
-        }
-        when (it) {
-            is ChooseTimerViewModel.Command.NavigateToClock -> navigationActions.openClock(
-                OpenClockPayload(
-                    whiteClock = it.timer.whiteClockTime,
-                    blackCLock = it.timer.blackClockTime,
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    LaunchedEffect(Unit) {
+        chooseTimerViewModel.command.observe(lifecycleOwner, {
+            if (it == null) {
+                return@observe
+            }
+            when (it) {
+                is ChooseTimerViewModel.Command.NavigateToClock -> navigationActions.openClock(
+                    OpenClockPayload(
+                        whiteClock = it.timer.whiteClockTime,
+                        blackCLock = it.timer.blackClockTime,
+                    )
                 )
-            )
-            is ChooseTimerViewModel.Command.NavigateToCreateTimer -> navigationActions.openCreateTimer()
-            is ChooseTimerViewModel.Command.NavigateToSettings -> navigationActions.openSettings()
-        }
-    })
+                is ChooseTimerViewModel.Command.NavigateToCreateTimer -> navigationActions.openCreateTimer()
+                is ChooseTimerViewModel.Command.NavigateToSettings -> navigationActions.openSettings()
+            }
+        })
+    }
 
     Scaffold(
         topBar = {
