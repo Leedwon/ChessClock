@@ -8,14 +8,14 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.lifecycleScope
 import com.ledwon.jakub.chessclock.R
-import com.ledwon.jakub.chessclock.feature.clock.PlayerDisplay
+import com.ledwon.jakub.chessclock.feature.clock.model.PlayerDisplay
 import com.ledwon.jakub.chessclock.feature.clock.widget.BothPlayersTimeClock
 import com.ledwon.jakub.chessclock.feature.clock.widget.CircleAnimatedClock
 import com.ledwon.jakub.chessclock.feature.clock.widget.OwnPlayerTimeClock
 import com.ledwon.jakub.chessclock.feature.common.ClockDisplay
 import com.ledwon.jakub.chessclock.feature.common.exhaustive
 import com.ledwon.jakub.chessclock.navigation.NavigationActions
-import com.ledwon.jakub.chessclock.util.rememberString
+import com.ledwon.jakub.chessclock.util.getString
 import kotlinx.coroutines.launch
 
 @Composable
@@ -30,8 +30,8 @@ fun ClockPreviewScreen(navigationActions: NavigationActions, clockPreviewViewMod
 
     val pulsationEnabled = clockPreviewViewModel.pulsationEnabled.collectAsState()
 
-    val turnPulsationOnText = rememberString(R.string.turn_pulsation_on)
-    val turnPulsationOffText = rememberString(R.string.turn_pulsation_off)
+    val turnPulsationOnText = getString(R.string.turn_pulsation_on)
+    val turnPulsationOffText = getString(R.string.turn_pulsation_off)
 
     val scaffoldState = rememberScaffoldState()
 
@@ -39,11 +39,11 @@ fun ClockPreviewScreen(navigationActions: NavigationActions, clockPreviewViewMod
         scaffoldState = scaffoldState,
         topBar = {
             TopAppBar(
-                title = { Text(rememberString(R.string.clock_preview_title)) },
+                title = { Text(getString(R.string.clock_preview_title)) },
                 navigationIcon = {
                     val backIcon = painterResource(id = R.drawable.ic_arrow_back_24)
                     IconButton(onClick = clockPreviewViewModel::onBackClick) {
-                        Icon(painter = backIcon, contentDescription = rememberString(R.string.navigate_back_content_description))
+                        Icon(painter = backIcon, contentDescription = getString(R.string.navigate_back_content_description))
                     }
                 }
             )
@@ -68,11 +68,11 @@ fun ClockPreviewScreen(navigationActions: NavigationActions, clockPreviewViewMod
 
         val playersDisplay =
             PlayerDisplay.White(
-                text = rememberString(R.string.white_time),
+                text = getString(R.string.white_time),
                 percentageLeft = testPercentageAnimation.value / durationMillis,
                 isActive = true
             ) to PlayerDisplay.Black(
-                text = rememberString(R.string.black_time),
+                text = getString(R.string.black_time),
                 percentageLeft = 1f,
                 isActive = false
             )

@@ -17,13 +17,15 @@ import com.ledwon.jakub.chessclock.feature.choose_timer.ChooseTimerViewModel
 import com.ledwon.jakub.chessclock.feature.choose_timer.ChooseTimerScreen
 import com.ledwon.jakub.chessclock.feature.clock.ClockScreen
 import com.ledwon.jakub.chessclock.feature.clock.ClockViewModel
-import com.ledwon.jakub.chessclock.feature.clock.ClockInitialData
+import com.ledwon.jakub.chessclock.feature.clock.model.ClockInitialData
 import com.ledwon.jakub.chessclock.feature.clock_preview.ClockPreviewScreen
 import com.ledwon.jakub.chessclock.feature.clock_preview.ClockPreviewViewModel
 import com.ledwon.jakub.chessclock.feature.create_timer.CreateTimerScreen
 import com.ledwon.jakub.chessclock.feature.create_timer.CreateTimerViewModel
 import com.ledwon.jakub.chessclock.feature.settings.SettingsScreen
 import com.ledwon.jakub.chessclock.feature.settings.SettingsViewModel
+import com.ledwon.jakub.chessclock.feature.stats.StatsScreen
+import com.ledwon.jakub.chessclock.feature.stats.StatsViewModel
 import com.ledwon.jakub.chessclock.navigation.NavigationActions
 import com.ledwon.jakub.chessclock.navigation.Routes
 import com.ledwon.jakub.chessclock.ui.ChessClockTheme
@@ -120,7 +122,10 @@ class MainActivity : AppCompatActivity() {
 
                                     val clockViewModel: ClockViewModel = provideNavViewModel(parameters = { parametersOf(initialData) })
 
-                                    ClockScreen(clockViewModel = clockViewModel)
+                                    ClockScreen(
+                                        actions = actions,
+                                        clockViewModel = clockViewModel
+                                    )
                                 }
                                 composable(
                                     Routes.ClockPreviewRoute,
@@ -140,6 +145,20 @@ class MainActivity : AppCompatActivity() {
                                     ClockPreviewScreen(
                                         navigationActions = actions,
                                         clockPreviewViewModel = clockPreviewViewModel
+                                    )
+                                }
+                                composable(
+                                    Routes.StatsRoute,
+                                    arguments = listOf(navArgument(Routes.StatsArgs.MovesMillisCsv) { type = NavType.StringType })
+                                ) { navBackStackEntry ->
+                                    val movesCsv = navBackStackEntry.arguments!!.getString(Routes.StatsArgs.MovesMillisCsv)
+                                    val movesMillis = movesCsv.orEmpty().split(",").mapNotNull { it.toLongOrNull() }
+
+                                    val statsViewModel: StatsViewModel = provideNavViewModel(parameters = { parametersOf(movesMillis) })
+
+                                    StatsScreen(
+                                        actions = actions,
+                                        viewModel = statsViewModel
                                     )
                                 }
                             }

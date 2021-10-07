@@ -4,7 +4,7 @@ import androidx.compose.animation.core.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.graphics.Color
-import com.ledwon.jakub.chessclock.feature.clock.PlayerDisplay
+import com.ledwon.jakub.chessclock.feature.clock.model.PlayerDisplay
 
 fun PlayerDisplay.contentColor(): Color = when (this) {
     is PlayerDisplay.White -> Color.Black
