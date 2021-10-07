@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,32 +37,35 @@ fun SettingsScreen(navigationActions: NavigationActions, settingsViewModel: Sett
     val isDarkMode: Boolean = LocalIsDarkMode.current
 
     val context = LocalContext.current
+    val lifecycleObserver = LocalLifecycleOwner.current
 
-    settingsViewModel.command.observe(LocalLifecycleOwner.current, {
-        //todo move links to build config
-        when (it) {
-            is SettingsViewModel.Command.NavigateBack -> navigationActions.navigateBack()
-            is SettingsViewModel.Command.OpenBuyMeACoffee -> {
-                val intent = Intent(Intent.ACTION_VIEW)
-                intent.data = Uri.parse("https://www.buymeacoffee.com/leedwon")
-                context.startActivity(intent)
-            }
-            is SettingsViewModel.Command.RateApp -> {
-                context.startActivity(
-                    Intent(
-                        Intent.ACTION_VIEW,
-                        Uri.parse("market://details?id=com.ledwon.jakub.chessclock")
+    LaunchedEffect(Unit) {
+        settingsViewModel.command.observe(lifecycleObserver) {
+            //todo move links to build config
+            when (it) {
+                is SettingsViewModel.Command.NavigateBack -> navigationActions.navigateBack()
+                is SettingsViewModel.Command.OpenBuyMeACoffee -> {
+                    val intent = Intent(Intent.ACTION_VIEW)
+                    intent.data = Uri.parse("https://www.buymeacoffee.com/leedwon")
+                    context.startActivity(intent)
+                }
+                is SettingsViewModel.Command.RateApp -> {
+                    context.startActivity(
+                        Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("market://details?id=com.ledwon.jakub.chessclock")
+                        )
                     )
-                )
-            }
-            is SettingsViewModel.Command.OpenClockPreview -> {
-                navigationActions.openClockDisplayPreview(it.clockDisplayTypeId)
-            }
-            is SettingsViewModel.Command.Noop -> {
+                }
+                is SettingsViewModel.Command.OpenClockPreview -> {
+                    navigationActions.openClockDisplayPreview(it.clockDisplayTypeId)
+                }
+                is SettingsViewModel.Command.Noop -> {
 
-            }
-        }.exhaustive
-    })
+                }
+            }.exhaustive
+        }
+    }
 
     Scaffold(
         topBar = {

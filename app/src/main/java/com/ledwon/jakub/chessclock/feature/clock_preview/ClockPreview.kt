@@ -22,10 +22,14 @@ import kotlinx.coroutines.launch
 fun ClockPreviewScreen(navigationActions: NavigationActions, clockPreviewViewModel: ClockPreviewViewModel) {
     val clockType = clockPreviewViewModel.clockType
 
-    clockPreviewViewModel.command.observe(LocalLifecycleOwner.current) {
-        when (it) {
-            is ClockPreviewViewModel.Command.NavigateBack -> navigationActions.navigateBack()
-        }.exhaustive
+    val lifecycleObserver = LocalLifecycleOwner.current
+
+    LaunchedEffect(Unit) {
+        clockPreviewViewModel.command.observe(lifecycleObserver) {
+            when (it) {
+                is ClockPreviewViewModel.Command.NavigateBack -> navigationActions.navigateBack()
+            }.exhaustive
+        }
     }
 
     val pulsationEnabled = clockPreviewViewModel.pulsationEnabled.collectAsState()
