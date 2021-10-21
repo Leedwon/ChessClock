@@ -27,7 +27,7 @@ val persistenceModule = module {
     }
 
     single {
-        PrepopulateDataStore(preferences = get())
+        PrepopulateDataStore(context = get())
     }
     single {
         SettingsDataStore(preferences = get())
