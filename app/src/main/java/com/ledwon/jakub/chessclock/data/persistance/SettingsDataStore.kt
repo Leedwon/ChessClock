@@ -9,13 +9,13 @@ import com.ledwon.jakub.chessclock.util.*
 class SettingsDataStore(preferences: SharedPreferences) {
 
     companion object {
-        const val APP_DARK_THEME_KEY = "APP_DARK_THEME_KEY"
-        const val APP_COLOR_THEME_TYPE_KEY = "APP_COLOR_THEME_TYPE_KEY"
-        const val RANDOMIZE_POSITION_KEY = "RANDOMIZE_POS_KEY"
-        const val CLOCK_TYPE_KEY = "CLOCK_TYPE_KEY"
-        const val ROTATION_FIRST_KEY = "ROTATIONS_FIRST_KEY"
-        const val ROTATION_SECOND_KEY = "ROTATIONS_SECOND_KEY"
-        const val PULSATION_ENABLED_KEY = "PULSATION_ENABLED_KEY"
+        private const val APP_DARK_THEME_KEY = "APP_DARK_THEME_KEY"
+        private const val APP_COLOR_THEME_TYPE_KEY = "APP_COLOR_THEME_TYPE_KEY"
+        private const val RANDOMIZE_POSITION_KEY = "RANDOMIZE_POS_KEY"
+        private const val CLOCK_TYPE_KEY = "CLOCK_TYPE_KEY"
+        private const val ROTATION_FIRST_KEY = "ROTATIONS_FIRST_KEY"
+        private const val ROTATION_SECOND_KEY = "ROTATIONS_SECOND_KEY"
+        private const val PULSATION_ENABLED_KEY = "PULSATION_ENABLED_KEY"
     }
 
     private enum class ClockTypeKey {
