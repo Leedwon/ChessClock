@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.toArgb
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
+import com.ledwon.jakub.chessclock.data.repository.AppColorThemeType
 import com.ledwon.jakub.chessclock.data.repository.AppDarkTheme
 import com.ledwon.jakub.chessclock.di.provideNavViewModel
 import com.ledwon.jakub.chessclock.feature.choose_timer.ChooseTimerViewModel
@@ -44,8 +45,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val appDarkThemeState = mainViewModel.appDarkTheme.collectAsState()
-            val appColorThemeState = mainViewModel.appColorTheme.collectAsState()
+            val appDarkThemeState = mainViewModel.appDarkTheme.collectAsState(AppDarkTheme.SystemDefault)
+            val appColorThemeState = mainViewModel.appColorTheme.collectAsState(AppColorThemeType.DarkGreen)
 
             val isDarkTheme = when (appDarkThemeState.value) {
                 AppDarkTheme.Light -> false
