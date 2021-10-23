@@ -61,8 +61,8 @@ fun ClockScreen(actions: NavigationActions, clockViewModel: ClockViewModel) {
     }
 
 
-    val clockType = clockViewModel.clockDisplay.collectAsState()
-    val pulsationEnabled = clockViewModel.pulsationEnabled.collectAsState()
+    val clockType = clockViewModel.clockDisplay.collectAsState(ClockDisplay.OwnPlayerTimeClock(180f to 0f))
+    val pulsationEnabled = clockViewModel.pulsationEnabled.collectAsState(true)
 
     val rotations = when (val clockTypeValue = clockType.value) {
         is ClockDisplay.CircleAnimatedClock -> clockTypeValue.rotations
