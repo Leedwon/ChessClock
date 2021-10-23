@@ -1,22 +1,15 @@
 package com.ledwon.jakub.chessclock.data.persistance
 
-import android.content.SharedPreferences
+import android.content.Context
+import androidx.datastore.preferences.core.*
 import com.ledwon.jakub.chessclock.data.repository.AppColorThemeType
 import com.ledwon.jakub.chessclock.data.repository.AppDarkTheme
 import com.ledwon.jakub.chessclock.feature.common.ClockDisplay
-import com.ledwon.jakub.chessclock.util.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 
-class SettingsDataStore(preferences: SharedPreferences) {
-
-    companion object {
-        private const val APP_DARK_THEME_KEY = "APP_DARK_THEME_KEY"
-        private const val APP_COLOR_THEME_TYPE_KEY = "APP_COLOR_THEME_TYPE_KEY"
-        private const val RANDOMIZE_POSITION_KEY = "RANDOMIZE_POS_KEY"
-        private const val CLOCK_TYPE_KEY = "CLOCK_TYPE_KEY"
-        private const val ROTATION_FIRST_KEY = "ROTATIONS_FIRST_KEY"
-        private const val ROTATION_SECOND_KEY = "ROTATIONS_SECOND_KEY"
-        private const val PULSATION_ENABLED_KEY = "PULSATION_ENABLED_KEY"
-    }
+class SettingsDataStore(private val context: Context) {
 
     private enum class ClockTypeKey {
         OwnPlayerClock,
@@ -24,78 +17,115 @@ class SettingsDataStore(preferences: SharedPreferences) {
         CircleAnimatedClock
     }
 
-    var appDarkTheme: AppDarkTheme by EnumPreferencesDelegate(
-        preferences = preferences,
-        key = APP_DARK_THEME_KEY,
-        enumClass = AppDarkTheme::class.java,
-        defaultValue = AppDarkTheme.SystemDefault
-    )
+    private val dataStore
+        get() = with(AppDataStore) { context.dataStore }
 
-    var appColorThemeType: AppColorThemeType by EnumPreferencesDelegate(
-        preferences = preferences,
-        key = APP_COLOR_THEME_TYPE_KEY,
-        enumClass = AppColorThemeType::class.java,
-        defaultValue = AppColorThemeType.DarkGreen
-    )
+    private val appDarkThemeKey = stringPreferencesKey("APP_DARK_THEME_KEY")
+    private val appColorThemeKey = stringPreferencesKey("APP_COLOR_THEME_TYPE_KEY")
+    private val randomizePositionKey = booleanPreferencesKey("RANDOMIZE_POS_KEY")
+    private val pulsationEnabledKey = booleanPreferencesKey("PULSATION_ENABLED_KEY")
+    private val clockTypePrefsKey = stringPreferencesKey("CLOCK_TYPE_KEY")
+    private val rotationFirstKey = floatPreferencesKey("ROTATIONS_FIRST_KEY")
+    private val rotationSecondKey = floatPreferencesKey("ROTATIONS_SECOND_KEY")
 
-    var randomizePosition: Boolean by BooleanPreferencesDelegate(
-        preferences = preferences,
-        key = RANDOMIZE_POSITION_KEY,
-        defaultValue = true
-    )
+    val appDarkTheme: Flow<AppDarkTheme> =
+        dataStore.data
+            .map { preferences -> preferences[appDarkThemeKey] ?: AppDarkTheme.SystemDefault.name }
+            .map { themeName -> AppDarkTheme.valueOf(themeName) }
 
-    var pulsationEnabled: Boolean by BooleanPreferencesDelegate(
-        preferences = preferences,
-        key = PULSATION_ENABLED_KEY,
-        defaultValue = true
-    )
+    val appColorThemeType: Flow<AppColorThemeType> =
+        dataStore.data
+            .map { preferences -> preferences[appColorThemeKey] ?: AppColorThemeType.DarkGreen.name }
+            .map { AppColorThemeType.valueOf(it) }
 
-    private var clockTypeKey: ClockTypeKey by EnumPreferencesDelegate(
-        preferences = preferences,
-        key = CLOCK_TYPE_KEY,
-        enumClass = ClockTypeKey::class.java,
-        defaultValue = ClockTypeKey.OwnPlayerClock
-    )
+    val randomizePosition: Flow<Boolean> = dataStore.data.map { preferences -> preferences[randomizePositionKey] ?: true }
 
-    private var rotationFirst: Float by FloatPreferencesDelegate(
-        preferences = preferences,
-        key = ROTATION_FIRST_KEY,
-        defaultValue = 180f
-    )
+    val pulsationEnabled: Flow<Boolean> = dataStore.data.map { preferences -> preferences[pulsationEnabledKey] ?: true }
 
-    private var rotationSecond: Float by FloatPreferencesDelegate(
-        preferences = preferences,
-        key = ROTATION_SECOND_KEY,
-        defaultValue = 0f
-    )
+    private val rotationFirst: Flow<Float> = dataStore.data.map { preferences -> preferences[rotationFirstKey] ?: 180f }
 
-    private var rotations: Pair<Float, Float>
-        set(value) {
-            rotationFirst = value.first
-            rotationSecond = value.second
-        }
-        get() = rotationFirst to rotationSecond
+    private val rotationSecond: Flow<Float> = dataStore.data.map { preferences -> preferences[rotationSecondKey] ?: 0f }
 
+    private val clockTypeKey: Flow<ClockTypeKey> =
+        dataStore.data
+            .map { preferences -> preferences[clockTypePrefsKey] ?: ClockTypeKey.OwnPlayerClock.name }
+            .map { ClockTypeKey.valueOf(it) }
 
-    var clockDisplay: ClockDisplay
-        set(value) {
-            when (value) {
-                is ClockDisplay.OwnPlayerTimeClock -> {
-                    clockTypeKey = ClockTypeKey.OwnPlayerClock
-                    rotations = value.rotations
-                }
-                is ClockDisplay.BothPlayersTimeClock -> {
-                    clockTypeKey = ClockTypeKey.BothPlayersClock
-                }
-                is ClockDisplay.CircleAnimatedClock -> {
-                    clockTypeKey = ClockTypeKey.CircleAnimatedClock
-                    rotations = value.rotations
-                }
+    val clockDisplay: Flow<ClockDisplay> =
+        combine(
+            clockTypeKey,
+            rotationFirst,
+            rotationSecond
+        ) { clockTypeKey, rotationFirst, rotationSecond ->
+            when (clockTypeKey) {
+                ClockTypeKey.OwnPlayerClock -> ClockDisplay.OwnPlayerTimeClock(rotations = rotationFirst to rotationSecond)
+                ClockTypeKey.BothPlayersClock -> ClockDisplay.BothPlayersTimeClock
+                ClockTypeKey.CircleAnimatedClock -> ClockDisplay.CircleAnimatedClock(rotations = rotationFirst to rotationSecond)
             }
         }
-        get() = when (clockTypeKey) {
-            ClockTypeKey.OwnPlayerClock -> ClockDisplay.OwnPlayerTimeClock(rotations = rotations)
-            ClockTypeKey.BothPlayersClock -> ClockDisplay.BothPlayersTimeClock
-            ClockTypeKey.CircleAnimatedClock -> ClockDisplay.CircleAnimatedClock(rotations = rotations)
+
+    suspend fun updateAppDarkTheme(value: AppDarkTheme) {
+        dataStore.edit { mutablePreferences ->
+            mutablePreferences[appDarkThemeKey] = value.name
         }
+    }
+
+    suspend fun updateAppColorThemeType(value: AppColorThemeType) {
+        dataStore.edit { mutablePreferences ->
+            mutablePreferences[appColorThemeKey] = value.name
+        }
+    }
+
+
+    suspend fun updateRandomizePosition(value: Boolean) {
+        dataStore.edit { mutablePreferences ->
+            mutablePreferences[randomizePositionKey] = value
+        }
+    }
+
+    suspend fun updatePulsationEnabled(value: Boolean) {
+        dataStore.edit { mutablePreferences ->
+            mutablePreferences[pulsationEnabledKey] = value
+        }
+    }
+
+    private suspend fun updateClockTypeKey(value: ClockTypeKey) {
+        dataStore.edit { mutablePreferences ->
+            mutablePreferences[clockTypePrefsKey] = value.name
+        }
+    }
+
+    private suspend fun updateRotationFirst(value: Float) {
+        dataStore.edit { mutablePreferences ->
+            mutablePreferences[rotationFirstKey] = value
+        }
+    }
+
+    private suspend fun updateRotationSecond(value: Float) {
+        dataStore.edit { mutablePreferences ->
+            mutablePreferences[rotationSecondKey] = value
+        }
+    }
+
+    private suspend fun updateClockDisplay(clockTypeKey: ClockTypeKey, rotations: Pair<Float, Float>? = null) {
+        updateClockTypeKey(clockTypeKey)
+        rotations?.let {
+            updateRotationFirst(it.first)
+            updateRotationSecond(it.second)
+        }
+    }
+
+    suspend fun updateClockDisplay(value: ClockDisplay) {
+        when (value) {
+            ClockDisplay.BothPlayersTimeClock -> {
+                updateClockDisplay(ClockTypeKey.BothPlayersClock)
+            }
+            is ClockDisplay.CircleAnimatedClock -> {
+                updateClockDisplay(ClockTypeKey.CircleAnimatedClock, value.rotations)
+            }
+            is ClockDisplay.OwnPlayerTimeClock -> {
+                updateClockDisplay(ClockTypeKey.OwnPlayerClock, value.rotations)
+            }
+        }
+    }
 }
