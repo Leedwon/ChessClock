@@ -30,6 +30,6 @@ val persistenceModule = module {
         PrepopulateDataStore(context = get())
     }
     single {
-        SettingsDataStore(preferences = get())
+        SettingsDataStore(context = get())
     }
 }
