@@ -10,7 +10,7 @@ import com.ledwon.jakub.chessclock.data.repository.AppDarkTheme
 import com.ledwon.jakub.chessclock.data.repository.ClockTypesRepository
 import com.ledwon.jakub.chessclock.data.repository.SettingsRepository
 import com.ledwon.jakub.chessclock.feature.common.ClockDisplay
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.Flow
 
 class SettingsViewModel(
     private val settingsRepository: SettingsRepository,
@@ -35,11 +35,11 @@ class SettingsViewModel(
 
     val clockTypes = clockTypesRepository.clockTypes
 
-    val appDarkTheme: StateFlow<AppDarkTheme> = settingsRepository.appDarkTheme
-    val appColorTheme: StateFlow<AppColorThemeType> = settingsRepository.appColorTheme
-    val randomizePosition: StateFlow<Boolean> = settingsRepository.randomizePosition
-    val clockType: StateFlow<ClockDisplay> = settingsRepository.clockDisplay
-    val pulsationEnabled: StateFlow<Boolean> = settingsRepository.pulsationEnabled
+    val appDarkTheme: Flow<AppDarkTheme> = settingsRepository.appDarkTheme
+    val appColorTheme: Flow<AppColorThemeType> = settingsRepository.appColorTheme
+    val randomizePosition: Flow<Boolean> = settingsRepository.randomizePosition
+    val clockType: Flow<ClockDisplay> = settingsRepository.clockDisplay
+    val pulsationEnabled: Flow<Boolean> = settingsRepository.pulsationEnabled
 
     fun updateAppDarkTheme(appDarkTheme: AppDarkTheme) = settingsRepository.updateAppDarkTheme(appDarkTheme)
 
