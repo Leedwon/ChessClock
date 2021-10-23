@@ -16,7 +16,7 @@ import com.ledwon.jakub.chessclock.feature.common.ClockDisplay
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.ticker
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.take
 import java.lang.Math.random
@@ -68,9 +68,9 @@ class ClockViewModel(
     private val _command: MutableLiveData<Command?> = MutableLiveData(null)
     val command: LiveData<Command?> = _command
 
-    val clockDisplay: StateFlow<ClockDisplay> = settingsRepository.clockDisplay
+    val clockDisplay: Flow<ClockDisplay> = settingsRepository.clockDisplay
 
-    val pulsationEnabled: StateFlow<Boolean> = settingsRepository.pulsationEnabled
+    val pulsationEnabled: Flow<Boolean> = settingsRepository.pulsationEnabled
 
     private val gameTimer: ReceiveChannel<Unit> = ticker(
         delayMillis = INTERVAL_MILLIS,
