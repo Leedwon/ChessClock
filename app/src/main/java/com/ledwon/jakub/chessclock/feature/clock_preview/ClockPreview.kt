@@ -32,7 +32,7 @@ fun ClockPreviewScreen(navigationActions: NavigationActions, clockPreviewViewMod
         }
     }
 
-    val pulsationEnabled = clockPreviewViewModel.pulsationEnabled.collectAsState()
+    val pulsationEnabled = clockPreviewViewModel.pulsationEnabled.collectAsState(true)
 
     val turnPulsationOnText = getString(R.string.turn_pulsation_on)
     val turnPulsationOffText = getString(R.string.turn_pulsation_off)
