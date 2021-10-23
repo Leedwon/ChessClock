@@ -19,7 +19,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ledwon.jakub.chessclock.R
+import com.ledwon.jakub.chessclock.data.repository.AppColorThemeType
 import com.ledwon.jakub.chessclock.data.repository.AppDarkTheme
+import com.ledwon.jakub.chessclock.feature.common.ClockDisplay
 import com.ledwon.jakub.chessclock.feature.common.exhaustive
 import com.ledwon.jakub.chessclock.navigation.NavigationActions
 import com.ledwon.jakub.chessclock.util.LocalIsDarkMode
@@ -28,11 +30,11 @@ import com.ledwon.jakub.chessclock.util.getString
 @Composable
 fun SettingsScreen(navigationActions: NavigationActions, settingsViewModel: SettingsViewModel) {
 
-    val appDarkTheme = settingsViewModel.appDarkTheme.collectAsState()
-    val appColorTheme = settingsViewModel.appColorTheme.collectAsState()
-    val randomizePosition = settingsViewModel.randomizePosition.collectAsState()
-    val selectedClockType = settingsViewModel.clockType.collectAsState()
-    val pulsationEnabled = settingsViewModel.pulsationEnabled.collectAsState()
+    val appDarkTheme = settingsViewModel.appDarkTheme.collectAsState(AppDarkTheme.SystemDefault)
+    val appColorTheme = settingsViewModel.appColorTheme.collectAsState(AppColorThemeType.DarkGreen)
+    val randomizePosition = settingsViewModel.randomizePosition.collectAsState(true)
+    val selectedClockType = settingsViewModel.clockType.collectAsState(ClockDisplay.OwnPlayerTimeClock(180f to 0f))
+    val pulsationEnabled = settingsViewModel.pulsationEnabled.collectAsState(true)
 
     val isDarkMode: Boolean = LocalIsDarkMode.current
 
