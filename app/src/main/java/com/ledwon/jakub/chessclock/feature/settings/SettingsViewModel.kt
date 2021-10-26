@@ -3,6 +3,7 @@ package com.ledwon.jakub.chessclock.feature.settings
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.ledwon.jakub.chessclock.analytics.AnalyticsEvent
 import com.ledwon.jakub.chessclock.analytics.AnalyticsManager
 import com.ledwon.jakub.chessclock.data.repository.AppColorThemeType
@@ -10,7 +11,8 @@ import com.ledwon.jakub.chessclock.data.repository.AppDarkTheme
 import com.ledwon.jakub.chessclock.data.repository.ClockTypesRepository
 import com.ledwon.jakub.chessclock.data.repository.SettingsRepository
 import com.ledwon.jakub.chessclock.feature.common.ClockDisplay
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 
 class SettingsViewModel(
     private val settingsRepository: SettingsRepository,
@@ -35,26 +37,47 @@ class SettingsViewModel(
 
     val clockTypes = clockTypesRepository.clockTypes
 
-    val appDarkTheme: StateFlow<AppDarkTheme> = settingsRepository.appDarkTheme
-    val appColorTheme: StateFlow<AppColorThemeType> = settingsRepository.appColorTheme
-    val randomizePosition: StateFlow<Boolean> = settingsRepository.randomizePosition
-    val clockType: StateFlow<ClockDisplay> = settingsRepository.clockDisplay
-    val pulsationEnabled: StateFlow<Boolean> = settingsRepository.pulsationEnabled
+    val appDarkTheme: Flow<AppDarkTheme> = settingsRepository.appDarkTheme
+    val appColorTheme: Flow<AppColorThemeType> = settingsRepository.appColorTheme
+    val randomizePosition: Flow<Boolean> = settingsRepository.randomizePosition
+    val clockType: Flow<ClockDisplay> = settingsRepository.clockDisplay
+    val pulsationEnabled: Flow<Boolean> = settingsRepository.pulsationEnabled
 
-    fun updateAppDarkTheme(appDarkTheme: AppDarkTheme) = settingsRepository.updateAppDarkTheme(appDarkTheme)
+    fun updateAppDarkTheme(appDarkTheme: AppDarkTheme) {
+        viewModelScope.launch {
+            settingsRepository.updateAppDarkTheme(appDarkTheme)
+        }
+    }
 
-    fun updateAppColorTheme(appColorThemeType: AppColorThemeType) = settingsRepository.updateAppColorTheme(appColorThemeType)
-        .also { analyticsManager.logEvent(AnalyticsEvent.UpdateAppColorTheme(appColorThemeType)) }
+    fun updateAppColorTheme(appColorThemeType: AppColorThemeType) {
+        viewModelScope.launch {
+            settingsRepository.updateAppColorTheme(appColorThemeType)
+            analyticsManager.logEvent(AnalyticsEvent.UpdateAppColorTheme(appColorThemeType))
+        }
+    }
 
-    fun updateRandomizePosition(randomizePosition: Boolean) = settingsRepository.updateRandomizePosition(randomizePosition)
-        .also { analyticsManager.logEvent(AnalyticsEvent.UpdateRandomizePlayersPositions(randomizePosition)) }
+    fun updateRandomizePosition(randomizePosition: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.updateRandomizePosition(randomizePosition)
+            analyticsManager.logEvent(AnalyticsEvent.UpdateRandomizePlayersPositions(randomizePosition))
+        }
+    }
 
-    fun updateClockType(namedClockDisplay: ClockTypesRepository.NamedClockDisplayType) =
-        settingsRepository.updateClockType(clockDisplay = namedClockDisplay.display)
-            .also { analyticsManager.logEvent(AnalyticsEvent.UpdateClockType(namedClockDisplay)) }
+    fun updateClockType(namedClockDisplay: ClockTypesRepository.NamedClockDisplayType) {
+        viewModelScope.launch {
+            settingsRepository.updateClockType(clockDisplay = namedClockDisplay.display)
+            analyticsManager.logEvent(AnalyticsEvent.UpdateClockType(namedClockDisplay))
+        }
+    }
 
-    fun updatePulsationEnabled(pulsationEnabled: Boolean) = settingsRepository.updatePulsationEnabled(pulsationEnabled)
-        .also { analyticsManager.logEvent(AnalyticsEvent.UpdatePulsationEnabled(pulsationEnabled)) }
+
+    fun updatePulsationEnabled(pulsationEnabled: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.updatePulsationEnabled(pulsationEnabled)
+            analyticsManager.logEvent(AnalyticsEvent.UpdatePulsationEnabled(pulsationEnabled))
+        }
+
+    }
 
     fun onClockTypePreviewClick(namedClockDisplay: ClockTypesRepository.NamedClockDisplayType) {
         _command.value = Command.OpenClockPreview(namedClockDisplay.id)

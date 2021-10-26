@@ -33,12 +33,15 @@ class ChooseTimerViewModel(
     val command: LiveData<Command> = _command
 
     init {
-        if (prepopulateDataStore.shouldPrepopulateDatabase) {
-            viewModelScope.launch(Dispatchers.IO) {
-                //reversed because while fetching timers they are sorted desc by id to show user timers as first
-                timerRepository.addTimers(PredefinedTimers.timers.reversed())
-            }
-            prepopulateDataStore.shouldPrepopulateDatabase = false
+        viewModelScope.launch {
+            prepopulateDataStore.shouldPrepopulateDatabase
+                .collect { shouldPrepopulateDb ->
+                    if (shouldPrepopulateDb) {
+                        //reversed because while fetching timers they are sorted desc by id to show user timers as first
+                        timerRepository.addTimers(PredefinedTimers.timers.reversed())
+                        prepopulateDataStore.updateShouldPrepopulateDatabase(false)
+                    }
+                }
         }
 
         viewModelScope.launch(Dispatchers.IO) {

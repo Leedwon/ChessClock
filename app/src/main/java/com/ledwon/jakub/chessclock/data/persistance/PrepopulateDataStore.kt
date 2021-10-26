@@ -1,18 +1,28 @@
 package com.ledwon.jakub.chessclock.data.persistance
 
-import android.content.SharedPreferences
-import com.ledwon.jakub.chessclock.util.BooleanPreferencesDelegate
+import android.content.Context
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 //todo remove it and introduce pre population asset
-class PrepopulateDataStore(preferences: SharedPreferences) {
+class PrepopulateDataStore(private val context: Context) {
 
-    companion object {
-        private const val SHOULD_PREPOPULATE_DB = "PREPOPULATE_KEY"
+    private val dataStore
+        get() = with(AppDataStore) {
+            context.dataStore
+        }
+
+    private val shouldPrepopulateDbKey = booleanPreferencesKey("PREPOPULATE_KEY")
+
+    val shouldPrepopulateDatabase: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[shouldPrepopulateDbKey] ?: true
     }
 
-    var shouldPrepopulateDatabase: Boolean by BooleanPreferencesDelegate(
-        preferences = preferences,
-        key = SHOULD_PREPOPULATE_DB,
-        defaultValue = true
-    )
+    suspend fun updateShouldPrepopulateDatabase(value: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[shouldPrepopulateDbKey] = value
+        }
+    }
 }
