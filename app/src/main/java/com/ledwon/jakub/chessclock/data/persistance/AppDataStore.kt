@@ -10,10 +10,6 @@ object AppDataStore {
 
     val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
         name = "settings",
-        produceMigrations = { context ->
-            listOf(
-                SharedPreferencesMigration(context, context.packageName + "_preferences")
-            )
-        }
+        produceMigrations = { context -> listOf(SharedPreferencesMigration(context, context.packageName + "_preferences")) }
     )
 }
