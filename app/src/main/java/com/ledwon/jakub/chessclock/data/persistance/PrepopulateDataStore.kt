@@ -9,16 +9,12 @@ import kotlinx.coroutines.flow.map
 //todo remove it and introduce pre population asset
 class PrepopulateDataStore(private val context: Context) {
 
-    companion object {
-        private const val SHOULD_PREPOPULATE_DB_KEY_NAME = "PREPOPULATE_KEY"
-    }
-
     private val dataStore
         get() = with(AppDataStore) {
             context.dataStore
         }
 
-    private val shouldPrepopulateDbKey = booleanPreferencesKey(SHOULD_PREPOPULATE_DB_KEY_NAME)
+    private val shouldPrepopulateDbKey = booleanPreferencesKey("PREPOPULATE_KEY")
 
     val shouldPrepopulateDatabase: Flow<Boolean> = dataStore.data.map { preferences ->
         preferences[shouldPrepopulateDbKey] ?: true
