@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ledwon.jakub.chessclock.data.repository.ClockTypesRepository
 import com.ledwon.jakub.chessclock.data.repository.SettingsRepository
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.Flow
 
 class ClockPreviewViewModel(
     private val clockId: String,
@@ -16,7 +16,7 @@ class ClockPreviewViewModel(
     private val _command: MutableLiveData<Command> = MutableLiveData()
     val command: LiveData<Command> = _command
 
-    val pulsationEnabled: StateFlow<Boolean> = settingsRepository.pulsationEnabled
+    val pulsationEnabled: Flow<Boolean> = settingsRepository.pulsationEnabled
 
     val clockType: ClockTypesRepository.NamedClockDisplayType? =
         clockTypesRepository.clockTypes.firstOrNull { it.id == clockId }.also {

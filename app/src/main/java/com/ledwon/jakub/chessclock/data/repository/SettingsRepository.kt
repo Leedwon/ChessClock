@@ -3,8 +3,10 @@ package com.ledwon.jakub.chessclock.data.repository
 import com.ledwon.jakub.chessclock.data.persistance.SettingsDataStore
 import com.ledwon.jakub.chessclock.feature.common.ClockDisplay
 import com.ledwon.jakub.chessclock.ui.ColorTheme
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 
 enum class AppDarkTheme {
     Light,
@@ -24,46 +26,44 @@ enum class AppColorThemeType(val value: ColorTheme) {
     Orange(ColorTheme.Orange)
 }
 
-class SettingsRepository(private val settingsDataStore: SettingsDataStore) {
+class SettingsRepository(
+    private val settingsDataStore: SettingsDataStore,
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
+) {
 
-    private val _appDarkThemeFlow = MutableStateFlow(settingsDataStore.appDarkTheme)
-    val appDarkTheme: StateFlow<AppDarkTheme> = _appDarkThemeFlow
+    val appDarkTheme: Flow<AppDarkTheme> = settingsDataStore.appDarkTheme
+    val appColorTheme: Flow<AppColorThemeType> = settingsDataStore.appColorThemeType
+    val randomizePosition: Flow<Boolean> = settingsDataStore.randomizePosition
+    val clockDisplay: Flow<ClockDisplay> = settingsDataStore.clockDisplay
+    val pulsationEnabled: Flow<Boolean> = settingsDataStore.pulsationEnabled
 
-    private val _appColorThemeFlow =
-        MutableStateFlow(settingsDataStore.appColorThemeType)
-    val appColorTheme: StateFlow<AppColorThemeType> = _appColorThemeFlow
-
-    private val _randomizePositionFlow = MutableStateFlow(settingsDataStore.randomizePosition)
-    val randomizePosition: StateFlow<Boolean> = _randomizePositionFlow
-
-    private val _clockTypeFlow = MutableStateFlow(settingsDataStore.clockDisplay)
-    val clockDisplay: StateFlow<ClockDisplay> = _clockTypeFlow
-
-    private val _pulsationEnabledFlow = MutableStateFlow(settingsDataStore.pulsationEnabled)
-    val pulsationEnabled: StateFlow<Boolean> = _pulsationEnabledFlow
-
-    fun updateAppDarkTheme(appDarkTheme: AppDarkTheme) {
-        settingsDataStore.appDarkTheme = appDarkTheme
-        _appDarkThemeFlow.tryEmit(settingsDataStore.appDarkTheme)
+    suspend fun updateAppDarkTheme(appDarkTheme: AppDarkTheme) {
+        withContext(defaultDispatcher) {
+            settingsDataStore.updateAppDarkTheme(appDarkTheme)
+        }
     }
 
-    fun updateAppColorTheme(appColorThemeType: AppColorThemeType) {
-        settingsDataStore.appColorThemeType = appColorThemeType
-        _appColorThemeFlow.tryEmit(appColorThemeType)
+    suspend fun updateAppColorTheme(appColorThemeType: AppColorThemeType) {
+        withContext(defaultDispatcher) {
+            settingsDataStore.updateAppColorThemeType(appColorThemeType)
+        }
     }
 
-    fun updateRandomizePosition(randomizePosition: Boolean) {
-        settingsDataStore.randomizePosition = randomizePosition
-        _randomizePositionFlow.tryEmit(settingsDataStore.randomizePosition)
+    suspend fun updateRandomizePosition(randomizePosition: Boolean) {
+        withContext(defaultDispatcher) {
+            settingsDataStore.updateRandomizePosition(randomizePosition)
+        }
     }
 
-    fun updateClockType(clockDisplay: ClockDisplay) {
-        settingsDataStore.clockDisplay = clockDisplay
-        _clockTypeFlow.tryEmit(clockDisplay)
+    suspend fun updateClockType(clockDisplay: ClockDisplay) {
+        withContext(defaultDispatcher) {
+            settingsDataStore.updateClockDisplay(clockDisplay)
+        }
     }
 
-    fun updatePulsationEnabled(pulsationEnabled: Boolean) {
-        settingsDataStore.pulsationEnabled = pulsationEnabled
-        _pulsationEnabledFlow.tryEmit(pulsationEnabled)
+    suspend fun updatePulsationEnabled(pulsationEnabled: Boolean) {
+        withContext(defaultDispatcher) {
+            settingsDataStore.updatePulsationEnabled(pulsationEnabled)
+        }
     }
 }
