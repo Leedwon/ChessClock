@@ -1,20 +1,20 @@
 <resources>
     <string name="app_name">Chess Clock</string>
 
-    <string name="choose_timer_title">Chess Clock</string>
+    <string name="choose_clock_title">Chess Clock</string>
     <string name="clock_preview_title">Clock Preview</string>
     <string name="create_clock_title">Create Clock</string>
     <string name="settings_title">Settings</string>
     <string name="create_new_clock">Create new clock</string>
-    <string name="delete_selected_timers">Delete selected</string>
+    <string name="delete_selected_clocks">Delete selected</string>
     <string name="turn_pulsation_on">You can turn on active player\'s pulsation in settings</string>
     <string name="turn_pulsation_off">You can turn off active player\'s pulsation in settings</string>
     <string name="white_time">White\'s time</string>
     <string name="black_time">Black\'s time</string>
-    <string name="create_timer_same_clock">Same clock for white and black</string>
-    <string name="create_timer_clock">Clock: </string>
-    <string name="create_timer_white_clock">White\'s clock: </string>
-    <string name="create_timer_black_clock">Black\'s clock: </string>
+    <string name="create_clock_same_clock">Same clock for white and black</string>
+    <string name="create_clock_for_both_players">Clock: </string>
+    <string name="create_clock_white">White\'s clock: </string>
+    <string name="create_clock_black">Black\'s clock: </string>
     <string name="start">Start</string>
     <string name="start_and_save">Start &amp; save</string>
     <string name="save">Save</string>
