@@ -140,7 +140,7 @@ fun ChooseTimerScreen(navigationActions: NavigationActions, chooseTimerViewModel
                 ) {
                     Text(
                         modifier = Modifier.padding(vertical = 8.dp),
-                        text = getString(R.string.delete_selected_timers),
+                        text = getString(R.string.delete_selected_clocks),
                         fontSize = 18.sp
                     )
                 }
@@ -155,7 +155,7 @@ fun ChooseTimerTopBar(
     onSettingsIconClick: () -> Unit
 ) {
     TopAppBar(
-        title = { Text(text = getString(resId = R.string.choose_timer_title)) },
+        title = { Text(text = getString(resId = R.string.choose_clock_title)) },
         actions = {
             val icon = painterResource(id = R.drawable.ic_settings_24)
             IconButton(onClick = onSettingsIconClick) {

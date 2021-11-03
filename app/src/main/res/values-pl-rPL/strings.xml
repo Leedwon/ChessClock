@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Zegar Szachowy</string>
-    <string name="choose_timer_title">Zegar Szachowy</string>
+    <string name="choose_clock_title">Zegar Szachowy</string>
     <string name="clock_preview_title">Podgląd zegara</string>
     <string name="create_clock_title">Stwórz zegar</string>
     <string name="settings_title">Ustawienia</string>
     <string name="create_new_clock">Stwórz nowy zegar</string>
-    <string name="delete_selected_timers">Usuń zaznaczone</string>
+    <string name="delete_selected_clocks">Usuń zaznaczone</string>
     <string name="turn_pulsation_on">Możesz włączyć pulsowanie zegara w ustawieniach</string>
     <string name="turn_pulsation_off">Możesz wyłączyć pulsowanie zegara w ustawieniach</string>
     <string name="white_time">Czas białych</string>
     <string name="black_time">Czas czarnych</string>
-    <string name="create_timer_same_clock">Taki sam czas dla białych i czarnych</string>
-    <string name="create_timer_clock">"Czas: "</string>
-    <string name="create_timer_white_clock">"Czas białych: "</string>
-    <string name="create_timer_black_clock">"Czas czarnych: "</string>
+    <string name="create_clock_same_clock">Taki sam czas dla białych i czarnych</string>
+    <string name="create_clock_for_both_players">"Czas: "</string>
+    <string name="create_clock_white">"Czas białych: "</string>
+    <string name="create_clock_black">"Czas czarnych: "</string>
     <string name="start">Start</string>
     <string name="start_and_save">Start &amp; zapisz</string>
     <string name="save">Zapisz</string>
