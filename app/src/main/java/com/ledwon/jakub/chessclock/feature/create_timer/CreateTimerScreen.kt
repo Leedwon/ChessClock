@@ -123,7 +123,7 @@ fun CreateTimerScreen(navigationActions: NavigationActions, createTimerViewModel
                 ) {
                     Text(
                         modifier = Modifier.padding(horizontal = 8.dp),
-                        text = getString(R.string.create_timer_same_clock)
+                        text = getString(R.string.create_clock_same_clock)
                     )
                     Switch(
                         modifier = Modifier
@@ -136,7 +136,7 @@ fun CreateTimerScreen(navigationActions: NavigationActions, createTimerViewModel
             }
             item {
                 Text(
-                    text = if (timersMerged.value) getString(R.string.create_timer_clock) else getString(R.string.create_timer_white_clock),
+                    text = if (timersMerged.value) getString(R.string.create_clock_for_both_players) else getString(R.string.create_clock_white),
                     fontSize = 24.sp
                 )
             }
@@ -155,7 +155,7 @@ fun CreateTimerScreen(navigationActions: NavigationActions, createTimerViewModel
                 )
             }
             if (!timersMerged.value) {
-                item { Text(text = getString(R.string.create_timer_black_clock), fontSize = 24.sp) }
+                item { Text(text = getString(R.string.create_clock_black), fontSize = 24.sp) }
                 item {
                     ClockPicker(
                         clockPickerData = ClockPickerData(
