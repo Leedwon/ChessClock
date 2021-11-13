@@ -8,7 +8,7 @@ import com.ledwon.jakub.database.model.Timer
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface TimerDao {
+internal interface TimerDao {
     @Query("SELECT * from timer ORDER BY isFavourite desc, id desc")
     fun getAllTimers(): Flow<List<Timer>>
 
