@@ -1,4 +1,4 @@
-package com.ledwon.jakub.chessclock.feature.choose_timer
+package com.ledwon.jakub.chessclock.feature.choose_clock
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -6,28 +6,28 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ledwon.jakub.chessclock.analytics.AnalyticsEvent
 import com.ledwon.jakub.chessclock.analytics.AnalyticsManager
-import com.ledwon.jakub.chessclock.data.model.Timer
+import com.ledwon.jakub.chessclock.model.Clock
 import com.ledwon.jakub.chessclock.data.persistance.PrepopulateDataStore
-import com.ledwon.jakub.chessclock.data.repository.TimerRepository
-import com.ledwon.jakub.chessclock.util.PredefinedTimers
+import com.ledwon.jakub.chessclock.data.repository.ClockRepository
+import com.ledwon.jakub.chessclock.util.PredefinedClocks
 import com.ledwon.jakub.chessclock.util.postUpdate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-data class ChooseTimerState(
+data class ChooseClockState(
     val isSelectableModeOn: Boolean,
-    val timersToSelected: Map<Timer, Boolean>
+    val clocksToSelected: Map<Clock, Boolean>
 )
 
-class ChooseTimerViewModel(
-    private val timerRepository: TimerRepository,
+class ChooseClockViewModel(
+    private val clockRepository: ClockRepository,
     private val analyticsManager: AnalyticsManager,
     prepopulateDataStore: PrepopulateDataStore
 ) : ViewModel() {
 
-    private val _chooseTimerState: MutableLiveData<ChooseTimerState> = MutableLiveData()
-    val chooseTimerState: LiveData<ChooseTimerState> = _chooseTimerState
+    private val _chooseClockState: MutableLiveData<ChooseClockState> = MutableLiveData()
+    val chooseClockState: LiveData<ChooseClockState> = _chooseClockState
 
     private val _command: MutableLiveData<Command> = MutableLiveData()
     val command: LiveData<Command> = _command
@@ -38,43 +38,43 @@ class ChooseTimerViewModel(
                 .collect { shouldPrepopulateDb ->
                     if (shouldPrepopulateDb) {
                         //reversed because while fetching timers they are sorted desc by id to show user timers as first
-                        timerRepository.addTimers(PredefinedTimers.timers.reversed())
+                        clockRepository.addClocks(PredefinedClocks.clocks.reversed())
                         prepopulateDataStore.updateShouldPrepopulateDatabase(false)
                     }
                 }
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            timerRepository.timers.collect { timers ->
-                _chooseTimerState.postValue(
-                    ChooseTimerState(
-                        isSelectableModeOn = _chooseTimerState.value?.isSelectableModeOn ?: false,
-                        timersToSelected = timers.associateWith { false }
+            clockRepository.clocks.collect { timers ->
+                _chooseClockState.postValue(
+                    ChooseClockState(
+                        isSelectableModeOn = _chooseClockState.value?.isSelectableModeOn ?: false,
+                        clocksToSelected = timers.associateWith { false }
                     )
                 )
             }
         }
     }
 
-    fun onTimerClicked(timer: Timer) {
-        _command.value = Command.NavigateToClock(timer).also { analyticsManager.logEvent(AnalyticsEvent.OpenClockFromChooseTimer(timer)) }
+    fun onClockClicked(clock: Clock) {
+        _command.value = Command.NavigateToClock(clock).also { analyticsManager.logEvent(AnalyticsEvent.OpenClockFromChooseClock(clock)) }
         _command.value = null
     }
 
-    fun onCreateTimerClicked() {
+    fun onCreateClockClicked() {
         _command.value = Command.NavigateToCreateTimer.also { analyticsManager.logEvent(AnalyticsEvent.OpenCreateClock) }
         _command.value = null
     }
 
-    fun onRemoveTimers() {
-        val state = _chooseTimerState.value!!
+    fun onRemoveClocks() {
+        val state = _chooseClockState.value!!
         viewModelScope.launch(Dispatchers.IO) {
-            val timersToRemove = state.timersToSelected.filter { it.value }.keys.toList()
-            timerRepository.deleteTimers(timersToRemove).also {
+            val timersToRemove = state.clocksToSelected.filter { it.value }.keys.toList()
+            clockRepository.deleteClocks(timersToRemove).also {
                 timersToRemove.forEach { analyticsManager.logEvent(AnalyticsEvent.RemoveClock(it)) }
             }
         }
-        _chooseTimerState.postValue(state.copy(isSelectableModeOn = false))
+        _chooseClockState.postValue(state.copy(isSelectableModeOn = false))
     }
 
     fun onOpenSettingsClicked() {
@@ -83,40 +83,41 @@ class ChooseTimerViewModel(
     }
 
     fun onTimerLongClicked() {
-        _chooseTimerState.postUpdate { currentState ->
+        _chooseClockState.postUpdate { currentState ->
             currentState.copy(
                 isSelectableModeOn = !currentState.isSelectableModeOn,
-                timersToSelected = if (currentState.isSelectableModeOn) {
-                    currentState.timersToSelected.toMutableMap().mapValues {
+                clocksToSelected = if (currentState.isSelectableModeOn) {
+                    currentState.clocksToSelected.toMutableMap().mapValues {
                         false
                     }
                 } else {
-                    currentState.timersToSelected
+                    currentState.clocksToSelected
                 }
             )
         }
     }
 
-    fun onSelectTimerClick(timer: Timer) {
-        _chooseTimerState.postUpdate { currentState ->
+    fun onSelectClockClick(clock: Clock) {
+        _chooseClockState.postUpdate { currentState ->
             currentState.copy(
-                timersToSelected = currentState.timersToSelected.toMutableMap().apply {
-                    this[timer] = !this[timer]!!
+                clocksToSelected = currentState.clocksToSelected.toMutableMap().apply {
+                    this[clock] = !this[clock]!!
                 }
             )
         }
     }
 
-    fun onStarClicked(timer: Timer) {
+    fun onStarClicked(clock: Clock) {
         viewModelScope.launch(Dispatchers.IO) {
-            timerRepository.updateFavouriteStatus(
-                timer.copy(isFavourite = !timer.isFavourite)
+            clockRepository.updateClockFavouriteStatus(
+                clockId = clock.id,
+                isFavourite = clock.isFavourite
             )
         }
     }
 
     sealed class Command {
-        data class NavigateToClock(val timer: Timer) : Command()
+        data class NavigateToClock(val clock: Clock) : Command()
         object NavigateToCreateTimer : Command()
         object NavigateToSettings : Command()
     }
