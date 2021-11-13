@@ -15,8 +15,8 @@ import androidx.navigation.navArgument
 import com.ledwon.jakub.chessclock.data.repository.AppColorThemeType
 import com.ledwon.jakub.chessclock.data.repository.AppDarkTheme
 import com.ledwon.jakub.chessclock.di.provideNavViewModel
-import com.ledwon.jakub.chessclock.feature.choose_timer.ChooseTimerViewModel
-import com.ledwon.jakub.chessclock.feature.choose_timer.ChooseTimerScreen
+import com.ledwon.jakub.chessclock.feature.choose_clock.ChooseClockScreen
+import com.ledwon.jakub.chessclock.feature.choose_clock.ChooseClockViewModel
 import com.ledwon.jakub.chessclock.feature.clock.ClockScreen
 import com.ledwon.jakub.chessclock.feature.clock.ClockViewModel
 import com.ledwon.jakub.chessclock.feature.clock.model.ClockInitialData
@@ -75,11 +75,11 @@ class MainActivity : AppCompatActivity() {
                                 startDestination = Routes.TimerChooserRoute
                             ) {
                                 composable(Routes.TimerChooserRoute) {
-                                    val chooseTimerViewModel: ChooseTimerViewModel =
+                                    val chooseClockViewModel: ChooseClockViewModel =
                                         provideNavViewModel()
-                                    ChooseTimerScreen(
+                                    ChooseClockScreen(
                                         navigationActions = actions,
-                                        chooseTimerViewModel = chooseTimerViewModel
+                                        chooseClockViewModel = chooseClockViewModel
                                     )
                                 }
                                 composable(Routes.SettingsRoute) {

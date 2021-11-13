@@ -1,4 +1,4 @@
-package com.ledwon.jakub.chessclock.feature.choose_timer
+package com.ledwon.jakub.chessclock.feature.choose_clock
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -21,48 +21,48 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.ledwon.jakub.chessclock.R
-import com.ledwon.jakub.chessclock.data.model.ClockTime
-import com.ledwon.jakub.chessclock.data.model.Timer
+import com.ledwon.jakub.chessclock.model.Clock
+import com.ledwon.jakub.chessclock.model.PlayerTime
 import com.ledwon.jakub.chessclock.navigation.NavigationActions
 import com.ledwon.jakub.chessclock.navigation.OpenClockPayload
 import com.ledwon.jakub.chessclock.ui.widgets.OutlinePrimaryButton
-import com.ledwon.jakub.chessclock.util.TimerNameProvider.obtainDeferrableName
+import com.ledwon.jakub.chessclock.util.ClockNameProvider.obtainDeferrableName
 import com.ledwon.jakub.chessclock.util.getString
 
 @ExperimentalFoundationApi
 @Composable
-fun ChooseTimerScreen(navigationActions: NavigationActions, chooseTimerViewModel: ChooseTimerViewModel) {
+fun ChooseClockScreen(navigationActions: NavigationActions, chooseClockViewModel: ChooseClockViewModel) {
 
-    val chooseTimerState: ChooseTimerState by chooseTimerViewModel.chooseTimerState.observeAsState(
-        initial = ChooseTimerState(
+    val chooseClockState: ChooseClockState by chooseClockViewModel.chooseClockState.observeAsState(
+        initial = ChooseClockState(
             isSelectableModeOn = false,
-            timersToSelected = emptyMap()
+            clocksToSelected = emptyMap()
         )
     )
 
     val lifecycleOwner = LocalLifecycleOwner.current
 
     LaunchedEffect(Unit) {
-        chooseTimerViewModel.command.observe(lifecycleOwner, {
-            if (it == null) {
+        chooseClockViewModel.command.observe(lifecycleOwner, { command ->
+            if (command == null) {
                 return@observe
             }
-            when (it) {
-                is ChooseTimerViewModel.Command.NavigateToClock -> navigationActions.openClock(
+            when (command) {
+                is ChooseClockViewModel.Command.NavigateToClock -> navigationActions.openClock(
                     OpenClockPayload(
-                        whiteClock = it.timer.whiteClockTime,
-                        blackCLock = it.timer.blackClockTime,
+                        whiteClock = command.clock.whitePlayerTime,
+                        blackCLock = command.clock.blackPlayerTime,
                     )
                 )
-                is ChooseTimerViewModel.Command.NavigateToCreateTimer -> navigationActions.openCreateTimer()
-                is ChooseTimerViewModel.Command.NavigateToSettings -> navigationActions.openSettings()
+                is ChooseClockViewModel.Command.NavigateToCreateTimer -> navigationActions.openCreateTimer()
+                is ChooseClockViewModel.Command.NavigateToSettings -> navigationActions.openSettings()
             }
         })
     }
 
     Scaffold(
         topBar = {
-            ChooseTimerTopBar(onSettingsIconClick = chooseTimerViewModel::onOpenSettingsClicked)
+            ChooseClockTopBar(onSettingsIconClick = chooseClockViewModel::onOpenSettingsClicked)
         }
     ) { paddingValues ->
         ConstraintLayout(
@@ -76,7 +76,7 @@ fun ChooseTimerScreen(navigationActions: NavigationActions, chooseTimerViewModel
             LazyColumn(
                 modifier = Modifier
                     .padding(
-                        bottom = if (chooseTimerState.isSelectableModeOn) 48.dp else
+                        bottom = if (chooseClockState.isSelectableModeOn) 48.dp else
                             0.dp
                     )
                     .constrainAs(column) {
@@ -87,42 +87,42 @@ fun ChooseTimerScreen(navigationActions: NavigationActions, chooseTimerViewModel
                             modifier = Modifier
                                 .padding(16.dp)
                                 .fillMaxWidth(),
-                            onClick = chooseTimerViewModel::onCreateTimerClicked
+                            onClick = chooseClockViewModel::onCreateClockClicked
                         ) {
                             Text(getString(R.string.create_new_clock), fontSize = 21.sp)
                         }
                     }
 
-                    items(chooseTimerState.timersToSelected.toList()) { (timer, selected) ->
+                    items(chooseClockState.clocksToSelected.toList()) { (clock, selected) ->
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            if (chooseTimerState.isSelectableModeOn) {
+                            if (chooseClockState.isSelectableModeOn) {
                                 RadioButton(
                                     modifier = Modifier.padding(start = 8.dp),
                                     selected = selected,
-                                    onClick = { chooseTimerViewModel.onSelectTimerClick(timer) }
+                                    onClick = { chooseClockViewModel.onSelectClockClick(clock) }
                                 )
                             }
-                            TimeCard(
+                            ClockCard(
                                 modifier = Modifier
                                     .padding(vertical = 12.dp, horizontal = 16.dp)
                                     .fillMaxWidth()
                                     .combinedClickable(
                                         onClick = {
-                                            if (chooseTimerState.isSelectableModeOn) {
-                                                chooseTimerViewModel.onSelectTimerClick(timer)
+                                            if (chooseClockState.isSelectableModeOn) {
+                                                chooseClockViewModel.onSelectClockClick(clock)
                                             } else {
-                                                chooseTimerViewModel.onTimerClicked(timer)
+                                                chooseClockViewModel.onClockClicked(clock)
                                             }
                                         },
-                                        onLongClick = chooseTimerViewModel::onTimerLongClicked
+                                        onLongClick = chooseClockViewModel::onTimerLongClicked
                                     ),
-                                timer = timer,
-                                onStarClicked = chooseTimerViewModel::onStarClicked
+                                clock = clock,
+                                onStarClicked = chooseClockViewModel::onStarClicked
                             )
                         }
                     }
                 })
-            if (chooseTimerState.isSelectableModeOn) {
+            if (chooseClockState.isSelectableModeOn) {
                 Button(
                     elevation = ButtonDefaults.elevation(6.dp),
                     colors = ButtonDefaults.buttonColors(
@@ -136,7 +136,7 @@ fun ChooseTimerScreen(navigationActions: NavigationActions, chooseTimerViewModel
                         ) {
                             bottom.linkTo(parent.bottom)
                         },
-                    onClick = chooseTimerViewModel::onRemoveTimers
+                    onClick = chooseClockViewModel::onRemoveClocks
                 ) {
                     Text(
                         modifier = Modifier.padding(vertical = 8.dp),
@@ -151,7 +151,7 @@ fun ChooseTimerScreen(navigationActions: NavigationActions, chooseTimerViewModel
 }
 
 @Composable
-fun ChooseTimerTopBar(
+fun ChooseClockTopBar(
     onSettingsIconClick: () -> Unit
 ) {
     TopAppBar(
@@ -166,21 +166,20 @@ fun ChooseTimerTopBar(
 }
 
 @Composable
-fun TimeCard(
-    timer: Timer,
+fun ClockCard(
+    clock: Clock,
     modifier: Modifier = Modifier,
-    onStarClicked: (Timer) -> Unit
+    onStarClicked: (Clock) -> Unit
 ) {
     Card(
         modifier = modifier,
         elevation = 6.dp,
         backgroundColor = MaterialTheme.colors.primary
     ) {
-
         Column(modifier = Modifier.padding(8.dp), horizontalAlignment = Alignment.Start) {
             Text(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
-                text = timer.obtainDeferrableName().getString(),
+                text = clock.obtainDeferrableName().getString(),
                 color = MaterialTheme.colors.onSurface,
                 fontSize = 19.sp
             )
@@ -191,8 +190,8 @@ fun TimeCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                ClockIconsColumn(clockTime = timer.whiteClockTime)
-                ClockIconsColumn(clockTime = timer.blackClockTime, isWhite = false)
+                ClockIconsColumn(playerTime = clock.whitePlayerTime)
+                ClockIconsColumn(playerTime = clock.blackPlayerTime, isWhite = false)
                 val star = painterResource(id = R.drawable.ic_star_24)
                 val starOutline = painterResource(id = R.drawable.ic_star_border_24)
                 IconButton(
@@ -200,9 +199,9 @@ fun TimeCard(
                         .height(24.dp)
                         .width(24.dp)
                         .align(alignment = Alignment.CenterVertically),
-                    onClick = { onStarClicked(timer) }) {
+                    onClick = { onStarClicked(clock) }) {
                     Icon(
-                        painter = if (timer.isFavourite) star else starOutline,
+                        painter = if (clock.isFavourite) star else starOutline,
                         contentDescription = getString(resId = R.string.favourite_clock_content_description),
                         tint = Color.Yellow
                     )
@@ -213,7 +212,7 @@ fun TimeCard(
 }
 
 @Composable
-fun ClockIconsColumn(clockTime: ClockTime, modifier: Modifier = Modifier, isWhite: Boolean = true) {
+fun ClockIconsColumn(playerTime: PlayerTime, modifier: Modifier = Modifier, isWhite: Boolean = true) {
     Column(modifier = modifier.padding(top = 4.dp)) {
         Row(modifier = Modifier.defaultMinSize(minHeight = 24.dp)) {
             val clockImage = painterResource(id = R.drawable.ic_clock_24)
@@ -224,15 +223,15 @@ fun ClockIconsColumn(clockTime: ClockTime, modifier: Modifier = Modifier, isWhit
                 colorFilter = ColorFilter.tint(if (isWhite) Color.White else Color.Black)
             )
             Text(
-                text = clockTime.toString(),
+                text = playerTime.toString(),
                 color = MaterialTheme.colors.onSurface,
                 fontSize = 17.sp
             )
         }
-        clockTime.increment.takeIf { it > 0 }?.let {
+        if (playerTime.increment > 0) {
             Row {
-                val incrementClock = ClockTime(
-                    seconds = it
+                val incrementClock = PlayerTime(
+                    seconds = playerTime.increment
                 )
                 val incrementImage = painterResource(id = R.drawable.ic_arrow_circle_up_24)
                 Image(
@@ -249,5 +248,4 @@ fun ClockIconsColumn(clockTime: ClockTime, modifier: Modifier = Modifier, isWhit
             }
         }
     }
-
 }
