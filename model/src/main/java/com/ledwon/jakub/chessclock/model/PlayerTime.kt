@@ -1,9 +1,9 @@
-package com.ledwon.jakub.chessclock.data.model
+package com.ledwon.jakub.chessclock.model
 
-data class ClockTime(
-    val seconds: Int = 0,
-    val minutes: Int = 0,
+data class PlayerTime(
     val hours: Int = 0,
+    val minutes: Int = 0,
+    val seconds: Int = 0,
     val increment: Int = 0
 ) {
     private fun formatToTwoDigitsString(value: Int) = if (value < 10) "0$value" else value
@@ -11,6 +11,7 @@ data class ClockTime(
     val secondsSum: Int
         get() = seconds + minutes * 60 + hours * 60 * 60
 
+    //todo that should not be in toString()
     override fun toString(): String {
         return if (hours == 0) {
             textWithoutHours
