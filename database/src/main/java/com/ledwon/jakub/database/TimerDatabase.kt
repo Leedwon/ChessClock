@@ -7,7 +7,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.ledwon.jakub.database.model.Timer
 
 @Database(entities = [Timer::class], version = 2)
-abstract class TimerDatabase : RoomDatabase() {
+internal abstract class TimerDatabase : RoomDatabase() {
     abstract fun timerDao(): TimerDao
 }
 
