@@ -1,4 +1,4 @@
-package com.ledwon.jakub.chessclock.feature.create_timer
+package com.ledwon.jakub.chessclock.feature.create_clock
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -15,6 +15,8 @@ import androidx.compose.ui.unit.sp
 import com.ledwon.jakub.chessclock.R
 import com.ledwon.jakub.chessclock.navigation.NavigationActions
 import com.ledwon.jakub.chessclock.navigation.OpenClockPayload
+import com.ledwon.jakub.chessclock.ui.widgets.NumberPicker
+import com.ledwon.jakub.chessclock.ui.widgets.NumberPickerState
 import com.ledwon.jakub.chessclock.ui.widgets.OutlinePrimaryButton
 import com.ledwon.jakub.chessclock.util.getString
 import kotlinx.coroutines.flow.collect
@@ -32,7 +34,7 @@ data class NumberPickerStates(
 )
 
 @Composable
-fun CreateTimerScreen(navigationActions: NavigationActions, createTimerViewModel: CreateTimerViewModel) {
+fun CreateClockScreen(navigationActions: NavigationActions, createClockViewModel: CreateClockViewModel) {
 
     val hoursRange = 0..23
     val minutesRange = 0..59
@@ -56,7 +58,7 @@ fun CreateTimerScreen(navigationActions: NavigationActions, createTimerViewModel
 
     LaunchedEffect(Unit) {
         scope.launch {
-            createTimerViewModel.state.collect {
+            createClockViewModel.state.collect {
                 state.blackHoursState.updateCurrentOffset(it.blackClock.hours.toFloat())
                 state.blackMinutesState.updateCurrentOffset(it.blackClock.minutes.toFloat())
                 state.blackSecondsState.updateCurrentOffset(it.blackClock.seconds.toFloat())
@@ -72,9 +74,9 @@ fun CreateTimerScreen(navigationActions: NavigationActions, createTimerViewModel
     val lifecycleObserver = LocalLifecycleOwner.current
 
     LaunchedEffect(Unit) {
-        createTimerViewModel.command.observe(lifecycleObserver, {
+        createClockViewModel.command.observe(lifecycleObserver, {
             when (it) {
-                is CreateTimerViewModel.Command.NavigateToClock -> {
+                is CreateClockViewModel.Command.NavigateToClock -> {
                     navigationActions.openClock(
                         OpenClockPayload(
                             whiteClock = it.state.whiteClock,
@@ -82,17 +84,17 @@ fun CreateTimerScreen(navigationActions: NavigationActions, createTimerViewModel
                         )
                     )
                 }
-                is CreateTimerViewModel.Command.NavigateBack -> {
+                is CreateClockViewModel.Command.NavigateBack -> {
                     navigationActions.navigateBack()
                 }
-                is CreateTimerViewModel.Command.Noop -> {
+                is CreateClockViewModel.Command.Noop -> {
                     //noop
                 }
             }
         })
     }
 
-    val timersMerged = createTimerViewModel.timersMerged.collectAsState()
+    val clocksMerged = createClockViewModel.clocksMerged.collectAsState()
 
     Scaffold(
         topBar = {
@@ -100,7 +102,7 @@ fun CreateTimerScreen(navigationActions: NavigationActions, createTimerViewModel
                 title = { Text(text = getString(R.string.create_clock_title)) },
                 navigationIcon = {
                     val backIcon = painterResource(id = R.drawable.ic_arrow_back_24)
-                    IconButton(onClick = createTimerViewModel::onBackClick) {
+                    IconButton(onClick = createClockViewModel::onBackClick) {
                         Icon(painter = backIcon, contentDescription = getString(R.string.navigate_back_content_description))
                     }
                 }
@@ -129,14 +131,14 @@ fun CreateTimerScreen(navigationActions: NavigationActions, createTimerViewModel
                         modifier = Modifier
                             .width(32.dp)
                             .height(32.dp),
-                        checked = timersMerged.value,
-                        onCheckedChange = createTimerViewModel::onTimersMergeClick
+                        checked = clocksMerged.value,
+                        onCheckedChange = createClockViewModel::onClocksMergeClick
                     )
                 }
             }
             item {
                 Text(
-                    text = if (timersMerged.value) getString(R.string.create_clock_for_both_players) else getString(R.string.create_clock_white),
+                    text = if (clocksMerged.value) getString(R.string.create_clock_for_both_players) else getString(R.string.create_clock_white),
                     fontSize = 24.sp
                 )
             }
@@ -148,13 +150,13 @@ fun CreateTimerScreen(navigationActions: NavigationActions, createTimerViewModel
                         secondsPickerState = state.whiteSecondsState,
                         incrementPickerState = state.whiteIncrementState
                     ),
-                    onHoursChanged = createTimerViewModel::onWhiteHoursChanged,
-                    onMinutesChanged = createTimerViewModel::onWhiteMinutesChanged,
-                    onSecondsChanged = createTimerViewModel::onWhiteSecondsChanged,
-                    onIncrementChanged = createTimerViewModel::onWhiteIncrementChanged
+                    onHoursChanged = createClockViewModel::onWhiteHoursChanged,
+                    onMinutesChanged = createClockViewModel::onWhiteMinutesChanged,
+                    onSecondsChanged = createClockViewModel::onWhiteSecondsChanged,
+                    onIncrementChanged = createClockViewModel::onWhiteIncrementChanged
                 )
             }
-            if (!timersMerged.value) {
+            if (!clocksMerged.value) {
                 item { Text(text = getString(R.string.create_clock_black), fontSize = 24.sp) }
                 item {
                     ClockPicker(
@@ -164,10 +166,10 @@ fun CreateTimerScreen(navigationActions: NavigationActions, createTimerViewModel
                             secondsPickerState = state.blackSecondsState,
                             incrementPickerState = state.blackIncrementState
                         ),
-                        onHoursChanged = createTimerViewModel::onBlackHoursChanged,
-                        onMinutesChanged = createTimerViewModel::onBlackMinutesChanged,
-                        onSecondsChanged = createTimerViewModel::onBlackSecondsChanged,
-                        onIncrementChanged = createTimerViewModel::onBlackIncrementChanged
+                        onHoursChanged = createClockViewModel::onBlackHoursChanged,
+                        onMinutesChanged = createClockViewModel::onBlackMinutesChanged,
+                        onSecondsChanged = createClockViewModel::onBlackSecondsChanged,
+                        onIncrementChanged = createClockViewModel::onBlackIncrementChanged
 
                     )
                 }
@@ -179,15 +181,15 @@ fun CreateTimerScreen(navigationActions: NavigationActions, createTimerViewModel
                         .padding(16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    OutlinePrimaryButton(onClick = createTimerViewModel::onStartGameClick) {
+                    OutlinePrimaryButton(onClick = createClockViewModel::onStartGameClick) {
                         Text(getString(R.string.start), fontSize = 19.sp)
                     }
                     OutlinePrimaryButton(
-                        onClick = createTimerViewModel::onStartGameAndSaveTimerClick
+                        onClick = createClockViewModel::onStartGameAndSaveClockClick
                     ) {
                         Text(getString(R.string.start_and_save), fontSize = 19.sp)
                     }
-                    OutlinePrimaryButton(onClick = createTimerViewModel::onSaveTimerClick) {
+                    OutlinePrimaryButton(onClick = createClockViewModel::onSaveClockClick) {
                         Text(getString(R.string.save), fontSize = 19.sp)
                     }
                 }
@@ -213,22 +215,22 @@ fun ClockPicker(
     onIncrementChanged: ((Int) -> Unit)? = null
 ) {
     Row {
-        TimerPickerWithDescription(
+        TimePickerWithDescription(
             numberPickerState = clockPickerData.hoursPickerState,
             text = getString(R.string.hours),
             onValueChangedListener = onHoursChanged
         )
-        TimerPickerWithDescription(
+        TimePickerWithDescription(
             numberPickerState = clockPickerData.minutesPickerState,
             text = getString(R.string.minutes),
             onValueChangedListener = onMinutesChanged
         )
-        TimerPickerWithDescription(
+        TimePickerWithDescription(
             numberPickerState = clockPickerData.secondsPickerState,
             text = getString(R.string.seconds),
             onValueChangedListener = onSecondsChanged
         )
-        TimerPickerWithDescription(
+        TimePickerWithDescription(
             numberPickerState = clockPickerData.incrementPickerState,
             text = getString(R.string.increment),
             onValueChangedListener = onIncrementChanged
@@ -238,7 +240,7 @@ fun ClockPicker(
 }
 
 @Composable
-fun TimerPickerWithDescription(
+fun TimePickerWithDescription(
     text: String,
     numberPickerState: NumberPickerState,
     onValueChangedListener: ((Int) -> Unit)? = null,

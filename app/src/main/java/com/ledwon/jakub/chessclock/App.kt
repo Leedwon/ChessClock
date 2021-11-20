@@ -7,7 +7,7 @@ import com.ledwon.jakub.chessclock.data.repository.repositoryModule
 import com.ledwon.jakub.chessclock.di.choose_timer.chooseTimerModule
 import com.ledwon.jakub.chessclock.di.clock.clockModule
 import com.ledwon.jakub.chessclock.di.clock_preview.clockPreviewModule
-import com.ledwon.jakub.chessclock.di.create_timer.createTimerModule
+import com.ledwon.jakub.chessclock.di.create_clock.createClockModule
 import com.ledwon.jakub.chessclock.di.main.mainModule
 import com.ledwon.jakub.chessclock.di.settings.settingsModule
 import com.ledwon.jakub.chessclock.feature.stats.statsModule
@@ -25,7 +25,7 @@ class App : Application() {
             modules(
                 chooseTimerModule,
                 clockModule,
-                createTimerModule,
+                createClockModule,
                 databaseModule,
                 persistenceModule,
                 repositoryModule,
