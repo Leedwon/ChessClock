@@ -4,7 +4,7 @@ import android.app.Application
 import com.ledwon.jakub.chessclock.analytics.analyticsModule
 import com.ledwon.jakub.chessclock.data.persistance.persistenceModule
 import com.ledwon.jakub.chessclock.data.repository.repositoryModule
-import com.ledwon.jakub.chessclock.di.choose_timer.chooseTimerModule
+import com.ledwon.jakub.chessclock.di.choose_clock.chooseClockModule
 import com.ledwon.jakub.chessclock.di.clock.clockModule
 import com.ledwon.jakub.chessclock.di.clock_preview.clockPreviewModule
 import com.ledwon.jakub.chessclock.di.create_clock.createClockModule
@@ -23,7 +23,7 @@ class App : Application() {
         startKoin {
             androidContext(this@App)
             modules(
-                chooseTimerModule,
+                chooseClockModule,
                 clockModule,
                 createClockModule,
                 databaseModule,
