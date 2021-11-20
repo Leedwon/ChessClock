@@ -1,4 +1,4 @@
-package com.ledwon.jakub.chessclock.feature.create_timer
+package com.ledwon.jakub.chessclock.feature.create_clock
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -6,35 +6,36 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ledwon.jakub.chessclock.analytics.AnalyticsEvent
 import com.ledwon.jakub.chessclock.analytics.AnalyticsManager
-import com.ledwon.jakub.chessclock.data.model.*
-import com.ledwon.jakub.chessclock.data.repository.TimerRepository
+import com.ledwon.jakub.chessclock.data.repository.ClockRepository
+import com.ledwon.jakub.chessclock.model.Clock
+import com.ledwon.jakub.chessclock.model.PlayerTime
 import com.ledwon.jakub.chessclock.util.tryUpdate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-data class State(
-    val whiteClock: ClockTime = ClockTime(minutes = 5),
-    val blackClock: ClockTime = ClockTime(minutes = 5)
+data class CreateClockState(
+    val whiteClock: PlayerTime = PlayerTime(minutes = 5),
+    val blackClock: PlayerTime = PlayerTime(minutes = 5)
 )
 
-class CreateTimerViewModel(
-    private val timerRepository: TimerRepository,
+class CreateClockViewModel(
+    private val clockRepository: ClockRepository,
     private val analyticsManager: AnalyticsManager
 ) : ViewModel() {
-    private val _state = MutableStateFlow(State())
-    val state: StateFlow<State> = _state
+    private val _state = MutableStateFlow(CreateClockState())
+    val state: StateFlow<CreateClockState> = _state
 
     private val _command = MutableLiveData<Command>(Command.Noop)
     val command: LiveData<Command> = _command
 
-    private val _timersMerged = MutableStateFlow<Boolean>(true)
-    val timersMerged: StateFlow<Boolean> = _timersMerged
+    private val _clocksMerged = MutableStateFlow<Boolean>(true)
+    val clocksMerged: StateFlow<Boolean> = _clocksMerged
 
-    fun onTimersMergeClick(timersMerged: Boolean) {
-        _timersMerged.tryEmit(timersMerged)
-        if (timersMerged) {
+    fun onClocksMergeClick(clocksMerged: Boolean) {
+        _clocksMerged.tryEmit(clocksMerged)
+        if (clocksMerged) {
             _state.tryUpdate {
                 it.copy(
                     blackClock = it.whiteClock
@@ -47,7 +48,7 @@ class CreateTimerViewModel(
         _state.tryUpdate {
             it.copy(
                 whiteClock = it.whiteClock.copy(hours = value),
-                blackClock = if (timersMerged.value) it.blackClock.copy(hours = value) else it.blackClock
+                blackClock = if (clocksMerged.value) it.blackClock.copy(hours = value) else it.blackClock
             )
         }
     }
@@ -56,7 +57,7 @@ class CreateTimerViewModel(
         _state.tryUpdate {
             it.copy(
                 whiteClock = it.whiteClock.copy(minutes = value),
-                blackClock = if (timersMerged.value) it.blackClock.copy(minutes = value) else it.blackClock
+                blackClock = if (clocksMerged.value) it.blackClock.copy(minutes = value) else it.blackClock
             )
         }
     }
@@ -65,7 +66,7 @@ class CreateTimerViewModel(
         _state.tryUpdate {
             it.copy(
                 whiteClock = it.whiteClock.copy(seconds = value),
-                blackClock = if (timersMerged.value) it.blackClock.copy(seconds = value) else it.blackClock
+                blackClock = if (clocksMerged.value) it.blackClock.copy(seconds = value) else it.blackClock
             )
         }
     }
@@ -74,7 +75,7 @@ class CreateTimerViewModel(
         _state.tryUpdate {
             it.copy(
                 whiteClock = it.whiteClock.copy(increment = value),
-                blackClock = if (timersMerged.value) it.blackClock.copy(increment = value) else it.blackClock
+                blackClock = if (clocksMerged.value) it.blackClock.copy(increment = value) else it.blackClock
             )
         }
     }
@@ -118,33 +119,33 @@ class CreateTimerViewModel(
 
     fun onStartGameClick() {
         navigateToClock()
-        analyticsManager.logEvent(AnalyticsEvent.OpenClockFromCreateTimer(timer = buildTimerFromState()))
+        analyticsManager.logEvent(AnalyticsEvent.OpenClockFromCreateClock(clock = buildClockFromState()))
     }
 
-    private fun buildTimerFromState(): Timer {
+    private fun buildClockFromState(): Clock {
         val state = _state.value
-        return Timer(
-            whiteClockTime = state.whiteClock,
-            blackClockTime = state.blackClock,
+        return Clock(
+            whitePlayerTime = state.whiteClock,
+            blackPlayerTime = state.blackClock,
             isFavourite = false
         )
     }
 
-    fun onSaveTimerClick() {
+    fun onSaveClockClick() {
         viewModelScope.launch(Dispatchers.IO) {
-            val timer = buildTimerFromState()
-            timerRepository.addTimer(timer)
-            analyticsManager.logEvent(AnalyticsEvent.AddClock(timer))
+            val clock = buildClockFromState()
+            clockRepository.addClock(clock)
+            analyticsManager.logEvent(AnalyticsEvent.AddClock(clock))
 
             _command.postValue(Command.NavigateBack)
         }
     }
 
-    fun onStartGameAndSaveTimerClick() {
-        val timer = buildTimerFromState()
+    fun onStartGameAndSaveClockClick() {
+        val clock = buildClockFromState()
         viewModelScope.launch(Dispatchers.IO) {
-            timerRepository.addTimer(timer)
-            analyticsManager.logEvent(AnalyticsEvent.OpenAndAddClock(timer))
+            clockRepository.addClock(clock)
+            analyticsManager.logEvent(AnalyticsEvent.OpenAndAddClock(clock))
         }
         navigateToClock()
     }
@@ -154,7 +155,7 @@ class CreateTimerViewModel(
     }
 
     sealed class Command {
-        data class NavigateToClock(val state: State) : Command()
+        data class NavigateToClock(val state: CreateClockState) : Command()
         object NavigateBack : Command()
         object Noop : Command()
     }

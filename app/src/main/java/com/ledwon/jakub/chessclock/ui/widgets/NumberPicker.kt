@@ -1,4 +1,4 @@
-package com.ledwon.jakub.chessclock.feature.create_timer
+package com.ledwon.jakub.chessclock.ui.widgets
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
