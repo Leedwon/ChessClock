@@ -1,2 +1,4 @@
 rootProject.name = "ChessClock"
 include ':app'
+include ':database'
+include ':model'

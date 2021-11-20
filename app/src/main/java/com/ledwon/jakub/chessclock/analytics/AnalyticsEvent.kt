@@ -2,7 +2,7 @@ package com.ledwon.jakub.chessclock.analytics
 
 import android.os.Bundle
 import androidx.core.os.bundleOf
-import com.ledwon.jakub.chessclock.data.model.Timer
+import com.ledwon.jakub.chessclock.model.Clock
 import com.ledwon.jakub.chessclock.data.repository.AppColorThemeType
 import com.ledwon.jakub.chessclock.data.repository.ClockTypesRepository
 
@@ -26,27 +26,27 @@ sealed class AnalyticsEvent {
         override val eventName: String = "OpenStats"
     }
 
-    data class OpenClockFromChooseTimer(val timer: Timer) : AnalyticsEvent() {
+    data class OpenClockFromChooseClock(val clock: Clock) : AnalyticsEvent() {
         override val eventName: String = "OpenClock"
-        override val params: Bundle = timer.toBundle().apply { putString(clockOpenedFromKey, "Choose Timer") }
+        override val params: Bundle = clock.toBundle().apply { putString(clockOpenedFromKey, "Choose clock") }
     }
 
-    data class AddClock(val timer: Timer) : AnalyticsEvent() {
+    data class AddClock(val clock: Clock) : AnalyticsEvent() {
         override val eventName: String = "AddClock"
-        override val params: Bundle = timer.toBundle()
+        override val params: Bundle = clock.toBundle()
     }
 
-    data class OpenAndAddClock(val timer: Timer) : AnalyticsEvent() {
+    data class OpenAndAddClock(val clock: Clock) : AnalyticsEvent() {
         override val eventName: String = "OpenAndAddClock"
-        override val params: Bundle = timer.toBundle()
+        override val params: Bundle = clock.toBundle()
     }
 
-    data class OpenClockFromCreateTimer(val timer: Timer) : AnalyticsEvent() {
+    data class OpenClockFromCreateClock(val clock: Clock) : AnalyticsEvent() {
         override val eventName: String = "OpenClock"
-        override val params: Bundle = timer.toBundle().apply { putString(clockOpenedFromKey, "Create Timer") }
+        override val params: Bundle = clock.toBundle().apply { putString(clockOpenedFromKey, "Create clock") }
     }
 
-    data class RemoveClock(val clock: Timer) : AnalyticsEvent() {
+    data class RemoveClock(val clock: Clock) : AnalyticsEvent() {
         override val eventName: String = "RemoveClock"
         override val params: Bundle = clock.toBundle()
     }
@@ -71,10 +71,10 @@ sealed class AnalyticsEvent {
         override val params: Bundle = bundleOf("randomizePositions" to randomizePosition)
     }
 
-    protected fun Timer.toBundle() = bundleOf(
-        "whiteSeconds" to this.whiteClockTime.secondsSum,
-        "blackSeconds" to this.blackClockTime.secondsSum,
-        "whiteIncrement" to this.whiteClockTime.increment,
-        "blackIncrement" to this.blackClockTime.increment
+    protected fun Clock.toBundle() = bundleOf(
+        "whiteSeconds" to this.whitePlayerTime.secondsSum,
+        "blackSeconds" to this.blackPlayerTime.secondsSum,
+        "whiteIncrement" to this.whitePlayerTime.increment,
+        "blackIncrement" to this.blackPlayerTime.increment
     )
 }
