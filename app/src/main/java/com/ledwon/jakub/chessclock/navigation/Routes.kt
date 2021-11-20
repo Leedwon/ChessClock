@@ -1,7 +1,7 @@
 package com.ledwon.jakub.chessclock.navigation
 
 import androidx.navigation.NavController
-import com.ledwon.jakub.chessclock.data.model.ClockTime
+import com.ledwon.jakub.chessclock.model.PlayerTime
 import com.ledwon.jakub.chessclock.navigation.Routes.CreateTimerRoute
 import com.ledwon.jakub.chessclock.navigation.Routes.SettingsRoute
 
@@ -32,8 +32,8 @@ object Routes {
 }
 
 data class OpenClockPayload(
-    val whiteClock: ClockTime,
-    val blackCLock: ClockTime
+    val whiteClock: PlayerTime,
+    val blackCLock: PlayerTime
 )
 
 class NavigationActions(navController: NavController) {
