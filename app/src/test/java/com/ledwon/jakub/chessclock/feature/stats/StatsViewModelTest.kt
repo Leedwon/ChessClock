@@ -1,30 +1,18 @@
 package com.ledwon.jakub.chessclock.feature.stats
 
-import com.ledwon.jakub.chessclock.analytics.AnalyticsManager
 import com.ledwon.jakub.chessclock.beEqualTo
 import com.ledwon.jakub.chessclock.feature.stats.data.Move
 import com.ledwon.jakub.chessclock.feature.stats.data.Moves
 import com.ledwon.jakub.chessclock.feature.stats.data.PlayerColor
 import com.ledwon.jakub.chessclock.should
-import io.mockk.MockKAnnotations
-import io.mockk.impl.annotations.MockK
-import org.junit.Before
 import org.junit.Test
 
 class StatsViewModelTest {
 
     private lateinit var viewModel: StatsViewModel
 
-    @MockK
-    private lateinit var analyticsManager: AnalyticsManager
-
-    @Before
-    fun setUp() {
-        MockKAnnotations.init(this, relaxUnitFun = true)
-    }
-
     private fun init(movesMillis: List<Long>) {
-        viewModel = StatsViewModel(movesMillis, analyticsManager)
+        viewModel = StatsViewModel(movesMillis)
     }
 
     @Test
