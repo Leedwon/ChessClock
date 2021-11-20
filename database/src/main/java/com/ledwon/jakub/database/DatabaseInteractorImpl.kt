@@ -6,9 +6,7 @@ import com.ledwon.jakub.database.model.Mappers.toTimer
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-internal class DatabaseInteractorImpl constructor(
-    private val timerDao: TimerDao
-) : DatabaseInteractor {
+internal class DatabaseInteractorImpl(private val timerDao: TimerDao) : DatabaseInteractor {
 
     override fun getAllClocks(): Flow<List<Clock>> {
         return timerDao.getAllTimers().map { timers -> timers.map { it.toClock() } }
