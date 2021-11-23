@@ -2,7 +2,7 @@ package com.ledwon.jakub.chessclock.navigation
 
 import androidx.navigation.NavController
 import com.ledwon.jakub.chessclock.model.PlayerTime
-import com.ledwon.jakub.chessclock.navigation.Routes.CreateTimerRoute
+import com.ledwon.jakub.chessclock.navigation.Routes.CreateClockRoute
 import com.ledwon.jakub.chessclock.navigation.Routes.SettingsRoute
 
 //todo simplify - so we don't rely on hardcoded values in NavActions
@@ -25,7 +25,7 @@ object Routes {
     const val ChooseClockRoute = "ChooseClock"
     const val ClockRoute =
         "Clock/{${ClockArgs.WhiteSeconds}}/{${ClockArgs.BlackSeconds}}/{${ClockArgs.WhiteIncrementSeconds}}/{${ClockArgs.BlackIncrementSeconds}}"
-    const val CreateTimerRoute = "CreateTimer"
+    const val CreateClockRoute = "CreateClock"
     const val SettingsRoute = "Settings"
     const val ClockPreviewRoute = "ClockPreview/{${ClockPreviewArgs.ClockDisplayId}}"
     const val StatsRoute = "Stats/{${StatsArgs.MovesMillisCsv}}"
@@ -45,8 +45,8 @@ class NavigationActions(navController: NavController) {
         navController.navigate("Clock/${it.whiteClock.secondsSum}/${it.blackCLock.secondsSum}/${it.whiteClock.increment}/${it.blackCLock.increment}")
     }
 
-    val openCreateTimer: () -> Unit = {
-        navController.navigate(CreateTimerRoute)
+    val openCreateClock: () -> Unit = {
+        navController.navigate(CreateClockRoute)
     }
 
     val openSettings: () -> Unit = {

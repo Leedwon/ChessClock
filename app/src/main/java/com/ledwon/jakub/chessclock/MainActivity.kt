@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity() {
                                         settingsViewModel = settingsViewModel
                                     )
                                 }
-                                composable(Routes.CreateTimerRoute) {
+                                composable(Routes.CreateClockRoute) {
                                     val createClockViewModel: CreateClockViewModel = provideNavViewModel()
                                     CreateClockScreen(
                                         navigationActions = actions,
