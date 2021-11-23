@@ -72,7 +72,7 @@ class ClockViewModel(
 
     val pulsationEnabled: Flow<Boolean> = settingsRepository.pulsationEnabled
 
-    private val gameTimer: ReceiveChannel<Unit> = ticker(
+    private val gameClock: ReceiveChannel<Unit> = ticker(
         delayMillis = INTERVAL_MILLIS,
         initialDelayMillis = 0,
         context = Dispatchers.Default
@@ -113,13 +113,13 @@ class ClockViewModel(
         _state.postValue(createState())
     }
 
-    fun startGameTimer() {
+    fun resumeClock() {
         if (pauseClock.started) {
             pauseClock.stop()
         }
         gameState = GameState.Running
         viewModelScope.launch(Dispatchers.Default) {
-            for (tick in gameTimer) {
+            for (tick in gameClock) {
                 val executionStartMillis = System.currentTimeMillis()
                 val player = currentPlayer
                 if (player != null && gameState != GameState.Over && gameState != GameState.Paused) {
@@ -149,7 +149,7 @@ class ClockViewModel(
         }
     }
 
-    fun stopTimer() {
+    fun pauseClock() {
         gameState = GameState.Paused
         pauseClock.start()
     }
@@ -186,7 +186,7 @@ class ClockViewModel(
         if (gameState == GameState.BeforeStarted && currPlayer == null) {
             if (player.isFor(black)) {
                 currentPlayer = white
-                startGameTimer()
+                resumeClock()
             }
         }
 
