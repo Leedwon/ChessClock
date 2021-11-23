@@ -1,6 +1,6 @@
 package com.ledwon.jakub.chessclock.feature.clock.util
 
-class PauseTimer {
+class PauseClock {
     private var startTime: Long? = null
     private var stopTime: Long? = null
 
