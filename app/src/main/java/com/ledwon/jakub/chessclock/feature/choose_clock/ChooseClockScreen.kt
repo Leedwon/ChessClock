@@ -54,7 +54,7 @@ fun ChooseClockScreen(navigationActions: NavigationActions, chooseClockViewModel
                         blackCLock = command.clock.blackPlayerTime,
                     )
                 )
-                is ChooseClockViewModel.Command.NavigateToCreateTimer -> navigationActions.openCreateTimer()
+                is ChooseClockViewModel.Command.NavigateToCreateClock -> navigationActions.openCreateClock()
                 is ChooseClockViewModel.Command.NavigateToSettings -> navigationActions.openSettings()
             }
         })
