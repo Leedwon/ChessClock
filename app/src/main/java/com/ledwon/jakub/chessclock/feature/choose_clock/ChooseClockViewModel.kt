@@ -37,7 +37,7 @@ class ChooseClockViewModel(
             prepopulateDataStore.shouldPrepopulateDatabase
                 .collect { shouldPrepopulateDb ->
                     if (shouldPrepopulateDb) {
-                        //reversed because while fetching timers they are sorted desc by id to show user timers as first
+                        //reversed because while fetching clocks they are sorted desc by id to show user clocks as first
                         clockRepository.addClocks(PredefinedClocks.clocks.reversed())
                         prepopulateDataStore.updateShouldPrepopulateDatabase(false)
                     }
