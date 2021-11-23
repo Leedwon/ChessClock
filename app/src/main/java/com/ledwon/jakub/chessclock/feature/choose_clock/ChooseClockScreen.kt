@@ -72,7 +72,7 @@ fun ChooseClockScreen(navigationActions: NavigationActions, chooseClockViewModel
         ) {
 
             val (column, removeSelectedButton) = createRefs()
-            //this padding is a hack for bottom.linkTo(removeSelectedButton.top) causing Create new timer button to move up and be below TopAppBar
+            //this padding is a hack for bottom.linkTo(removeSelectedButton.top) causing Create new clock button to move up and be below TopAppBar
             LazyColumn(
                 modifier = Modifier
                     .padding(
