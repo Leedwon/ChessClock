@@ -114,7 +114,7 @@ fun ChooseClockScreen(navigationActions: NavigationActions, chooseClockViewModel
                                                 chooseClockViewModel.onClockClicked(clock)
                                             }
                                         },
-                                        onLongClick = chooseClockViewModel::onTimerLongClicked
+                                        onLongClick = chooseClockViewModel::onClockLongClicked
                                     ),
                                 clock = clock,
                                 onStarClicked = chooseClockViewModel::onStarClicked
