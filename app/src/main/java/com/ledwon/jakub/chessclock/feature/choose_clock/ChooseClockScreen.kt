@@ -54,7 +54,7 @@ fun ChooseClockScreen(navigationActions: NavigationActions, chooseClockViewModel
                         blackCLock = command.clock.blackPlayerTime,
                     )
                 )
-                is ChooseClockViewModel.Command.NavigateToCreateTimer -> navigationActions.openCreateTimer()
+                is ChooseClockViewModel.Command.NavigateToCreateClock -> navigationActions.openCreateClock()
                 is ChooseClockViewModel.Command.NavigateToSettings -> navigationActions.openSettings()
             }
         })
@@ -72,7 +72,7 @@ fun ChooseClockScreen(navigationActions: NavigationActions, chooseClockViewModel
         ) {
 
             val (column, removeSelectedButton) = createRefs()
-            //this padding is a hack for bottom.linkTo(removeSelectedButton.top) causing Create new timer button to move up and be below TopAppBar
+            //this padding is a hack for bottom.linkTo(removeSelectedButton.top) causing Create new clock button to move up and be below TopAppBar
             LazyColumn(
                 modifier = Modifier
                     .padding(
@@ -114,7 +114,7 @@ fun ChooseClockScreen(navigationActions: NavigationActions, chooseClockViewModel
                                                 chooseClockViewModel.onClockClicked(clock)
                                             }
                                         },
-                                        onLongClick = chooseClockViewModel::onTimerLongClicked
+                                        onLongClick = chooseClockViewModel::onClockLongClicked
                                     ),
                                 clock = clock,
                                 onStarClicked = chooseClockViewModel::onStarClicked

@@ -37,7 +37,7 @@ class ChooseClockViewModel(
             prepopulateDataStore.shouldPrepopulateDatabase
                 .collect { shouldPrepopulateDb ->
                     if (shouldPrepopulateDb) {
-                        //reversed because while fetching timers they are sorted desc by id to show user timers as first
+                        //reversed because while fetching clocks they are sorted desc by id to show user clocks as first
                         clockRepository.addClocks(PredefinedClocks.clocks.reversed())
                         prepopulateDataStore.updateShouldPrepopulateDatabase(false)
                     }
@@ -45,11 +45,11 @@ class ChooseClockViewModel(
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            clockRepository.clocks.collect { timers ->
+            clockRepository.clocks.collect { clocks ->
                 _chooseClockState.postValue(
                     ChooseClockState(
                         isSelectableModeOn = _chooseClockState.value?.isSelectableModeOn ?: false,
-                        clocksToSelected = timers.associateWith { false }
+                        clocksToSelected = clocks.associateWith { false }
                     )
                 )
             }
@@ -62,16 +62,16 @@ class ChooseClockViewModel(
     }
 
     fun onCreateClockClicked() {
-        _command.value = Command.NavigateToCreateTimer.also { analyticsManager.logEvent(AnalyticsEvent.OpenCreateClock) }
+        _command.value = Command.NavigateToCreateClock.also { analyticsManager.logEvent(AnalyticsEvent.OpenCreateClock) }
         _command.value = null
     }
 
     fun onRemoveClocks() {
         val state = _chooseClockState.value!!
         viewModelScope.launch(Dispatchers.IO) {
-            val timersToRemove = state.clocksToSelected.filter { it.value }.keys.toList()
-            clockRepository.deleteClocks(timersToRemove).also {
-                timersToRemove.forEach { analyticsManager.logEvent(AnalyticsEvent.RemoveClock(it)) }
+            val clocksToRemove = state.clocksToSelected.filter { it.value }.keys.toList()
+            clockRepository.deleteClocks(clocksToRemove).also {
+                clocksToRemove.forEach { analyticsManager.logEvent(AnalyticsEvent.RemoveClock(it)) }
             }
         }
         _chooseClockState.postValue(state.copy(isSelectableModeOn = false))
@@ -82,7 +82,7 @@ class ChooseClockViewModel(
         _command.value = null
     }
 
-    fun onTimerLongClicked() {
+    fun onClockLongClicked() {
         _chooseClockState.postUpdate { currentState ->
             currentState.copy(
                 isSelectableModeOn = !currentState.isSelectableModeOn,
@@ -118,7 +118,7 @@ class ChooseClockViewModel(
 
     sealed class Command {
         data class NavigateToClock(val clock: Clock) : Command()
-        object NavigateToCreateTimer : Command()
+        object NavigateToCreateClock : Command()
         object NavigateToSettings : Command()
     }
 }

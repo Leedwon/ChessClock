@@ -120,7 +120,7 @@ fun ClockScreen(actions: NavigationActions, clockViewModel: ClockViewModel) {
                     modifier = Modifier
                         .size(centerButtonSize)
                         .rotate(centerButtonRotations),
-                    onClick = { clockViewModel.stopTimer() },
+                    onClick = { clockViewModel.pauseClock() },
                     icon = painterResource(id = R.drawable.ic_pause_48),
                     iconTint = Color.Red,
                     iconContentDescription = getString(resId = R.string.pause_clock_content_description)
@@ -135,7 +135,7 @@ fun ClockScreen(actions: NavigationActions, clockViewModel: ClockViewModel) {
                         modifier = Modifier
                             .size(centerButtonSize)
                             .rotate(centerButtonRotations),
-                        onClick = { clockViewModel.startGameTimer() },
+                        onClick = { clockViewModel.resumeClock() },
                         icon = painterResource(id = R.drawable.ic_play_48),
                         iconTint = Color.Green,
                         iconContentDescription = getString(resId = R.string.resume_clock_content_description)
