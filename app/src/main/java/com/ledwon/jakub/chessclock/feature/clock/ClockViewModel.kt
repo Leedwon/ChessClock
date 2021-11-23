@@ -11,7 +11,7 @@ import com.ledwon.jakub.chessclock.feature.clock.model.ClockInitialData
 import com.ledwon.jakub.chessclock.feature.clock.model.GameState
 import com.ledwon.jakub.chessclock.feature.clock.model.Player
 import com.ledwon.jakub.chessclock.feature.clock.model.PlayerDisplay
-import com.ledwon.jakub.chessclock.feature.clock.util.PauseTimer
+import com.ledwon.jakub.chessclock.feature.clock.util.PauseClock
 import com.ledwon.jakub.chessclock.feature.common.ClockDisplay
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -24,7 +24,7 @@ import java.lang.Math.random
 class ClockViewModel(
     clockInitialData: ClockInitialData,
     private val settingsRepository: SettingsRepository,
-    private val pauseTimer: PauseTimer,
+    private val pauseClock: PauseClock,
     private val analyticsManager: AnalyticsManager
 ) : ViewModel() {
 
@@ -114,8 +114,8 @@ class ClockViewModel(
     }
 
     fun startGameTimer() {
-        if (pauseTimer.started) {
-            pauseTimer.stop()
+        if (pauseClock.started) {
+            pauseClock.stop()
         }
         gameState = GameState.Running
         viewModelScope.launch(Dispatchers.Default) {
@@ -145,13 +145,13 @@ class ClockViewModel(
         _state.value = createState()
         movesMillis.clear().also {
             currentMoveStartTimeMillis = null
-            pauseTimer.restart()
+            pauseClock.restart()
         }
     }
 
     fun stopTimer() {
         gameState = GameState.Paused
-        pauseTimer.start()
+        pauseClock.start()
     }
 
     fun cancelRandomization() {
@@ -178,7 +178,7 @@ class ClockViewModel(
 
         val now = System.currentTimeMillis()
         currentMoveStartTimeMillis?.let { currentMoveStartTime ->
-            val pauseTime = if (pauseTimer.canBeConsumed) pauseTimer.consume() else 0
+            val pauseTime = if (pauseClock.canBeConsumed) pauseClock.consume() else 0
             movesMillis.add(now - currentMoveStartTime - pauseTime)
         }
         currentMoveStartTimeMillis = now
