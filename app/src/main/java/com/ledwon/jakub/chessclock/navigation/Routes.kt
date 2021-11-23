@@ -22,7 +22,7 @@ object Routes {
         const val MovesMillisCsv = "movesMillis"
     }
 
-    const val TimerChooserRoute = "TimerChooser"
+    const val ChooseClockRoute = "ChooseClock"
     const val ClockRoute =
         "Clock/{${ClockArgs.WhiteSeconds}}/{${ClockArgs.BlackSeconds}}/{${ClockArgs.WhiteIncrementSeconds}}/{${ClockArgs.BlackIncrementSeconds}}"
     const val CreateTimerRoute = "CreateTimer"

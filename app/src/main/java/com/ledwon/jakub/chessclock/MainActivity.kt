@@ -72,9 +72,9 @@ class MainActivity : AppCompatActivity() {
                         CompositionLocalProvider(LocalNavController provides navController) {
                             NavHost(
                                 navController = navController,
-                                startDestination = Routes.TimerChooserRoute
+                                startDestination = Routes.ChooseClockRoute
                             ) {
-                                composable(Routes.TimerChooserRoute) {
+                                composable(Routes.ChooseClockRoute) {
                                     val chooseClockViewModel: ChooseClockViewModel =
                                         provideNavViewModel()
                                     ChooseClockScreen(
