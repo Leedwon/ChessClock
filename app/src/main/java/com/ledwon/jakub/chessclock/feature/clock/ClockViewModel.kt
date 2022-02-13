@@ -51,9 +51,7 @@ class ClockViewModel(
     private var currentMoveStartTimeMillis: Long? = null
 
     private var playersInOrder: Pair<Player, Player> = white to black
-
     private var currentPlayer: Player? = null
-
     private var gameState: GameState = GameState.RandomizingPositions
         get() =
             if (white.hasLost || black.hasLost) {
