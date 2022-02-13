@@ -18,14 +18,15 @@ import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.ticker
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.take
-import java.lang.Math.random
 
 class ClockViewModel(
     clockInitialData: ClockInitialData,
     private val settingsRepository: SettingsRepository,
     private val pauseClock: PauseClock,
-    private val analyticsManager: AnalyticsManager
+    private val analyticsManager: AnalyticsManager,
+    private val positionRandomizer: PositionRandomizer,
 ) : ViewModel() {
 
     data class State(
@@ -35,7 +36,6 @@ class ClockViewModel(
 
     companion object {
         private const val INTERVAL_MILLIS = 50L
-        private const val MIN_RANDOM_ROUNDS = 9
     }
 
     private val white = Player.White(
@@ -84,26 +84,18 @@ class ClockViewModel(
 
     private var randomizingJob: Job? = null
 
+    private suspend fun isPositionRandomizationEnabled(): Boolean = settingsRepository.randomizePosition.take(1).first()
+
     private fun randomizePositions() {
         randomizingJob = viewModelScope.launch(Dispatchers.Default) {
-            settingsRepository.randomizePosition.take(1).collect { randomizeEnabled ->
-                if (randomizeEnabled) {
-                    val randomRounds = (random() * 100 % 2 + MIN_RANDOM_ROUNDS).toInt()
-                    var currentRound = 1
-
-                    repeat(randomRounds) {
-                        delay(250L.takeIf { currentRound++ <= randomRounds - 3 }
-                            ?: 75L * currentRound++)
-                        swapSides()
-                    }
-                    gameState = GameState.BeforeStarted
-                    _state.postValue(createState())
-                } else {
-                    gameState = GameState.BeforeStarted
+            if (isPositionRandomizationEnabled()) {
+                positionRandomizer.randomizePositions(white = white, black = black).collect {
+                    playersInOrder = it
                     _state.postValue(createState())
                 }
-
             }
+            gameState = GameState.BeforeStarted
+            _state.postValue(createState())
         }
     }
 
