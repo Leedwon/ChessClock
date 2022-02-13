@@ -94,9 +94,25 @@ class ChessClockTest {
         clock.stop()
     }
 
-    private fun createCountdownClock(initialMillis: Long = 1000, intervalMillis: Long = interval) = ChessClock(
+    @Test
+    fun `test increment`() = runBlocking {
+        val clock = createCountdownClock(incrementMillis = 30)
+
+        clock.start()
+
+        clock.millisLeft.test {
+            awaitItem().should.beEqualTo(1_000L)
+            testDispatcher.advanceTimeBy(interval)
+            clock.increment()
+            awaitItem().should.beEqualTo(950L)
+            awaitItem().should.beEqualTo(980L)
+        }
+    }
+
+    private fun createCountdownClock(initialMillis: Long = 1000, intervalMillis: Long = interval, incrementMillis: Long = 0) = ChessClock(
         initialMillis = initialMillis,
         intervalMillis = intervalMillis,
+        incrementMillis = incrementMillis,
         defaultDispatcher = testDispatcher,
     )
 }

@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.*
 class ChessClock(
     private val initialMillis: Long,
     private val intervalMillis: Long = 50,
+    private val incrementMillis: Long = 0,
     private val defaultDispatcher: CoroutineDispatcher,
 ) {
     private val gameClock = flow {
@@ -22,6 +23,13 @@ class ChessClock(
     val millisLeft: Flow<Long> = _millisLeft
 
     /**
+     * Increments clock by [incrementMillis]
+     */
+    fun increment() {
+        _millisLeft.update { it + incrementMillis }
+    }
+
+    /**
      * Starts countdown clock, after calling start make sure to call stop when you don't need clock anymore
      */
     @OptIn(DelicateCoroutinesApi::class)
@@ -29,9 +37,9 @@ class ChessClock(
         clockJob?.cancel()
         clockJob = GlobalScope.launch(defaultDispatcher) {
             gameClock.collect {
-                val newMillis = _millisLeft.value - intervalMillis
-                if (newMillis >= 0) {
-                    _millisLeft.emit(newMillis)
+                _millisLeft.update {
+                    val newMillis = it - intervalMillis
+                    if (newMillis >= 0) newMillis else it
                 }
             }
         }
