@@ -9,7 +9,7 @@ import kotlinx.coroutines.test.TestCoroutineDispatcher
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class CountdownClockTest {
+class ChessClockTest {
 
     private val testDispatcher = TestCoroutineDispatcher()
     private val interval = 50L
@@ -94,7 +94,7 @@ class CountdownClockTest {
         clock.stop()
     }
 
-    private fun createCountdownClock(initialMillis: Long = 1000, intervalMillis: Long = interval) = CountdownClock(
+    private fun createCountdownClock(initialMillis: Long = 1000, intervalMillis: Long = interval) = ChessClock(
         initialMillis = initialMillis,
         intervalMillis = intervalMillis,
         defaultDispatcher = testDispatcher,

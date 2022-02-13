@@ -3,7 +3,7 @@ package com.ledwon.jakub.chessclock.feature.clock
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
-class CountdownClock(
+class ChessClock(
     private val initialMillis: Long,
     private val intervalMillis: Long = 50,
     private val defaultDispatcher: CoroutineDispatcher,
