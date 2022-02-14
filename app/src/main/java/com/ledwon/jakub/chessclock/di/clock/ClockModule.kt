@@ -1,6 +1,7 @@
 package com.ledwon.jakub.chessclock.di.clock
 
 import com.ledwon.jakub.chessclock.feature.clock.ClockViewModel
+import com.ledwon.jakub.chessclock.feature.clock.MovesTracker
 import com.ledwon.jakub.chessclock.feature.clock.PositionRandomizer
 import com.ledwon.jakub.chessclock.feature.clock.util.PauseClock
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -10,14 +11,15 @@ val clockModule = module {
     factory { PauseClock() }
 
     factory { PositionRandomizer() }
+    factory { MovesTracker() }
 
     viewModel { parameters ->
         ClockViewModel(
             clockInitialData = parameters[0],
             settingsRepository = get(),
-            pauseClock = get(),
             analyticsManager = get(),
-            positionRandomizer = get()
+            positionRandomizer = get(),
+            movesTracker = get(),
         )
     }
 }
