@@ -11,7 +11,6 @@ import com.ledwon.jakub.chessclock.feature.clock.model.ClockInitialData
 import com.ledwon.jakub.chessclock.feature.clock.model.GameState
 import com.ledwon.jakub.chessclock.feature.clock.model.Player
 import com.ledwon.jakub.chessclock.feature.clock.model.PlayerDisplay
-import com.ledwon.jakub.chessclock.feature.clock.util.PauseClock
 import com.ledwon.jakub.chessclock.feature.common.ClockDisplay
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -24,9 +23,9 @@ import kotlinx.coroutines.flow.take
 class ClockViewModel(
     clockInitialData: ClockInitialData,
     private val settingsRepository: SettingsRepository,
-    private val pauseClock: PauseClock,
     private val analyticsManager: AnalyticsManager,
     private val positionRandomizer: PositionRandomizer,
+    private val movesTracker: MovesTracker,
 ) : ViewModel() {
 
     data class State(
@@ -46,9 +45,6 @@ class ClockViewModel(
         initialMillis = clockInitialData.blackSeconds * 1000f,
         increment = clockInitialData.blackIncrementSeconds * 1000
     )
-
-    private val movesMillis: MutableList<Long> = mutableListOf()
-    private var currentMoveStartTimeMillis: Long? = null
 
     private var playersInOrder: Pair<Player, Player> = white to black
     private var currentPlayer: Player? = null
@@ -104,8 +100,8 @@ class ClockViewModel(
     }
 
     fun resumeClock() {
-        if (pauseClock.started) {
-            pauseClock.stop()
+        if (gameState == GameState.Paused) {
+            movesTracker.moveResumed()
         }
         gameState = GameState.Running
         viewModelScope.launch(Dispatchers.Default) {
@@ -124,8 +120,10 @@ class ClockViewModel(
 
     fun showStats() {
         analyticsManager.logEvent(AnalyticsEvent.OpenStats)
-        _command.value = Command.NavigateToStats(movesMillis)
-        _command.value = null
+        viewModelScope.launch {
+            _command.value = Command.NavigateToStats(movesTracker.movesMillis.first())
+            _command.value = null
+        }
     }
 
     fun restartGame() {
@@ -133,15 +131,12 @@ class ClockViewModel(
         black.resetTime()
         gameState = GameState.BeforeStarted.also { currentPlayer = null }
         _state.value = createState()
-        movesMillis.clear().also {
-            currentMoveStartTimeMillis = null
-            pauseClock.restart()
-        }
+        movesTracker.restart()
     }
 
     fun pauseClock() {
         gameState = GameState.Paused
-        pauseClock.start()
+        movesTracker.movePaused()
     }
 
     fun cancelRandomization() {
@@ -166,19 +161,17 @@ class ClockViewModel(
             return
         }
 
-        val now = System.currentTimeMillis()
-        currentMoveStartTimeMillis?.let { currentMoveStartTime ->
-            val pauseTime = if (pauseClock.canBeConsumed) pauseClock.consume() else 0
-            movesMillis.add(now - currentMoveStartTime - pauseTime)
-        }
-        currentMoveStartTimeMillis = now
         val currPlayer = currentPlayer
         if (gameState == GameState.BeforeStarted && currPlayer == null) {
             if (player.isFor(black)) {
                 currentPlayer = white
                 resumeClock()
             }
+        } else {
+            movesTracker.moveEnded()
         }
+
+        movesTracker.moveStarted()
 
 
         if (currPlayer != null && player.isFor(currPlayer)) {
