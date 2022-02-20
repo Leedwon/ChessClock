@@ -7,7 +7,7 @@ class ChessClock(
     private val initialMillis: Long,
     private val intervalMillis: Long = 50,
     private val incrementMillis: Long = 0,
-    private val defaultDispatcher: CoroutineDispatcher,
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) {
     private val gameClock = flow {
         delay(intervalMillis)
