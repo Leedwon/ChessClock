@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ledwon.jakub.chessclock.feature.clock.model.PlayerDisplay
 import com.ledwon.jakub.chessclock.ui.*
+import com.ledwon.jakub.chessclock.util.toDeferrableString
 
 @Composable
 fun CircleAnimatedClock(
@@ -48,7 +49,9 @@ fun CircleAnimatedClock(
     val circleSize = remember { height / 2 * 0.75f }
 
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceAround) {
-        val btnModifier = Modifier.weight(1f).fillMaxWidth()
+        val btnModifier = Modifier
+            .weight(1f)
+            .fillMaxWidth()
         ClockButton(
             modifier = btnModifier,
             player = playersDisplay.first,
@@ -56,7 +59,8 @@ fun CircleAnimatedClock(
             enabled = enabled
         ) {
             Box(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
                     .padding(bottom = circlePaddingFromCenter)
                     .rotate(rotations.first),
                 contentAlignment = Alignment.Center
@@ -67,7 +71,7 @@ fun CircleAnimatedClock(
                     borderColor = playersDisplay.first.contentColor()
                 )
                 Text(
-                    text = playersDisplay.first.text,
+                    text = playersDisplay.first.text.getString(),
                     color = playersDisplay.first.contentColor(),
                     fontSize = firstClockFontSize.sp
                 )
@@ -80,7 +84,8 @@ fun CircleAnimatedClock(
             enabled = enabled
         ) {
             Box(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
                     .padding(top = circlePaddingFromCenter)
                     .rotate(rotations.second),
                 contentAlignment = Alignment.Center
@@ -91,7 +96,7 @@ fun CircleAnimatedClock(
                     borderColor = playersDisplay.second.contentColor()
                 )
                 Text(
-                    text = playersDisplay.second.text,
+                    text = playersDisplay.second.text.getString(),
                     color = playersDisplay.second.contentColor(),
                     fontSize = secondClockFontSize.sp
                 )
@@ -111,7 +116,9 @@ fun FilledCircle(modifier: Modifier = Modifier, filledPercentage: Float, borderC
     )
 
     Box(modifier = modifier.border(color = borderColor, shape = CircleShape, width = 1.dp)) {
-        Canvas(modifier = Modifier.fillMaxSize().rotate(270f), onDraw = {
+        Canvas(modifier = Modifier
+            .fillMaxSize()
+            .rotate(270f), onDraw = {
             drawArc(
                 color = color.value,
                 startAngle = 0.0f,
@@ -127,8 +134,8 @@ fun FilledCircle(modifier: Modifier = Modifier, filledPercentage: Float, borderC
 fun FilledCirclePrev() {
     CircleAnimatedClock(
         rotations = 180f to 0f,
-        playersDisplay = PlayerDisplay.White("01:00", 1.0f, true) to PlayerDisplay.Black(
-            "00:30",
+        playersDisplay = PlayerDisplay.White("01:00".toDeferrableString(), 1.0f, true) to PlayerDisplay.Black(
+            "00:30".toDeferrableString(),
             0.5f,
             false
         ),

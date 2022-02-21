@@ -34,7 +34,9 @@ fun OwnPlayerTimeClock(
     }
 
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceAround) {
-        val btnModifier = Modifier.weight(1f).fillMaxWidth()
+        val btnModifier = Modifier
+            .weight(1f)
+            .fillMaxWidth()
         ClockButton(
             modifier = btnModifier,
             player = playersDisplay.first,
@@ -42,10 +44,11 @@ fun OwnPlayerTimeClock(
             enabled = enabled
         ) {
             Text(
-                modifier = Modifier.padding(bottom = paddingFromCenter)
+                modifier = Modifier
+                    .padding(bottom = paddingFromCenter)
                     .rotate(rotations.first),
                 fontSize = firstClockFontSize.sp,
-                text = playersDisplay.first.text,
+                text = playersDisplay.first.text.getString(),
                 color = playersDisplay.first.contentColor()
             )
         }
@@ -56,10 +59,11 @@ fun OwnPlayerTimeClock(
             enabled = enabled,
         ) {
             Text(
-                modifier = Modifier.padding(top = paddingFromCenter)
+                modifier = Modifier
+                    .padding(top = paddingFromCenter)
                     .rotate(rotations.second),
                 fontSize = secondClockFontSize.sp,
-                text = playersDisplay.second.text,
+                text = playersDisplay.second.text.getString(),
                 color = playersDisplay.second.contentColor()
             )
         }
