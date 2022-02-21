@@ -1,21 +1,23 @@
 package com.ledwon.jakub.chessclock.feature.clock.model
 
 import androidx.annotation.FloatRange
+import com.ledwon.jakub.chessclock.util.DeferrableString
+import com.ledwon.jakub.chessclock.util.toDeferrableString
 
 sealed class PlayerDisplay(
-    val text: String,
+    val text: DeferrableString,
     @FloatRange(from = 0.0, to = 1.0)
     val percentageLeft: Float,
     val isActive: Boolean
 ) {
     class White(
-        text: String,
+        text: DeferrableString,
         percentageLeft: Float,
         isActive: Boolean
     ) : PlayerDisplay(text, percentageLeft, isActive)
 
     class Black(
-        text: String,
+        text: DeferrableString,
         percentageLeft: Float,
         isActive: Boolean
     ) : PlayerDisplay(text, percentageLeft, isActive)
@@ -27,12 +29,12 @@ sealed class PlayerDisplay(
         fun from(player: Player, isActive: Boolean): PlayerDisplay {
             return when (player) {
                 is Player.White -> White(
-                    player.text,
+                    player.text.toDeferrableString(),
                     player.percentageLeft,
                     isActive
                 )
                 is Player.Black -> Black(
-                    player.text,
+                    player.text.toDeferrableString(),
                     player.percentageLeft,
                     isActive
                 )

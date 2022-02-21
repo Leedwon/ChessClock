@@ -19,6 +19,7 @@ import com.ledwon.jakub.chessclock.feature.common.ClockDisplay
 import com.ledwon.jakub.chessclock.navigation.NavigationActions
 import com.ledwon.jakub.chessclock.util.LocalWindowProvider
 import com.ledwon.jakub.chessclock.util.getString
+import com.ledwon.jakub.chessclock.util.toDeferrableString
 
 @Composable
 fun ClockScreen(actions: NavigationActions, clockViewModel: ClockViewModel) {
@@ -27,11 +28,11 @@ fun ClockScreen(actions: NavigationActions, clockViewModel: ClockViewModel) {
     val state: ClockViewModel.State by clockViewModel.state.observeAsState(
         ClockViewModel.State(
             playersDisplay = PlayerDisplay.White(
-                text = "",
+                text = "".toDeferrableString(),
                 percentageLeft = 1.0f,
                 isActive = false
             ) to PlayerDisplay.Black(
-                text = "",
+                text = "".toDeferrableString(),
                 percentageLeft = 1.0f,
                 isActive = false
             ),
