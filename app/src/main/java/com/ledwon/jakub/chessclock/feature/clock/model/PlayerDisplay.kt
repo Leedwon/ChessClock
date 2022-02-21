@@ -4,23 +4,24 @@ import androidx.annotation.FloatRange
 import com.ledwon.jakub.chessclock.util.DeferrableString
 import com.ledwon.jakub.chessclock.util.toDeferrableString
 
-sealed class PlayerDisplay(
-    val text: DeferrableString,
-    @FloatRange(from = 0.0, to = 1.0)
-    val percentageLeft: Float,
-    val isActive: Boolean
-) {
-    class White(
-        text: DeferrableString,
-        percentageLeft: Float,
-        isActive: Boolean
-    ) : PlayerDisplay(text, percentageLeft, isActive)
+sealed class PlayerDisplay {
+    abstract val text: DeferrableString
+    abstract val percentageLeft: Float
+    abstract val isActive: Boolean
 
-    class Black(
-        text: DeferrableString,
-        percentageLeft: Float,
-        isActive: Boolean
-    ) : PlayerDisplay(text, percentageLeft, isActive)
+    data class White(
+        override val text: DeferrableString,
+        @FloatRange(from = 0.0, to = 1.0)
+        override val percentageLeft: Float,
+        override val isActive: Boolean
+    ) : PlayerDisplay()
+
+    data class Black(
+        override val text: DeferrableString,
+        @FloatRange(from = 0.0, to = 1.0)
+        override val percentageLeft: Float,
+        override val isActive: Boolean
+    ) : PlayerDisplay()
 
     fun isFor(player: Player): Boolean =
         this is White && player is Player.White || this is Black && player is Player.Black
