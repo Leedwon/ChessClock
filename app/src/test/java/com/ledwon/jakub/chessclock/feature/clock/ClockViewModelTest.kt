@@ -19,6 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
@@ -109,7 +110,8 @@ class ClockViewModelTest {
 
     @Test
     fun `should correctly stop position randomization`() = vmTestCase {
-        every { settingsRepository.randomizePosition } returns flowOf(true)
+        val delayDispatcher = TestCoroutineDispatcher()
+        every { settingsRepository.randomizePosition } returns flowOf(true).onEach { delay(1) }.flowOn(delayDispatcher)
 
         val positionsChannel = Channel<Pair<PlayerColor, PlayerColor>>(capacity = UNLIMITED)
 
@@ -119,6 +121,8 @@ class ClockViewModelTest {
         val vm = createViewModel()
 
         vm.state.test {
+            awaitItem().should.beEqualTo(createState())
+            delayDispatcher.advanceTimeBy(1)
             clockState = ClockState.RandomizingPositions
             awaitItem().should.beEqualTo(createState())
 
@@ -256,8 +260,67 @@ class ClockViewModelTest {
     }
 
     @Test
-    fun `should correctly pause and resume`() {
+    fun `should correctly pause and resume`() = vmTestCase {
+        mockPositionRandomizationEnabled(false)
 
+        val vm = createViewModel()
+
+        vm.state.test {
+            awaitItem().should.beEqualTo(createState())
+
+            vm.clockClicked(white)
+
+            clockState = ClockState.Running
+            white = white.copy(isActive = true)
+
+            awaitItem().should.beEqualTo(createState())
+
+            advanceTimeBy(100)
+
+            white = white.copy(
+                text = "00:59".toDeferrableString(),
+                percentageLeft = 59_900F / 60_000F
+            )
+            awaitItem().should.beEqualTo(createState())
+
+            vm.pauseClock()
+
+            clockState = ClockState.Paused
+            awaitItem().should.beEqualTo(createState())
+
+            advanceTimeBy(100)
+
+            vm.resumeClock()
+
+            clockState = ClockState.Running
+            awaitItem().should.beEqualTo(createState())
+
+            advanceTimeBy(100)
+
+            white = white.copy(percentageLeft = 59_800F / 60_000F)
+            awaitItem().should.beEqualTo(createState())
+        }
+    }
+
+    @Test
+    fun `should correctly send command with opening stats screen`() = vmTestCase {
+        mockPositionRandomizationEnabled(false)
+
+        val vm = createViewModel()
+
+        vm.command.test {
+            vm.clockClicked(white)
+            advanceTimeBy(100)
+            vm.pauseClock()
+            advanceTimeBy(100)
+            vm.resumeClock()
+            advanceTimeBy(100)
+            vm.clockClicked(white)
+            vm.pauseClock()
+            vm.showStats()
+
+            awaitItem().should.beEqualTo(ClockViewModel.Command.NavigateToStats(listOf(200L)))
+        }
     }
 
     private class VmTestCase {
