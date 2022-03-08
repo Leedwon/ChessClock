@@ -15,6 +15,8 @@ import com.ledwon.jakub.chessclock.feature.clock.widget.OwnPlayerTimeClock
 import com.ledwon.jakub.chessclock.feature.common.ClockDisplay
 import com.ledwon.jakub.chessclock.feature.common.exhaustive
 import com.ledwon.jakub.chessclock.navigation.NavigationActions
+import com.ledwon.jakub.chessclock.util.DeferrableString
+import com.ledwon.jakub.chessclock.util.ResDeferrableString
 import com.ledwon.jakub.chessclock.util.getString
 import kotlinx.coroutines.launch
 
@@ -72,11 +74,11 @@ fun ClockPreviewScreen(navigationActions: NavigationActions, clockPreviewViewMod
 
         val playersDisplay =
             PlayerDisplay.White(
-                text = getString(R.string.white_time),
+                text = ResDeferrableString(R.string.white_time),
                 percentageLeft = testPercentageAnimation.value / durationMillis,
                 isActive = true
             ) to PlayerDisplay.Black(
-                text = getString(R.string.black_time),
+                text = ResDeferrableString(R.string.black_time),
                 percentageLeft = 1f,
                 isActive = false
             )
