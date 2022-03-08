@@ -1,5 +1,6 @@
 package com.ledwon.jakub.chessclock.data.repository
 
+import app.cash.turbine.test
 import com.ledwon.jakub.chessclock.beEqualTo
 import com.ledwon.jakub.chessclock.model.Clock
 import com.ledwon.jakub.chessclock.model.PlayerTime
@@ -10,9 +11,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Test
@@ -44,8 +43,9 @@ class ClockRepositoryTest {
 
         val repo = createRepo()
 
-        repo.clocks.take(1).collect {
-            it.should.beEqualTo(clocks)
+        repo.clocks.test {
+            awaitItem().should.beEqualTo(clocks)
+            awaitComplete()
             verify { dbInteractorMock.getAllClocks() }
         }
     }
