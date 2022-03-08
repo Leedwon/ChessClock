@@ -69,4 +69,6 @@
     <string name="moves_list">Lista ruchów:</string>
     <string name="stats_no_moves_yet">Brak ruchów</string>
     <string name="stats_content_description">statystyki gry</string>
+    <string name="white_wins">Białe wygrały</string>
+    <string name="black_wins">Czarne wygrały</string>
 </resources>

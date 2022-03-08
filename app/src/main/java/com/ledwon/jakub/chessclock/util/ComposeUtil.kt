@@ -4,7 +4,6 @@ import android.view.Window
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 
@@ -18,11 +17,24 @@ fun getString(@StringRes resId: Int, formatArgs: List<Any> = emptyList()): Strin
     return LocalContext.current.getString(resId, *formatArgs.toTypedArray())
 }
 
-class DeferrableString(
-    @StringRes private val resId: Int,
-    private val formatArgs: List<Any> = emptyList()
-) {
+sealed interface DeferrableString {
     @Composable
-    fun getString(): String = getString(resId = resId, formatArgs)
+    fun getString(): String
 }
 
+data class ResDeferrableString(
+    @StringRes private val resId: Int,
+    private val formatArgs: List<Any> = emptyList()
+) : DeferrableString {
+    @Composable
+    override fun getString(): String = getString(resId = resId, formatArgs)
+}
+
+data class ValueDeferrableString(
+    private val value: String
+) : DeferrableString {
+    @Composable
+    override fun getString(): String = value
+}
+
+fun String.toDeferrableString() = ValueDeferrableString(this)

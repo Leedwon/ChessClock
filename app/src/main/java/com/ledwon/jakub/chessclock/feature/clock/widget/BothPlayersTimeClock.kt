@@ -12,6 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ledwon.jakub.chessclock.feature.clock.model.PlayerDisplay
+import com.ledwon.jakub.chessclock.util.toDeferrableString
 
 @Composable
 fun BothPlayersTimeClock(
@@ -34,7 +35,9 @@ fun BothPlayersTimeClock(
     }
 
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceAround) {
-        val btnModifier = Modifier.weight(1f).fillMaxWidth()
+        val btnModifier = Modifier
+            .weight(1f)
+            .fillMaxWidth()
         ClockButton(
             modifier = btnModifier,
             player = playersDisplay.first,
@@ -42,20 +45,27 @@ fun BothPlayersTimeClock(
             enabled = enabled
         ) {
             Column(
-                modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
                 val textColor = playersDisplay.first.contentColor()
                 Text(
-                    modifier = Modifier.rotate(180f).align(Alignment.CenterHorizontally),
+                    modifier = Modifier
+                        .rotate(180f)
+                        .align(Alignment.CenterHorizontally),
                     fontSize = firstClockFontSize.sp,
-                    text = playersDisplay.first.text,
+                    text = playersDisplay.first.text.getString(),
                     color = textColor
                 )
                 Text(
-                    modifier = Modifier.padding(top = 32.dp).rotate(180f).align(Alignment.End),
+                    modifier = Modifier
+                        .padding(top = 32.dp)
+                        .rotate(180f)
+                        .align(Alignment.End),
                     fontSize = 25.sp,
-                    text = playersDisplay.second.text,
+                    text = playersDisplay.second.text.getString(),
                     color = textColor
                 )
             }
@@ -67,20 +77,24 @@ fun BothPlayersTimeClock(
             enabled = enabled,
         ) {
             Column(
-                modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
                 val textColor = playersDisplay.second.contentColor()
                 Text(
-                    modifier = Modifier.align(Alignment.End).padding(bottom = 32.dp),
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .padding(bottom = 32.dp),
                     fontSize = 25.sp,
-                    text = playersDisplay.first.text,
+                    text = playersDisplay.first.text.getString(),
                     color = textColor
                 )
                 Text(
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                     fontSize = secondClockFontSize.sp,
-                    text = playersDisplay.second.text,
+                    text = playersDisplay.second.text.getString(),
                     color = textColor
                 )
             }
@@ -92,8 +106,8 @@ fun BothPlayersTimeClock(
 @Composable
 fun ClockPreview() {
     BothPlayersTimeClock(
-        playersDisplay = PlayerDisplay.White("05:00", 1.0f, true) to PlayerDisplay.Black(
-            "03:00",
+        playersDisplay = PlayerDisplay.White("05:00".toDeferrableString(), 1.0f, true) to PlayerDisplay.Black(
+            "03:00".toDeferrableString(),
             0.6f,
             false
         ),
