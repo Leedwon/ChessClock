@@ -1,76 +1,43 @@
 package com.ledwon.jakub.chessclock.feature.clock
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ledwon.jakub.chessclock.analytics.AnalyticsEvent
 import com.ledwon.jakub.chessclock.analytics.AnalyticsManager
 import com.ledwon.jakub.chessclock.data.repository.SettingsRepository
-import com.ledwon.jakub.chessclock.feature.clock.model.ClockInitialData
-import com.ledwon.jakub.chessclock.feature.clock.model.GameState
-import com.ledwon.jakub.chessclock.feature.clock.model.Player
-import com.ledwon.jakub.chessclock.feature.clock.model.PlayerDisplay
+import com.ledwon.jakub.chessclock.feature.clock.model.*
 import com.ledwon.jakub.chessclock.feature.common.ClockDisplay
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.ReceiveChannel
-import kotlinx.coroutines.channels.ticker
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.*
 
 class ClockViewModel(
-    clockInitialData: ClockInitialData,
     private val settingsRepository: SettingsRepository,
     private val analyticsManager: AnalyticsManager,
     private val positionRandomizer: PositionRandomizer,
-    private val movesTracker: MovesTracker,
+    private val game: Game
 ) : ViewModel() {
 
     data class State(
         val playersDisplay: Pair<PlayerDisplay, PlayerDisplay>,
-        val gameState: GameState
+        val clockState: ClockState
     )
 
-    companion object {
-        private const val INTERVAL_MILLIS = 50L
+    private val playersInOrder = MutableStateFlow(PlayerColor.White to PlayerColor.Black)
+    private val randomizing = MutableStateFlow(false)
+
+    val state: Flow<State> = combine(
+        game.state.distinctUntilChangedBy { listOf(it.white, it.black, it.clockState) },
+        playersInOrder,
+        randomizing,
+    ) { gameState, playersInOrder, randomizing ->
+        createVmState(gameState, playersInOrder, randomizing)
     }
 
-    private val white = Player.White(
-        initialMillis = clockInitialData.whiteSeconds * 1000f,
-        increment = clockInitialData.whiteIncrementSeconds * 1000
-    )
-    private val black = Player.Black(
-        initialMillis = clockInitialData.blackSeconds * 1000f,
-        increment = clockInitialData.blackIncrementSeconds * 1000
-    )
-
-    private var playersInOrder: Pair<Player, Player> = white to black
-    private var currentPlayer: Player? = null
-    private var gameState: GameState = GameState.RandomizingPositions
-        get() =
-            if (white.hasLost || black.hasLost) {
-                GameState.Over.also { currentPlayer = null }
-            } else {
-                field
-            }
-
-    private val _state: MutableLiveData<State> = MutableLiveData(createState())
-    val state: LiveData<State> = _state
-
-    private val _command: MutableLiveData<Command?> = MutableLiveData(null)
-    val command: LiveData<Command?> = _command
+    private val _command: MutableSharedFlow<Command> = MutableSharedFlow()
+    val command: Flow<Command> = _command
 
     val clockDisplay: Flow<ClockDisplay> = settingsRepository.clockDisplay
-
     val pulsationEnabled: Flow<Boolean> = settingsRepository.pulsationEnabled
-
-    private val gameClock: ReceiveChannel<Unit> = ticker(
-        delayMillis = INTERVAL_MILLIS,
-        initialDelayMillis = 0,
-        context = Dispatchers.Default
-    )
 
     init {
         randomizePositions()
@@ -78,109 +45,101 @@ class ClockViewModel(
 
     private var randomizingJob: Job? = null
 
-    private suspend fun isPositionRandomizationEnabled(): Boolean = settingsRepository.randomizePosition.take(1).first()
-
-    private fun randomizePositions() {
-        randomizingJob = viewModelScope.launch(Dispatchers.Default) {
-            if (isPositionRandomizationEnabled()) {
-                positionRandomizer.randomizePositions(white = white, black = black).collect {
-                    playersInOrder = it
-                    _state.postValue(createState())
-                }
-            }
-            gameState = GameState.BeforeStarted
-            _state.postValue(createState())
-        }
+    override fun onCleared() {
+        game.clear()
+        super.onCleared()
     }
 
-
     fun swapSides() {
-        playersInOrder = playersInOrder.second to playersInOrder.first
-        _state.postValue(createState())
+        playersInOrder.update { it.second to it.first }
     }
 
     fun resumeClock() {
-        if (gameState == GameState.Paused) {
-            movesTracker.moveResumed()
-        }
-        gameState = GameState.Running
-        viewModelScope.launch(Dispatchers.Default) {
-            for (tick in gameClock) {
-                val executionStartMillis = System.currentTimeMillis()
-                val player = currentPlayer
-                if (player != null && gameState != GameState.Over && gameState != GameState.Paused) {
-                    player.millisLeft -= (INTERVAL_MILLIS + (System.currentTimeMillis() - executionStartMillis))
-                } else {
-                    cancel()
-                }
-                _state.postValue(createState())
-            }
-        }
+        game.resume()
     }
 
     fun showStats() {
         analyticsManager.logEvent(AnalyticsEvent.OpenStats)
         viewModelScope.launch {
-            _command.value = Command.NavigateToStats(movesTracker.movesMillis.first())
-            _command.value = null
+            val moves = game.state.first().movesTracked
+            _command.emit(Command.NavigateToStats(moves))
         }
     }
 
     fun restartGame() {
-        white.resetTime()
-        black.resetTime()
-        gameState = GameState.BeforeStarted.also { currentPlayer = null }
-        _state.value = createState()
-        movesTracker.restart()
+        game.restart()
     }
 
     fun pauseClock() {
-        gameState = GameState.Paused
-        movesTracker.movePaused()
+        game.pause()
     }
 
     fun cancelRandomization() {
         randomizingJob?.cancel()
-        gameState = GameState.BeforeStarted.also { currentPlayer = null }
-        _state.postValue(createState())
     }
 
-    private fun createState(): State = State(
-        playersDisplay = PlayerDisplay.from(
-            player = playersInOrder.first,
-            isActive = currentPlayer == playersInOrder.first
-        ) to PlayerDisplay.from(
-            player = playersInOrder.second,
-            isActive = currentPlayer == playersInOrder.second
-        ),
-        gameState = gameState
-    )
-
     fun clockClicked(player: PlayerDisplay) {
-        if (gameState == GameState.Paused || gameState == GameState.Over) {
-            return
-        }
+        viewModelScope.launch {
+            if (state.first().clockState == ClockState.Over) return@launch
 
-        val currPlayer = currentPlayer
-        if (gameState == GameState.BeforeStarted && currPlayer == null) {
-            if (player.isFor(black)) {
-                currentPlayer = white
-                resumeClock()
-            }
-        } else {
-            movesTracker.moveEnded()
-        }
+            val activePlayerColor = findActivePlayerColorOrNull()
 
-        movesTracker.moveStarted()
-
-
-        if (currPlayer != null && player.isFor(currPlayer)) {
-            currPlayer.incrementTime()
-            currentPlayer = when (player) {
-                is PlayerDisplay.White -> black
-                is PlayerDisplay.Black -> white
+            //we can assume that this happens only before game starts
+            if (activePlayerColor == null) {
+                game.start()
+            } else if (player.isFor(activePlayerColor)) {
+                game.playerMoveFinished()
             }
         }
+    }
+
+    private fun PlayerDisplay.isFor(playerColor: PlayerColor) =
+        when (this) {
+            is PlayerDisplay.Black -> playerColor == PlayerColor.Black
+            is PlayerDisplay.White -> playerColor == PlayerColor.White
+        }
+
+    private suspend fun findActivePlayerColorOrNull(): PlayerColor? {
+        val state = game.state.first()
+        return when {
+            state.white.isActive -> PlayerColor.White
+            state.black.isActive -> PlayerColor.Black
+            else -> null
+        }
+    }
+
+    private suspend fun isPositionRandomizationEnabled(): Boolean = settingsRepository.randomizePosition.take(1).first()
+
+    private fun randomizePositions() {
+        randomizingJob = viewModelScope.launch(Dispatchers.Default) {
+            if (isPositionRandomizationEnabled()) {
+                randomizing.value = true
+                positionRandomizer.randomizePositions().collect { playersInOrder.value = it }
+            }
+        }.also {
+            it.invokeOnCompletion {
+                randomizing.value = false
+            }
+        }
+    }
+
+    private fun createVmState(gameState: Game.State, playersInOrder: Pair<PlayerColor, PlayerColor>, randomizing: Boolean): State {
+        val white = PlayerDisplay.White(
+            text = gameState.white.text,
+            percentageLeft = gameState.white.percentageLeft,
+            isActive = gameState.white.isActive,
+        )
+
+        val black = PlayerDisplay.Black(
+            text = gameState.black.text,
+            percentageLeft = gameState.black.percentageLeft,
+            isActive = gameState.black.isActive
+        )
+
+        return State(
+            playersDisplay = if (playersInOrder == PlayerColor.White to PlayerColor.Black) white to black else black to white,
+            clockState = if (randomizing) ClockState.RandomizingPositions else gameState.clockState
+        )
     }
 
     sealed class Command {

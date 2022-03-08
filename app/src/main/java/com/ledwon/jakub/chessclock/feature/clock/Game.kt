@@ -1,10 +1,14 @@
 package com.ledwon.jakub.chessclock.feature.clock
 
 import com.ledwon.jakub.chessclock.feature.clock.GameUtil.percentageLeft
-import com.ledwon.jakub.chessclock.feature.clock.model.GameState
+import com.ledwon.jakub.chessclock.feature.clock.model.ClockState
+import com.ledwon.jakub.chessclock.feature.clock.model.PlayerColor
 import com.ledwon.jakub.chessclock.util.DeferrableString
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.update
 
 data class Player(
     val millis: Long,
@@ -16,7 +20,8 @@ class Game(
     private val black: Player,
     private val movesTracker: MovesTracker,
     defaultDispatcher: CoroutineDispatcher,
-    intervalMillis: Long = 50
+    intervalMillis: Long = 50,
+    currentTimeMillisProvider: () -> Long = { System.currentTimeMillis() }
 ) {
 
     private val currentPlayerColorFlow = MutableStateFlow(PlayerColor.White)
@@ -33,6 +38,7 @@ class Game(
         incrementMillis = white.incrementMillis,
         defaultDispatcher = defaultDispatcher,
         intervalMillis = intervalMillis,
+        currentTimeMillisProvider = currentTimeMillisProvider,
     )
 
     private val blackClock = ChessClock(
@@ -40,6 +46,7 @@ class Game(
         incrementMillis = black.incrementMillis,
         defaultDispatcher = defaultDispatcher,
         intervalMillis = intervalMillis,
+        currentTimeMillisProvider = currentTimeMillisProvider,
     )
 
     val state: Flow<State> = combine(
@@ -54,14 +61,14 @@ class Game(
             white = PlayerUiState(
                 text = GameUtil.textFromMillis(millisLeft = whiteMillis, PlayerColor.White),
                 percentageLeft = white.percentageLeft(whiteMillis),
-                isActive = currentPlayerColor == PlayerColor.White
+                isActive = gameState != InternalGameState.BeforeStarted && currentPlayerColor == PlayerColor.White
             ),
             black = PlayerUiState(
                 text = GameUtil.textFromMillis(millisLeft = blackMillis, PlayerColor.Black),
                 percentageLeft = black.percentageLeft(blackMillis),
-                isActive = currentPlayerColor == PlayerColor.Black
+                isActive = gameState != InternalGameState.BeforeStarted && currentPlayerColor == PlayerColor.Black
             ),
-            gameState = if (gameOver) GameState.Over else gameState.toExternalGameState(),
+            clockState = if (gameOver) ClockState.Over else gameState.toClockState(),
             movesTracked = movesTracked,
         )
     }
@@ -71,20 +78,6 @@ class Game(
         stopPlayerMove()
         switchPlayers()
         startPlayerMove()
-    }
-
-    private fun startPlayerMove() {
-        currentPlayerClock.start()
-        movesTracker.moveStarted()
-    }
-
-    private fun stopPlayerMove() {
-        currentPlayerClock.stopAndIncrement()
-        movesTracker.moveEnded()
-    }
-
-    private fun switchPlayers() {
-        currentPlayerColorFlow.update { it.opposite() }
     }
 
     fun start() {
@@ -108,6 +101,32 @@ class Game(
         gameStateFlow.update { InternalGameState.Running }
     }
 
+    fun restart() {
+        gameStateFlow.value = InternalGameState.BeforeStarted
+        whiteClock.restart()
+        blackClock.restart()
+        movesTracker.restart()
+    }
+
+    fun clear() {
+        whiteClock.stop()
+        blackClock.stop()
+    }
+
+    private fun startPlayerMove() {
+        currentPlayerClock.start()
+        movesTracker.moveStarted()
+    }
+
+    private fun stopPlayerMove() {
+        currentPlayerClock.stopAndIncrement()
+        movesTracker.moveEnded()
+    }
+
+    private fun switchPlayers() {
+        currentPlayerColorFlow.update { it.opposite() }
+    }
+
     private fun ChessClock.stopAndIncrement() {
         stop()
         increment()
@@ -116,7 +135,7 @@ class Game(
     data class State(
         val white: PlayerUiState,
         val black: PlayerUiState,
-        val gameState: GameState,
+        val clockState: ClockState,
         val movesTracked: List<Long>,
     )
 
@@ -125,15 +144,6 @@ class Game(
         val percentageLeft: Float,
         val isActive: Boolean,
     )
-
-    enum class PlayerColor {
-        White, Black;
-
-        fun opposite(): PlayerColor = when (this) {
-            White -> Black
-            Black -> White
-        }
-    }
     
     private enum class InternalGameState {
         BeforeStarted,
@@ -141,9 +151,9 @@ class Game(
         Paused,
     }
 
-    private fun InternalGameState.toExternalGameState() = when(this) {
-        InternalGameState.BeforeStarted -> GameState.BeforeStarted
-        InternalGameState.Running -> GameState.Running
-        InternalGameState.Paused -> GameState.Paused
+    private fun InternalGameState.toClockState() = when(this) {
+        InternalGameState.BeforeStarted -> ClockState.BeforeStarted
+        InternalGameState.Running -> ClockState.Running
+        InternalGameState.Paused -> ClockState.Paused
     }
 }

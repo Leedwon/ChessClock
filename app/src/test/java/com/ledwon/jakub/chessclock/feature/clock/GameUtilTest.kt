@@ -4,6 +4,7 @@ import com.ledwon.jakub.chessclock.R
 import com.ledwon.jakub.chessclock.beEqualTo
 import com.ledwon.jakub.chessclock.feature.clock.GameUtil.percentageLeft
 import com.ledwon.jakub.chessclock.feature.clock.GameUtil.textFromMillis
+import com.ledwon.jakub.chessclock.feature.clock.model.PlayerColor
 import com.ledwon.jakub.chessclock.should
 import com.ledwon.jakub.chessclock.util.DeferrableString
 import com.ledwon.jakub.chessclock.util.ResDeferrableString
@@ -37,7 +38,7 @@ class GameUtilTest {
             ),
             TestTextData(
                 millisLeft = 0,
-                playerColor = Game.PlayerColor.Black,
+                playerColor = PlayerColor.Black,
                 expected = ResDeferrableString(R.string.white_wins)
             )
         )
@@ -84,7 +85,7 @@ class GameUtilTest {
     data class TestTextData(
         val millisLeft: Long,
         val expected: DeferrableString,
-        val playerColor: Game.PlayerColor = Game.PlayerColor.White
+        val playerColor: PlayerColor = PlayerColor.White
     )
 
     data class TestPercentageData(

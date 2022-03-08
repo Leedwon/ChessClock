@@ -22,24 +22,4 @@ sealed class PlayerDisplay {
         override val percentageLeft: Float,
         override val isActive: Boolean
     ) : PlayerDisplay()
-
-    fun isFor(player: Player): Boolean =
-        this is White && player is Player.White || this is Black && player is Player.Black
-
-    companion object {
-        fun from(player: Player, isActive: Boolean): PlayerDisplay {
-            return when (player) {
-                is Player.White -> White(
-                    player.text.toDeferrableString(),
-                    player.percentageLeft,
-                    isActive
-                )
-                is Player.Black -> Black(
-                    player.text.toDeferrableString(),
-                    player.percentageLeft,
-                    isActive
-                )
-            }
-        }
-    }
 }

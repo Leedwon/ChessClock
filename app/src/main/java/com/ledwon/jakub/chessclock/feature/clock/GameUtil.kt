@@ -2,6 +2,7 @@ package com.ledwon.jakub.chessclock.feature.clock
 
 import androidx.annotation.FloatRange
 import com.ledwon.jakub.chessclock.R
+import com.ledwon.jakub.chessclock.feature.clock.model.PlayerColor
 import com.ledwon.jakub.chessclock.util.DeferrableString
 import com.ledwon.jakub.chessclock.util.ResDeferrableString
 import com.ledwon.jakub.chessclock.util.toDeferrableString
@@ -11,7 +12,7 @@ object GameUtil {
     /**
      * Get formatted time text from millis
      */
-    fun textFromMillis(millisLeft: Long, playerColor: Game.PlayerColor): DeferrableString {
+    fun textFromMillis(millisLeft: Long, playerColor: PlayerColor): DeferrableString {
         return if (millisLeft <= 0) {
             playerColor.lostDeferrableString
         } else {
@@ -22,10 +23,10 @@ object GameUtil {
         }
     }
 
-    private val Game.PlayerColor.lostDeferrableString: ResDeferrableString
+    private val PlayerColor.lostDeferrableString: ResDeferrableString
         get() = when (this) {
-            Game.PlayerColor.White -> ResDeferrableString(R.string.black_wins)
-            Game.PlayerColor.Black -> ResDeferrableString(R.string.white_wins)
+            PlayerColor.White -> ResDeferrableString(R.string.black_wins)
+            PlayerColor.Black -> ResDeferrableString(R.string.white_wins)
         }
 
     @FloatRange(from = 0.0, to = 1.0, fromInclusive = true, toInclusive = true)

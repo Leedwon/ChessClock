@@ -4,7 +4,7 @@ import app.cash.turbine.test
 import com.ledwon.jakub.chessclock.R
 import com.ledwon.jakub.chessclock.beEqualTo
 import com.ledwon.jakub.chessclock.feature.clock.Game.*
-import com.ledwon.jakub.chessclock.feature.clock.model.GameState
+import com.ledwon.jakub.chessclock.feature.clock.model.ClockState
 import com.ledwon.jakub.chessclock.should
 import com.ledwon.jakub.chessclock.util.ResDeferrableString
 import com.ledwon.jakub.chessclock.util.toDeferrableString
@@ -17,11 +17,11 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class GameTest {
 
-    private var currentMillis = 0L
-
     private val testDispatcher = TestCoroutineDispatcher()
-    private val movesTracker = MovesTracker(currentTimeMillisProvider = { currentMillis })
+    private val movesTracker = MovesTracker(currentTimeMillisProvider = { millis })
     private val interval = 100L
+
+    private var millis = 0L
 
     private fun createGame(
         white: Player = testWhite,
@@ -31,12 +31,14 @@ class GameTest {
         black = black,
         movesTracker = movesTracker,
         defaultDispatcher = testDispatcher,
-        intervalMillis = interval
+        intervalMillis = interval,
+        currentTimeMillisProvider = { millis }
     )
 
     @Before
     fun setUp() {
         movesTracker.restart()
+        millis = 0
     }
 
     @Test
@@ -45,9 +47,9 @@ class GameTest {
 
         game.state.test {
             awaitItem()
-                .assertWhite(PlayerUiState("01:00".toDeferrableString(), percentageLeft = 1.0f, isActive = true))
+                .assertWhite(PlayerUiState("01:00".toDeferrableString(), percentageLeft = 1.0f, isActive = false))
                 .assertBlack(PlayerUiState("01:00".toDeferrableString(), percentageLeft = 1.0f, isActive = false))
-                .assertGameState(GameState.BeforeStarted)
+                .assertGameState(ClockState.BeforeStarted)
                 .assertMoves(emptyList())
         }
     }
@@ -62,12 +64,12 @@ class GameTest {
 
                 start()
 
-                gameState = GameState.Running
+                white = white.copy(isActive= true)
+                clockState = ClockState.Running
                 awaitItem().should.beEqualTo(createState())
 
-                testDispatcher.advanceTimeBy(1_000)
-
                 repeat(10) {
+                    advanceTimeBy(interval)
                     white = PlayerUiState(
                         "00:59".toDeferrableString(),
                         percentageLeft = (60_000.toFloat() - interval * (it + 1)) / 60_000,
@@ -76,7 +78,6 @@ class GameTest {
                     awaitItem().should.beEqualTo(createState())
                 }
 
-                currentMillis = 1000
                 playerMoveFinished()
 
                 movesTracked = listOf(1_000L)
@@ -86,10 +87,9 @@ class GameTest {
                 black = black.copy(isActive = true)
                 awaitItem().should.beEqualTo(createState())
 
-                testDispatcher.advanceTimeBy(1_500)
-
                 repeat(15) {
                     val timePassed = it + 1
+                    advanceTimeBy(interval)
                     val text = if (timePassed <= 10) "00:59".toDeferrableString() else "00:58".toDeferrableString()
                     black = PlayerUiState(
                         text = text,
@@ -99,7 +99,6 @@ class GameTest {
                     awaitItem().should.beEqualTo(createState())
                 }
 
-                currentMillis = 2_500
                 playerMoveFinished()
 
                 movesTracked = listOf(1_000L, 1_500L)
@@ -122,12 +121,12 @@ class GameTest {
 
                 start()
 
-                gameState = GameState.Running
+                white = white.copy(isActive= true)
+                clockState = ClockState.Running
                 awaitItem().should.beEqualTo(createState())
 
-                testDispatcher.advanceTimeBy(500)
-
                 repeat(5) {
+                    advanceTimeBy(interval)
                     white = PlayerUiState(
                         "00:59".toDeferrableString(),
                         percentageLeft = (60_000.toFloat() - interval * (it + 1)) / 60_000,
@@ -136,23 +135,18 @@ class GameTest {
                     awaitItem().should.beEqualTo(createState())
                 }
 
-                currentMillis = 500
-
                 pause()
-                gameState = GameState.Paused
+                clockState = ClockState.Paused
                 awaitItem().should.beEqualTo(createState())
 
-                testDispatcher.advanceTimeBy(500)
-                currentMillis = 1000
+                advanceTimeBy(500)
 
                 resume()
-                gameState = GameState.Running
+                clockState = ClockState.Running
                 awaitItem().should.beEqualTo(createState())
 
-                testDispatcher.advanceTimeBy(500)
-                currentMillis = 1500
-
                 repeat(5) {
+                    advanceTimeBy(interval)
                     white = PlayerUiState(
                         "00:59".toDeferrableString(),
                         percentageLeft = (59_500.toFloat() - interval * (it + 1)) / 60_000,
@@ -186,10 +180,11 @@ class GameTest {
 
                 start()
 
-                gameState = GameState.Running
+                white = white.copy(isActive= true)
+                clockState = ClockState.Running
                 awaitItem().should.beEqualTo(createState())
 
-                testDispatcher.advanceTimeBy(100)
+                advanceTimeBy(100)
 
                 white = PlayerUiState(
                     "00:59".toDeferrableString(),
@@ -198,7 +193,6 @@ class GameTest {
                 )
                 awaitItem().should.beEqualTo(createState())
 
-                currentMillis = 100
                 playerMoveFinished()
 
                 white = PlayerUiState(
@@ -215,7 +209,7 @@ class GameTest {
                 black = black.copy(isActive = true)
                 awaitItem().should.beEqualTo(createState())
 
-                testDispatcher.advanceTimeBy(100)
+                advanceTimeBy(100)
 
                 black = PlayerUiState(
                     "00:59".toDeferrableString(),
@@ -224,7 +218,6 @@ class GameTest {
                 )
                 awaitItem().should.beEqualTo(createState())
 
-                currentMillis = 200
                 playerMoveFinished()
 
                 black = PlayerUiState(
@@ -257,13 +250,13 @@ class GameTest {
 
                 start()
 
-                gameState = GameState.Running
+                white = white.copy(isActive= true)
+                clockState = ClockState.Running
                 awaitItem().should.beEqualTo(createState())
-
-                testDispatcher.advanceTimeBy(2_000)
 
                 repeat(20) {
                     val timePassed = it + 1
+                    advanceTimeBy(interval)
                     val text = when {
                         timePassed <= 10 -> "00:01".toDeferrableString()
                         timePassed == 20 -> ResDeferrableString(R.string.black_wins)
@@ -276,10 +269,48 @@ class GameTest {
                         isActive = true
                     )
                     if (timePassed == 20) {
-                        gameState = GameState.Over
+                        clockState = ClockState.Over
                     }
                     awaitItem().should.beEqualTo(createState())
                 }
+            }
+        }
+    }
+
+    @Test
+    fun `should restart game`() = runGameTest {
+        game.run {
+            state.test {
+                white = white.copy(text = "01:00".toDeferrableString())
+                black = black.copy(text = "01:00".toDeferrableString())
+                awaitItem().should.beEqualTo(createState())
+
+                start()
+
+                clockState = ClockState.Running
+                white = white.copy(isActive = true)
+                awaitItem().should.beEqualTo(createState())
+
+                advanceTimeBy(interval)
+
+                white = PlayerUiState(
+                    "00:59".toDeferrableString(),
+                    percentageLeft = (59_900F) / 60_000,
+                    isActive = true
+                )
+                awaitItem().should.beEqualTo(createState())
+
+                game.restart()
+
+                white = white.copy(isActive = false)
+                clockState = ClockState.BeforeStarted
+
+                awaitItem().should.beEqualTo(createState())
+
+                white = white.copy(text = "01:00".toDeferrableString(), percentageLeft = 1.0f)
+                black = black.copy(text = "01:00".toDeferrableString())
+
+                awaitItem().should.beEqualTo(createState())
             }
         }
     }
@@ -292,16 +323,16 @@ class GameTest {
         }
 
     private class GameTestScope(val game: Game) {
-        var white = PlayerUiState("".toDeferrableString(), percentageLeft = 1.0f, isActive = true)
+        var white = PlayerUiState("".toDeferrableString(), percentageLeft = 1.0f, isActive = false)
         var black = PlayerUiState("".toDeferrableString(), percentageLeft = 1.0f, isActive = false)
-        var gameState = GameState.BeforeStarted
+        var clockState = ClockState.BeforeStarted
         var movesTracked = emptyList<Long>()
 
 
         fun createState(): State = State(
             white = white,
             black = black,
-            gameState = gameState,
+            clockState = clockState,
             movesTracked = movesTracked
         )
     }
@@ -314,12 +345,18 @@ class GameTest {
         black.should.beEqualTo(expected)
     }
 
-    private fun State.assertGameState(expected: GameState): State = apply {
-        gameState.should.beEqualTo(expected)
+    private fun State.assertGameState(expected: ClockState): State = apply {
+        clockState.should.beEqualTo(expected)
     }
 
     private fun State.assertMoves(expected: List<Long>): State = apply {
         movesTracked.should.beEqualTo(expected)
+    }
+
+    //order of execution matters details in Game class
+    private fun advanceTimeBy(intervalMillis: Long) {
+        millis += intervalMillis
+        testDispatcher.advanceTimeBy(intervalMillis)
     }
 
     companion object {
