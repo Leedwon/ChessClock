@@ -80,15 +80,18 @@ class ClockViewModel(
 
     fun clockClicked(player: PlayerDisplay) {
         viewModelScope.launch {
-            if (state.first().clockState == ClockState.Over) return@launch
+            val gameState = game.state.first()
 
-            val activePlayerColor = findActivePlayerColorOrNull()
+            if (gameState.clockState == ClockState.Over) return@launch
 
-            //we can assume that this happens only before game starts
-            if (activePlayerColor == null) {
+            if (gameState.clockState == ClockState.BeforeStarted) {
                 game.start()
-            } else if (player.isFor(activePlayerColor)) {
-                game.playerMoveFinished()
+            } else {
+                gameState.findActivePlayerColorOrNull()?.let { activePlayerColor ->
+                    if (player.isFor(activePlayerColor)) {
+                        game.playerMoveFinished()
+                    }
+                }
             }
         }
     }
@@ -99,13 +102,10 @@ class ClockViewModel(
             is PlayerDisplay.White -> playerColor == PlayerColor.White
         }
 
-    private suspend fun findActivePlayerColorOrNull(): PlayerColor? {
-        val state = game.state.first()
-        return when {
-            state.white.isActive -> PlayerColor.White
-            state.black.isActive -> PlayerColor.Black
-            else -> null
-        }
+    private fun Game.State.findActivePlayerColorOrNull(): PlayerColor? = when {
+        white.isActive -> PlayerColor.White
+        black.isActive -> PlayerColor.Black
+        else -> null
     }
 
     private suspend fun isPositionRandomizationEnabled(): Boolean = settingsRepository.randomizePosition.take(1).first()
