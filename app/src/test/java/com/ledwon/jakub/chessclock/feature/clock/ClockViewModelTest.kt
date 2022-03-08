@@ -19,6 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
@@ -109,7 +110,8 @@ class ClockViewModelTest {
 
     @Test
     fun `should correctly stop position randomization`() = vmTestCase {
-        every { settingsRepository.randomizePosition } returns flowOf(true)
+        val delayDispatcher = TestCoroutineDispatcher()
+        every { settingsRepository.randomizePosition } returns flowOf(true).onEach { delay(1) }.flowOn(delayDispatcher)
 
         val positionsChannel = Channel<Pair<PlayerColor, PlayerColor>>(capacity = UNLIMITED)
 
@@ -119,6 +121,8 @@ class ClockViewModelTest {
         val vm = createViewModel()
 
         vm.state.test {
+            awaitItem().should.beEqualTo(createState())
+            delayDispatcher.advanceTimeBy(1)
             clockState = ClockState.RandomizingPositions
             awaitItem().should.beEqualTo(createState())
 
