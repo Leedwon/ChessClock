@@ -6,6 +6,7 @@ import com.ledwon.jakub.chessclock.should
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
+import org.junit.Before
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -13,6 +14,14 @@ class ChessClockTest {
 
     private val testDispatcher = TestCoroutineDispatcher()
     private val interval = 50L
+    private val currentTimeProvider = { millis }
+
+    private var millis = 0L
+
+    @Before
+    fun setUp() {
+        millis = 0L
+    }
 
     @Test
     fun `test time passage`() = runBlocking {
@@ -21,9 +30,9 @@ class ChessClockTest {
 
         clock.millisLeft.test {
             awaitItem().should.beEqualTo(1000)
-            testDispatcher.advanceTimeBy(interval)
+            advanceTimeBy(interval)
             awaitItem().should.beEqualTo(950)
-            testDispatcher.advanceTimeBy(interval)
+            advanceTimeBy(interval)
             awaitItem().should.beEqualTo(900)
         }
 
@@ -37,10 +46,10 @@ class ChessClockTest {
 
         clock.millisLeft.test {
             awaitItem().should.beEqualTo(1000)
-            testDispatcher.advanceTimeBy(interval)
+            advanceTimeBy(interval)
             awaitItem().should.beEqualTo(950)
             clock.stop()
-            testDispatcher.advanceTimeBy(interval)
+            advanceTimeBy(interval)
             //if stop doesn't work there should be uncollected item which would fail the test
         }
 
@@ -53,11 +62,12 @@ class ChessClockTest {
         clock.start()
 
         clock.millisLeft.test {
-            testDispatcher.advanceTimeBy(1_000)
-            repeat(1_000 / interval.toInt() + 1) {
-                awaitItem().should.beEqualTo(1_000L - interval * it)
+            awaitItem().should.beEqualTo(1_000L)
+            repeat(1_000 / interval.toInt()) {
+                advanceTimeBy(interval)
+                awaitItem().should.beEqualTo(1_000L - interval * (it + 1))
             }
-            testDispatcher.advanceTimeBy(interval)
+            advanceTimeBy(interval)
             //if count would continue there should be uncollected item which would fail the test
         }
 
@@ -71,23 +81,23 @@ class ChessClockTest {
 
         clock.millisLeft.test {
             awaitItem().should.beEqualTo(1_000L)
-            testDispatcher.advanceTimeBy(interval)
+            advanceTimeBy(interval)
             awaitItem().should.beEqualTo(950)
         }
 
-        clock.reset()
+        clock.restart()
 
         clock.millisLeft.test {
             awaitItem().should.beEqualTo(1_000L)
-            testDispatcher.advanceTimeBy(interval)
+            advanceTimeBy(interval)
             //if count would continue there should be uncollected item which would fail the test
         }
 
-        clock.reset(startImmediately = true)
+        clock.restart(startImmediately = true)
 
         clock.millisLeft.test {
             awaitItem().should.beEqualTo(1_000L)
-            testDispatcher.advanceTimeBy(interval)
+            advanceTimeBy(interval)
             awaitItem().should.beEqualTo(950)
         }
 
@@ -102,11 +112,16 @@ class ChessClockTest {
 
         clock.millisLeft.test {
             awaitItem().should.beEqualTo(1_000L)
-            testDispatcher.advanceTimeBy(interval)
+            advanceTimeBy(interval)
             clock.increment()
             awaitItem().should.beEqualTo(950L)
             awaitItem().should.beEqualTo(980L)
         }
+    }
+
+    private fun advanceTimeBy(intervalMillis: Long = interval) {
+        millis += intervalMillis
+        testDispatcher.advanceTimeBy(intervalMillis)
     }
 
     private fun createCountdownClock(initialMillis: Long = 1000, intervalMillis: Long = interval, incrementMillis: Long = 0) = ChessClock(
@@ -114,5 +129,6 @@ class ChessClockTest {
         intervalMillis = intervalMillis,
         incrementMillis = incrementMillis,
         defaultDispatcher = testDispatcher,
+        currentTimeMillisProvider = currentTimeProvider,
     )
 }

@@ -1,6 +1,6 @@
 package com.ledwon.jakub.chessclock.feature.clock
 
-import com.ledwon.jakub.chessclock.feature.clock.model.Player
+import com.ledwon.jakub.chessclock.feature.clock.model.PlayerColor
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -14,12 +14,8 @@ class PositionRandomizer(
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
 ) {
 
-    fun randomizePositions(
-        minRandomRounds: Int = 9,
-        white: Player,
-        black: Player
-    ): Flow<Pair<Player, Player>> = flow {
-        var value = white to black
+    fun randomizePositions(minRandomRounds: Int = 9): Flow<Pair<PlayerColor, PlayerColor>> = flow {
+        var value = PlayerColor.White to PlayerColor.Black
         val rounds = (randomNumberProvider() * 100 % 2 + minRandomRounds)
 
         emit(value)
