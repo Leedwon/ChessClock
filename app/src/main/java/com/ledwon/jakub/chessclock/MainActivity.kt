@@ -37,7 +37,6 @@ import com.ledwon.jakub.chessclock.util.LocalWindowProvider
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-@ExperimentalFoundationApi
 class MainActivity : AppCompatActivity() {
 
     private val mainViewModel: MainViewModel by viewModel()
