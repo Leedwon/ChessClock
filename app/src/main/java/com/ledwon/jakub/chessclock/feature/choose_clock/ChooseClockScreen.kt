@@ -9,7 +9,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,16 +28,11 @@ import com.ledwon.jakub.chessclock.ui.widgets.OutlinePrimaryButton
 import com.ledwon.jakub.chessclock.util.ClockNameProvider.obtainDeferrableName
 import com.ledwon.jakub.chessclock.util.getString
 
-@ExperimentalFoundationApi
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ChooseClockScreen(navigationActions: NavigationActions, chooseClockViewModel: ChooseClockViewModel) {
 
-    val chooseClockState: ChooseClockState by chooseClockViewModel.chooseClockState.observeAsState(
-        initial = ChooseClockState(
-            isSelectableModeOn = false,
-            clocksToSelected = emptyMap()
-        )
-    )
+    val chooseClockState = chooseClockViewModel.chooseClockState.observeAsState(initial = ChooseClockState.Loading)
 
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -65,88 +59,122 @@ fun ChooseClockScreen(navigationActions: NavigationActions, chooseClockViewModel
             ChooseClockTopBar(onSettingsIconClick = chooseClockViewModel::onOpenSettingsClicked)
         }
     ) { paddingValues ->
-        ConstraintLayout(
+        when (val state = chooseClockState.value) {
+            is ChooseClockState.Loaded -> {
+                ChooseClockLoaded(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .padding(paddingValues),
+                    state = state,
+                    onCreateClockClick = chooseClockViewModel::onCreateClockClicked,
+                    onSelectClockClick = chooseClockViewModel::onSelectClockClick,
+                    onClockClick = chooseClockViewModel::onClockClicked,
+                    onClockLongClick = chooseClockViewModel::onClockLongClicked,
+                    onStarClick = chooseClockViewModel::onStarClicked,
+                    onRemoveClocksClick = chooseClockViewModel::onRemoveClocks
+                )
+            }
+            ChooseClockState.Loading -> ChooseClockLoading()
+        }
+    }
+}
+
+@Composable
+private fun ChooseClockLoading(modifier: Modifier = Modifier) {
+    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        CircularProgressIndicator(modifier = Modifier.size(128.dp))
+    }
+
+}
+
+@ExperimentalFoundationApi
+@Composable
+private fun ChooseClockLoaded(
+    modifier: Modifier = Modifier,
+    state: ChooseClockState.Loaded,
+    onCreateClockClick: () -> Unit = {},
+    onSelectClockClick: (Clock) -> Unit = {},
+    onClockClick: (Clock) -> Unit = {},
+    onClockLongClick: () -> Unit = {},
+    onStarClick: (Clock) -> Unit = {},
+    onRemoveClocksClick: () -> Unit = {},
+) {
+    ConstraintLayout(modifier = modifier) {
+
+        val (column, removeSelectedButton) = createRefs()
+        //this padding is a hack for bottom.linkTo(removeSelectedButton.top) causing Create new clock button to move up and be below TopAppBar
+        LazyColumn(
             modifier = Modifier
-                .fillMaxHeight()
-                .padding(paddingValues)
-        ) {
-
-            val (column, removeSelectedButton) = createRefs()
-            //this padding is a hack for bottom.linkTo(removeSelectedButton.top) causing Create new clock button to move up and be below TopAppBar
-            LazyColumn(
-                modifier = Modifier
-                    .padding(
-                        bottom = if (chooseClockState.isSelectableModeOn) 48.dp else
-                            0.dp
-                    )
-                    .constrainAs(column) {
-                        top.linkTo(parent.top)
-                    }, content = {
-                    item {
-                        OutlinePrimaryButton(
-                            modifier = Modifier
-                                .padding(16.dp)
-                                .fillMaxWidth(),
-                            onClick = chooseClockViewModel::onCreateClockClicked
-                        ) {
-                            Text(getString(R.string.create_new_clock), fontSize = 21.sp)
-                        }
+                .padding(
+                    bottom = if (state.isSelectableModeOn) 48.dp else
+                        0.dp
+                )
+                .constrainAs(column) {
+                    top.linkTo(parent.top)
+                }, content = {
+                item {
+                    OutlinePrimaryButton(
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .fillMaxWidth(),
+                        onClick = onCreateClockClick
+                    ) {
+                        Text(getString(R.string.create_new_clock), fontSize = 21.sp)
                     }
+                }
 
-                    items(chooseClockState.clocksToSelected.toList()) { (clock, selected) ->
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            if (chooseClockState.isSelectableModeOn) {
-                                RadioButton(
-                                    modifier = Modifier.padding(start = 8.dp),
-                                    selected = selected,
-                                    onClick = { chooseClockViewModel.onSelectClockClick(clock) }
-                                )
-                            }
-                            ClockCard(
-                                modifier = Modifier
-                                    .padding(vertical = 12.dp, horizontal = 16.dp)
-                                    .fillMaxWidth()
-                                    .combinedClickable(
-                                        onClick = {
-                                            if (chooseClockState.isSelectableModeOn) {
-                                                chooseClockViewModel.onSelectClockClick(clock)
-                                            } else {
-                                                chooseClockViewModel.onClockClicked(clock)
-                                            }
-                                        },
-                                        onLongClick = chooseClockViewModel::onClockLongClicked
-                                    ),
-                                clock = clock,
-                                onStarClicked = chooseClockViewModel::onStarClicked
+                items(state.clocksToSelected.toList()) { (clock, selected) ->
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        if (state.isSelectableModeOn) {
+                            RadioButton(
+                                modifier = Modifier.padding(start = 8.dp),
+                                selected = selected,
+                                onClick = { onSelectClockClick(clock) }
                             )
                         }
+                        ClockCard(
+                            modifier = Modifier
+                                .padding(vertical = 12.dp, horizontal = 16.dp)
+                                .fillMaxWidth()
+                                .combinedClickable(
+                                    onClick = {
+                                        if (state.isSelectableModeOn) {
+                                            onSelectClockClick(clock)
+                                        } else {
+                                            onClockClick(clock)
+                                        }
+                                    },
+                                    onLongClick = onClockLongClick
+                                ),
+                            clock = clock,
+                            onStarClicked = onStarClick
+                        )
                     }
-                })
-            if (chooseClockState.isSelectableModeOn) {
-                Button(
-                    elevation = ButtonDefaults.elevation(6.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = MaterialTheme.colors.primaryVariant,
-                        contentColor = MaterialTheme.colors.onSurface
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .constrainAs(
-                            removeSelectedButton
-                        ) {
-                            bottom.linkTo(parent.bottom)
-                        },
-                    onClick = chooseClockViewModel::onRemoveClocks
-                ) {
-                    Text(
-                        modifier = Modifier.padding(vertical = 8.dp),
-                        text = getString(R.string.delete_selected_clocks),
-                        fontSize = 18.sp
-                    )
                 }
+            })
+        if (state.isSelectableModeOn) {
+            Button(
+                elevation = ButtonDefaults.elevation(6.dp),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = MaterialTheme.colors.primaryVariant,
+                    contentColor = MaterialTheme.colors.onSurface
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .constrainAs(
+                        removeSelectedButton
+                    ) {
+                        bottom.linkTo(parent.bottom)
+                    },
+                onClick = onRemoveClocksClick
+            ) {
+                Text(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    text = getString(R.string.delete_selected_clocks),
+                    fontSize = 18.sp
+                )
             }
         }
-
     }
 }
 
