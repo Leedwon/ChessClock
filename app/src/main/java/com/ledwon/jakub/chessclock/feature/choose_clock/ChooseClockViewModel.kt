@@ -6,11 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ledwon.jakub.chessclock.analytics.AnalyticsEvent
 import com.ledwon.jakub.chessclock.analytics.AnalyticsManager
-import com.ledwon.jakub.chessclock.model.Clock
 import com.ledwon.jakub.chessclock.data.persistance.PrepopulateDataStore
 import com.ledwon.jakub.chessclock.data.repository.ClockRepository
+import com.ledwon.jakub.chessclock.model.Clock
 import com.ledwon.jakub.chessclock.util.PredefinedClocks
-import com.ledwon.jakub.chessclock.util.postUpdate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -50,10 +49,11 @@ class ChooseClockViewModel(
 
         viewModelScope.launch(Dispatchers.IO) {
             clockRepository.clocks.collect { clocks ->
+                val currentState = _chooseClockState.value
                 _chooseClockState.postValue(
                     ChooseClockState.Loaded(
                         isSelectableModeOn = _chooseClockState.value?.isSelectableModeOn ?: false,
-                        clocksToSelected = clocks.associateWith { false }
+                        clocksToSelected = clocks.associateWith { currentState?.findSelectedState(it.id) ?: false }
                     )
                 )
             }
@@ -120,6 +120,16 @@ class ChooseClockViewModel(
                 clockId = clock.id,
                 isFavourite = !clock.isFavourite
             )
+        }
+    }
+
+    private fun ChooseClockState.findSelectedState(clockId: Int): Boolean {
+        return when(this) {
+            is ChooseClockState.Loading -> false
+            is ChooseClockState.Loaded -> {
+                val clock = clocksToSelected.keys.firstOrNull { it.id == clockId }
+                clocksToSelected[clock] ?: false
+            }
         }
     }
 
