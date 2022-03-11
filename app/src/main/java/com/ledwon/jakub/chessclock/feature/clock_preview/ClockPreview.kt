@@ -41,6 +41,17 @@ fun ClockPreviewScreen(navigationActions: NavigationActions, clockPreviewViewMod
 
     val scaffoldState = rememberScaffoldState()
 
+    val currentLifecycleOwner = LocalLifecycleOwner.current
+
+    LaunchedEffect(Unit) {
+        currentLifecycleOwner.lifecycleScope.launch {
+            scaffoldState.snackbarHostState.showSnackbar(
+                message = if (pulsationEnabled.value) turnPulsationOffText else turnPulsationOnText,
+                duration = SnackbarDuration.Indefinite,
+            )
+        }
+    }
+
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
@@ -108,12 +119,5 @@ fun ClockPreviewScreen(navigationActions: NavigationActions, clockPreviewViewMod
                 )
             }
         }.exhaustive
-
-        LocalLifecycleOwner.current.lifecycleScope.launch {
-            scaffoldState.snackbarHostState.showSnackbar(
-                message = if (pulsationEnabled.value) turnPulsationOffText else turnPulsationOnText,
-                duration = SnackbarDuration.Indefinite,
-            )
-        }
     }
 }
