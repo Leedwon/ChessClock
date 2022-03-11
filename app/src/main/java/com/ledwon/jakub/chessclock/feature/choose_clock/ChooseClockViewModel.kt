@@ -118,7 +118,7 @@ class ChooseClockViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             clockRepository.updateClockFavouriteStatus(
                 clockId = clock.id,
-                isFavourite = clock.isFavourite
+                isFavourite = !clock.isFavourite
             )
         }
     }
