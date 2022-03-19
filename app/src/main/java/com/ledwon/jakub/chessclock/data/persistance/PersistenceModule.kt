@@ -21,4 +21,7 @@ val persistenceModule = module {
     single {
         InteractionCounterDataStore(context = get())
     }
+    single {
+        InAppReviewDataStore(context = get())
+    }
 }
