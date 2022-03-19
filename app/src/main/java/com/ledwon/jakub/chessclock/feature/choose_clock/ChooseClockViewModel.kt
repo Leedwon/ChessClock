@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.play.core.review.ReviewInfo
 import com.ledwon.jakub.chessclock.analytics.AnalyticsEvent
 import com.ledwon.jakub.chessclock.analytics.AnalyticsManager
 import com.ledwon.jakub.chessclock.data.persistance.PrepopulateDataStore
@@ -145,6 +146,7 @@ class ChooseClockViewModel(
 
     sealed class Command {
         data class NavigateToClock(val clock: Clock) : Command()
+        data class ShowInAppReview(val reviewInfo: ReviewInfo) : Command()
         object NavigateToCreateClock : Command()
         object NavigateToSettings : Command()
     }
