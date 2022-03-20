@@ -4,13 +4,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.play.core.review.ReviewInfo
 import com.ledwon.jakub.chessclock.analytics.AnalyticsEvent
 import com.ledwon.jakub.chessclock.analytics.AnalyticsManager
+import com.ledwon.jakub.chessclock.data.persistance.InteractionCounterDataStore
 import com.ledwon.jakub.chessclock.data.persistance.PrepopulateDataStore
 import com.ledwon.jakub.chessclock.data.repository.ClockRepository
 import com.ledwon.jakub.chessclock.model.Clock
 import com.ledwon.jakub.chessclock.util.PredefinedClocks
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -26,7 +29,9 @@ sealed class ChooseClockState {
 class ChooseClockViewModel(
     private val clockRepository: ClockRepository,
     private val analyticsManager: AnalyticsManager,
-    prepopulateDataStore: PrepopulateDataStore
+    private val inAppReviewUseCase: InAppReviewUseCase,
+    private val interactionCounterDataStore: InteractionCounterDataStore,
+    prepopulateDataStore: PrepopulateDataStore,
 ) : ViewModel() {
 
     private val _chooseClockState: MutableLiveData<ChooseClockState> = MutableLiveData(ChooseClockState.Loading)
@@ -58,11 +63,24 @@ class ChooseClockViewModel(
                 )
             }
         }
+
+        viewModelScope.launch {
+            inAppReviewUseCase.getReviewInfoOrNull()?.let {
+                delay(1_000L)
+                _command.value = Command.ShowInAppReview(it)
+                _command.value = null
+            }
+        }
     }
 
     fun onClockClicked(clock: Clock) {
-        _command.value = Command.NavigateToClock(clock).also { analyticsManager.logEvent(AnalyticsEvent.OpenClockFromChooseClock(clock)) }
-        _command.value = null
+        viewModelScope.launch {
+            _command.value = Command.NavigateToClock(clock).also {
+                analyticsManager.logEvent(AnalyticsEvent.OpenClockFromChooseClock(clock))
+                interactionCounterDataStore.incrementClockOpenedCount()
+            }
+            _command.value = null
+        }
     }
 
     fun onCreateClockClicked() {
@@ -124,7 +142,7 @@ class ChooseClockViewModel(
     }
 
     private fun ChooseClockState.findSelectedState(clockId: Int): Boolean {
-        return when(this) {
+        return when (this) {
             is ChooseClockState.Loading -> false
             is ChooseClockState.Loaded -> {
                 val clock = clocksToSelected.keys.firstOrNull { it.id == clockId }
@@ -145,6 +163,7 @@ class ChooseClockViewModel(
 
     sealed class Command {
         data class NavigateToClock(val clock: Clock) : Command()
+        data class ShowInAppReview(val reviewInfo: ReviewInfo) : Command()
         object NavigateToCreateClock : Command()
         object NavigateToSettings : Command()
     }

@@ -111,35 +111,36 @@ class ClockViewModelTest {
     @Test
     fun `should correctly stop position randomization`() = vmTestCase {
         val delayDispatcher = TestCoroutineDispatcher()
-        every { settingsRepository.randomizePosition } returns flowOf(true).onEach { delay(1) }.flowOn(delayDispatcher)
+        every { settingsRepository.randomizePosition } returns flowOf(true)
+            .onEach { delay(100) }
+            .flowOn(delayDispatcher)
 
-        val positionsChannel = Channel<Pair<PlayerColor, PlayerColor>>(capacity = UNLIMITED)
+        val positions = MutableStateFlow(White to Black)
 
-        every { positionRandomizer.randomizePositions() } returns positionsChannel.consumeAsFlow()
-        positionsChannel.send(White to Black)
+        every { positionRandomizer.randomizePositions() } returns positions
 
         val vm = createViewModel()
 
         vm.state.test {
             awaitItem().should.beEqualTo(createState())
-            delayDispatcher.advanceTimeBy(1)
+            delayDispatcher.advanceTimeBy(100)
             clockState = ClockState.RandomizingPositions
             awaitItem().should.beEqualTo(createState())
 
-            positionsChannel.send(Black to White)
+            positions.value = Black to White
             playersDisplayOrder = Black to White
             awaitItem().should.beEqualTo(createState())
 
-            positionsChannel.send(White to Black)
+            positions.value = White to Black
             playersDisplayOrder = White to Black
             awaitItem().should.beEqualTo(createState())
 
-            positionsChannel.send(Black to White)
+            positions.value = Black to White
             playersDisplayOrder = Black to White
             awaitItem().should.beEqualTo(createState())
 
             vm.cancelRandomization()
-            positionsChannel.send(White to Black)
+            positions.value = White to Black
 
             clockState = ClockState.BeforeStarted
             awaitItem().should.beEqualTo(createState())
@@ -375,6 +376,7 @@ class ClockViewModelTest {
             settingsRepository = settingsRepository,
             analyticsManager = analyticsManager,
             positionRandomizer = positionRandomizer,
+            defaultDispatcher = testDispatcher,
         )
     }
 

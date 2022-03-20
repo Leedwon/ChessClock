@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -27,6 +28,8 @@ import com.ledwon.jakub.chessclock.navigation.OpenClockPayload
 import com.ledwon.jakub.chessclock.ui.widgets.OutlinePrimaryButton
 import com.ledwon.jakub.chessclock.util.ClockNameProvider.obtainDeferrableName
 import com.ledwon.jakub.chessclock.util.getString
+import com.ledwon.jakub.chessclock.util.showInAppReviewIfPossible
+import kotlinx.coroutines.runBlocking
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -35,6 +38,7 @@ fun ChooseClockScreen(navigationActions: NavigationActions, chooseClockViewModel
     val chooseClockState = chooseClockViewModel.chooseClockState.observeAsState(initial = ChooseClockState.Loading)
 
     val lifecycleOwner = LocalLifecycleOwner.current
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         chooseClockViewModel.command.observe(lifecycleOwner, { command ->
@@ -50,6 +54,7 @@ fun ChooseClockScreen(navigationActions: NavigationActions, chooseClockViewModel
                 )
                 is ChooseClockViewModel.Command.NavigateToCreateClock -> navigationActions.openCreateClock()
                 is ChooseClockViewModel.Command.NavigateToSettings -> navigationActions.openSettings()
+                is ChooseClockViewModel.Command.ShowInAppReview -> runBlocking { context.showInAppReviewIfPossible(command.reviewInfo) }
             }
         })
     }

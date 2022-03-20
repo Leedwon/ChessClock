@@ -18,4 +18,10 @@ val persistenceModule = module {
     single {
         SettingsDataStore(context = get())
     }
+    single {
+        InteractionCounterDataStore(context = get())
+    }
+    single {
+        InAppReviewDataStore(context = get())
+    }
 }
