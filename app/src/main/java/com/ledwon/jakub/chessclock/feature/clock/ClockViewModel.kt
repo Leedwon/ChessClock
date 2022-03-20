@@ -14,7 +14,8 @@ class ClockViewModel(
     private val settingsRepository: SettingsRepository,
     private val analyticsManager: AnalyticsManager,
     private val positionRandomizer: PositionRandomizer,
-    private val game: Game
+    private val game: Game,
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) : ViewModel() {
 
     data class State(
@@ -111,7 +112,7 @@ class ClockViewModel(
     private suspend fun isPositionRandomizationEnabled(): Boolean = settingsRepository.randomizePosition.take(1).first()
 
     private fun randomizePositions() {
-        randomizingJob = viewModelScope.launch(Dispatchers.Default) {
+        randomizingJob = viewModelScope.launch(defaultDispatcher) {
             if (isPositionRandomizationEnabled()) {
                 randomizing.value = true
                 positionRandomizer.randomizePositions().collect { playersInOrder.value = it }
