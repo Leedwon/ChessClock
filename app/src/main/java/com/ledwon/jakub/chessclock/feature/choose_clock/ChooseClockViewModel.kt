@@ -13,6 +13,7 @@ import com.ledwon.jakub.chessclock.data.repository.ClockRepository
 import com.ledwon.jakub.chessclock.model.Clock
 import com.ledwon.jakub.chessclock.util.PredefinedClocks
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -65,6 +66,7 @@ class ChooseClockViewModel(
 
         viewModelScope.launch {
             inAppReviewUseCase.getReviewInfoOrNull()?.let {
+                delay(1_000L)
                 _command.value = Command.ShowInAppReview(it)
                 _command.value = null
             }
