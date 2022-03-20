@@ -12,6 +12,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Test
@@ -21,12 +22,18 @@ class ClockRepositoryTest {
     @MockK
     private lateinit var dbInteractorMock: DatabaseInteractor
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val testDispatcher = TestCoroutineDispatcher()
+
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
     }
 
-    private fun createRepo(): ClockRepository = ClockRepository(databaseInteractor = dbInteractorMock)
+    private fun createRepo(): ClockRepository = ClockRepository(
+        databaseInteractor = dbInteractorMock,
+        ioDispatcher = testDispatcher
+    )
 
     @ExperimentalCoroutinesApi
     @Test
