@@ -92,7 +92,6 @@ private fun ChooseClockLoading(modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         CircularProgressIndicator(modifier = Modifier.size(128.dp))
     }
-
 }
 
 @ExperimentalFoundationApi
