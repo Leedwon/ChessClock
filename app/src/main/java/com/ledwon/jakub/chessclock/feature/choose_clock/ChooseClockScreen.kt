@@ -248,7 +248,7 @@ fun ClockCard(
                     Icon(
                         painter = if (clock.isFavourite) star else starOutline,
                         contentDescription = getString(resId = R.string.favourite_clock_content_description),
-                        tint = Color.Yellow
+                        tint = MaterialTheme.colors.secondary
                     )
                 }
             }
