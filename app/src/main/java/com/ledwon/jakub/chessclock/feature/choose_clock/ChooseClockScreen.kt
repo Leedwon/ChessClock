@@ -158,28 +158,35 @@ private fun ChooseClockLoaded(
                 }
             })
         if (state.isSelectableModeOn) {
-            Button(
-                elevation = ButtonDefaults.elevation(6.dp),
-                colors = ButtonDefaults.buttonColors(
-                    backgroundColor = MaterialTheme.colors.primaryVariant,
-                    contentColor = MaterialTheme.colors.onSurface
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .constrainAs(
-                        removeSelectedButton
-                    ) {
-                        bottom.linkTo(parent.bottom)
-                    },
+            DeleteClocksButton(
+                modifier = Modifier.constrainAs(removeSelectedButton) {
+                    bottom.linkTo(parent.bottom)
+                },
                 onClick = onRemoveClocksClick
-            ) {
-                Text(
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    text = getString(R.string.delete_selected_clocks),
-                    fontSize = 18.sp
-                )
-            }
+            )
         }
+    }
+}
+
+@Composable
+fun DeleteClocksButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
+) {
+    Button(
+        elevation = ButtonDefaults.elevation(6.dp),
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = MaterialTheme.colors.primaryVariant,
+            contentColor = MaterialTheme.colors.onSurface
+        ),
+        modifier = modifier.fillMaxWidth(),
+        onClick = onClick,
+    ) {
+        Text(
+            modifier = Modifier.padding(vertical = 8.dp),
+            text = getString(R.string.delete_selected_clocks),
+            fontSize = 18.sp
+        )
     }
 }
 
@@ -207,7 +214,6 @@ fun ClockCard(
     Card(
         modifier = modifier,
         elevation = 6.dp,
-        backgroundColor = MaterialTheme.colors.primary
     ) {
         Column(modifier = Modifier.padding(8.dp), horizontalAlignment = Alignment.Start) {
             Text(
