@@ -25,7 +25,6 @@ import com.ledwon.jakub.chessclock.model.Clock
 import com.ledwon.jakub.chessclock.model.PlayerTime
 import com.ledwon.jakub.chessclock.navigation.NavigationActions
 import com.ledwon.jakub.chessclock.navigation.OpenClockPayload
-import com.ledwon.jakub.chessclock.ui.widgets.OutlinePrimaryButton
 import com.ledwon.jakub.chessclock.util.ClockNameProvider.obtainDeferrableName
 import com.ledwon.jakub.chessclock.util.getString
 import com.ledwon.jakub.chessclock.util.showInAppReviewIfPossible
@@ -59,19 +58,23 @@ fun ChooseClockScreen(navigationActions: NavigationActions, chooseClockViewModel
         })
     }
 
+    val state = chooseClockState.value
+
     Scaffold(
-        topBar = {
-            ChooseClockTopBar(onSettingsIconClick = chooseClockViewModel::onOpenSettingsClicked)
-        }
+        topBar = { ChooseClockTopBar(onSettingsIconClick = chooseClockViewModel::onOpenSettingsClicked) },
+        floatingActionButton = {
+            if (state is ChooseClockState.Loaded && !state.isSelectableModeOn) {
+                CreateNewClockFab(onClick = chooseClockViewModel::onCreateClockClicked)
+            }
+        },
     ) { paddingValues ->
-        when (val state = chooseClockState.value) {
+        when (state) {
             is ChooseClockState.Loaded -> {
                 ChooseClockLoaded(
                     modifier = Modifier
                         .fillMaxHeight()
                         .padding(paddingValues),
                     state = state,
-                    onCreateClockClick = chooseClockViewModel::onCreateClockClicked,
                     onSelectClockClick = chooseClockViewModel::onSelectClockClick,
                     onClockClick = chooseClockViewModel::onClockClicked,
                     onClockLongClick = chooseClockViewModel::onClockLongClicked,
@@ -97,7 +100,6 @@ private fun ChooseClockLoading(modifier: Modifier = Modifier) {
 private fun ChooseClockLoaded(
     modifier: Modifier = Modifier,
     state: ChooseClockState.Loaded,
-    onCreateClockClick: () -> Unit = {},
     onSelectClockClick: (Clock) -> Unit = {},
     onClockClick: (Clock) -> Unit = {},
     onClockLongClick: () -> Unit = {},
@@ -116,18 +118,8 @@ private fun ChooseClockLoaded(
                 )
                 .constrainAs(column) {
                     top.linkTo(parent.top)
-                }, content = {
-                item {
-                    OutlinePrimaryButton(
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .fillMaxWidth(),
-                        onClick = onCreateClockClick
-                    ) {
-                        Text(getString(R.string.create_new_clock), fontSize = 21.sp)
-                    }
-                }
-
+                },
+            content = {
                 items(state.clocksToSelected.toList()) { (clock, selected) ->
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         if (state.isSelectableModeOn) {
@@ -156,7 +148,8 @@ private fun ChooseClockLoaded(
                         )
                     }
                 }
-            })
+            }
+        )
         if (state.isSelectableModeOn) {
             DeleteClocksButton(
                 modifier = Modifier.constrainAs(removeSelectedButton) {
@@ -203,6 +196,19 @@ fun ChooseClockTopBar(
             }
         }
     )
+}
+
+@Composable
+fun CreateNewClockFab(
+    onClick: () -> Unit = {}
+) {
+    val icon = painterResource(id = R.drawable.ic_add_24)
+    FloatingActionButton(
+        onClick = onClick,
+
+        ) {
+        Icon(painter = icon, contentDescription = getString(R.string.create_new_clock))
+    }
 }
 
 @Composable
