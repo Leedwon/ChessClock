@@ -1,7 +1,5 @@
 package com.ledwon.jakub.chessclock.feature.choose_clock
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.play.core.review.ReviewInfo
@@ -14,7 +12,7 @@ import com.ledwon.jakub.chessclock.model.Clock
 import com.ledwon.jakub.chessclock.util.PredefinedClocks
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 sealed class ChooseClockState {
@@ -34,11 +32,11 @@ class ChooseClockViewModel(
     prepopulateDataStore: PrepopulateDataStore,
 ) : ViewModel() {
 
-    private val _chooseClockState: MutableLiveData<ChooseClockState> = MutableLiveData(ChooseClockState.Loading)
-    val chooseClockState: LiveData<ChooseClockState> = _chooseClockState
+    private val _chooseClockState: MutableStateFlow<ChooseClockState> = MutableStateFlow(ChooseClockState.Loading)
+    val chooseClockState: StateFlow<ChooseClockState> = _chooseClockState
 
-    private val _command: MutableLiveData<Command> = MutableLiveData()
-    val command: LiveData<Command> = _command
+    private val _command: MutableSharedFlow<Command> = MutableSharedFlow()
+    val command: Flow<Command> = _command
 
     init {
         viewModelScope.launch {
@@ -55,58 +53,61 @@ class ChooseClockViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             clockRepository.clocks.collect { clocks ->
                 val currentState = _chooseClockState.value
-                _chooseClockState.postValue(
-                    ChooseClockState.Loaded(
-                        isSelectableModeOn = _chooseClockState.value?.isSelectableModeOn ?: false,
-                        clocksToSelected = clocks.associateWith { currentState?.findSelectedState(it.id) ?: false }
-                    )
+                _chooseClockState.value = ChooseClockState.Loaded(
+                    isSelectableModeOn = currentState.isSelectableModeOn,
+                    clocksToSelected = clocks.associateWith { currentState.findSelectedState(it.id) }
                 )
+
             }
         }
 
         viewModelScope.launch {
             inAppReviewUseCase.getReviewInfoOrNull()?.let {
                 delay(1_000L)
-                _command.value = Command.ShowInAppReview(it)
-                _command.value = null
+                _command.emit(Command.ShowInAppReview(it))
             }
         }
     }
 
     fun onClockClicked(clock: Clock) {
         viewModelScope.launch {
-            _command.value = Command.NavigateToClock(clock).also {
+            _command.emit(Command.NavigateToClock(clock)).also {
                 analyticsManager.logEvent(AnalyticsEvent.OpenClockFromChooseClock(clock))
                 interactionCounterDataStore.incrementClockOpenedCount()
             }
-            _command.value = null
         }
     }
 
     fun onCreateClockClicked() {
-        _command.value = Command.NavigateToCreateClock.also { analyticsManager.logEvent(AnalyticsEvent.OpenCreateClock) }
-        _command.value = null
+        viewModelScope.launch {
+            _command.emit(Command.NavigateToCreateClock).also {
+                analyticsManager.logEvent(AnalyticsEvent.OpenCreateClock)
+            }
+        }
     }
 
     fun onRemoveClocks() {
-        _chooseClockState.value!!.runIfLoaded { state ->
+        _chooseClockState.value.runIfLoaded { state ->
+            val clocksToRemove = state.clocksToSelected.filter { it.value }.keys.toList()
+            if (clocksToRemove.isEmpty()) return@runIfLoaded
             viewModelScope.launch(Dispatchers.IO) {
-                val clocksToRemove = state.clocksToSelected.filter { it.value }.keys.toList()
                 clockRepository.deleteClocks(clocksToRemove).also {
                     clocksToRemove.forEach { analyticsManager.logEvent(AnalyticsEvent.RemoveClock(it)) }
                 }
+                _chooseClockState.value = (state.copy(isSelectableModeOn = false))
+                _command.emit(Command.ShowClocksRemovedMessage)
             }
-            _chooseClockState.postValue(state.copy(isSelectableModeOn = false))
         }
     }
 
     fun onOpenSettingsClicked() {
-        _command.value = Command.NavigateToSettings.also { analyticsManager.logEvent(AnalyticsEvent.OpenSettings) }
-        _command.value = null
+        viewModelScope.launch {
+            _command.emit(Command.NavigateToSettings).also { analyticsManager.logEvent(AnalyticsEvent.OpenSettings) }
+        }
     }
 
     fun onClockLongClicked() {
-        _chooseClockState.value!!.runIfLoaded { currentState ->
+        _chooseClockState.value.runIfLoaded { currentState ->
             val newState = currentState.copy(
                 isSelectableModeOn = !currentState.isSelectableModeOn,
                 clocksToSelected = if (currentState.isSelectableModeOn) {
@@ -117,18 +118,18 @@ class ChooseClockViewModel(
                     currentState.clocksToSelected
                 }
             )
-            _chooseClockState.postValue(newState)
+            _chooseClockState.value = newState
         }
     }
 
     fun onSelectClockClick(clock: Clock) {
-        _chooseClockState.value!!.runIfLoaded { currentState ->
+        _chooseClockState.value.runIfLoaded { currentState ->
             val newState = currentState.copy(
                 clocksToSelected = currentState.clocksToSelected.toMutableMap().apply {
                     this[clock] = !this[clock]!!
                 }
             )
-            _chooseClockState.postValue(newState)
+            _chooseClockState.value = newState
         }
     }
 
@@ -166,5 +167,6 @@ class ChooseClockViewModel(
         data class ShowInAppReview(val reviewInfo: ReviewInfo) : Command()
         object NavigateToCreateClock : Command()
         object NavigateToSettings : Command()
+        object ShowClocksRemovedMessage : Command()
     }
 }
