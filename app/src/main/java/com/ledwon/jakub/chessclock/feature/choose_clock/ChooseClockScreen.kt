@@ -9,7 +9,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,9 +17,9 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.lifecycle.lifecycleScope
 import com.ledwon.jakub.chessclock.R
 import com.ledwon.jakub.chessclock.model.Clock
 import com.ledwon.jakub.chessclock.model.PlayerTime
@@ -28,7 +28,8 @@ import com.ledwon.jakub.chessclock.navigation.OpenClockPayload
 import com.ledwon.jakub.chessclock.util.ClockNameProvider.obtainDeferrableName
 import com.ledwon.jakub.chessclock.util.getString
 import com.ledwon.jakub.chessclock.util.showInAppReviewIfPossible
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -39,11 +40,11 @@ fun ChooseClockScreen(navigationActions: NavigationActions, chooseClockViewModel
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
 
+    val scaffoldState = rememberScaffoldState()
+    val removedClocksMessage = stringResource(id = R.string.clocks_removed)
+
     LaunchedEffect(Unit) {
-        chooseClockViewModel.command.observe(lifecycleOwner, { command ->
-            if (command == null) {
-                return@observe
-            }
+        chooseClockViewModel.command.collect { command ->
             when (command) {
                 is ChooseClockViewModel.Command.NavigateToClock -> navigationActions.openClock(
                     OpenClockPayload(
@@ -53,14 +54,18 @@ fun ChooseClockScreen(navigationActions: NavigationActions, chooseClockViewModel
                 )
                 is ChooseClockViewModel.Command.NavigateToCreateClock -> navigationActions.openCreateClock()
                 is ChooseClockViewModel.Command.NavigateToSettings -> navigationActions.openSettings()
-                is ChooseClockViewModel.Command.ShowInAppReview -> runBlocking { context.showInAppReviewIfPossible(command.reviewInfo) }
+                is ChooseClockViewModel.Command.ShowInAppReview -> lifecycleOwner.lifecycleScope.launch {
+                    context.showInAppReviewIfPossible(command.reviewInfo)
+                }
+                ChooseClockViewModel.Command.ShowClocksRemovedMessage -> lifecycleOwner.lifecycleScope.launch {
+                    scaffoldState.snackbarHostState.showSnackbar(removedClocksMessage)
+                }
             }
-        })
+        }
     }
 
-    val state = chooseClockState.value
-
     Scaffold(
+        scaffoldState = scaffoldState,
         topBar = { ChooseClockTopBar(onSettingsIconClick = chooseClockViewModel::onOpenSettingsClicked) },
         floatingActionButton = {
             if (state is ChooseClockState.Loaded && !state.isSelectableModeOn) {
