@@ -21,7 +21,7 @@ internal object Mappers {
     fun Clock.toTimer() = Timer(
         id = this.id,
         whiteClockTime = this.whitePlayerTime.toClockTime(),
-        blackClockTime = this.whitePlayerTime.toClockTime(),
+        blackClockTime = this.blackPlayerTime.toClockTime(),
         isFavourite = this.isFavourite
     )
 
