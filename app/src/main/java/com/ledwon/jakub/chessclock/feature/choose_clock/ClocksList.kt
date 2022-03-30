@@ -20,7 +20,6 @@ import com.ledwon.jakub.chessclock.model.Clock
 import com.ledwon.jakub.chessclock.model.PlayerTime
 import com.ledwon.jakub.chessclock.util.ClockNameProvider.obtainDeferrableName
 import com.ledwon.jakub.chessclock.util.ClockTypeIconProvider.obtainTypeIcon
-import com.ledwon.jakub.chessclock.util.getString
 
 @ExperimentalFoundationApi
 @Composable
@@ -309,7 +308,7 @@ private fun RowScope.FavouriteButton(
     ) {
         Icon(
             painter = if (isFavourite) star else starOutline,
-            contentDescription = getString(resId = R.string.favourite_clock_content_description),
+            contentDescription = stringResource(R.string.favourite_clock_content_description),
             tint = MaterialTheme.colors.secondary
         )
     }

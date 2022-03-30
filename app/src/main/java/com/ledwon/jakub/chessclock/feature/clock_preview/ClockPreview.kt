@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.lifecycleScope
 import com.ledwon.jakub.chessclock.R
 import com.ledwon.jakub.chessclock.feature.clock.model.PlayerDisplay
@@ -15,9 +16,7 @@ import com.ledwon.jakub.chessclock.feature.clock.widget.OwnPlayerTimeClock
 import com.ledwon.jakub.chessclock.feature.common.ClockDisplay
 import com.ledwon.jakub.chessclock.feature.common.exhaustive
 import com.ledwon.jakub.chessclock.navigation.NavigationActions
-import com.ledwon.jakub.chessclock.util.DeferrableString
 import com.ledwon.jakub.chessclock.util.ResDeferrableString
-import com.ledwon.jakub.chessclock.util.getString
 import kotlinx.coroutines.launch
 
 @Composable
@@ -36,8 +35,8 @@ fun ClockPreviewScreen(navigationActions: NavigationActions, clockPreviewViewMod
 
     val pulsationEnabled = clockPreviewViewModel.pulsationEnabled.collectAsState(true)
 
-    val turnPulsationOnText = getString(R.string.turn_pulsation_on)
-    val turnPulsationOffText = getString(R.string.turn_pulsation_off)
+    val turnPulsationOnText = stringResource(R.string.turn_pulsation_on)
+    val turnPulsationOffText = stringResource(R.string.turn_pulsation_off)
 
     val scaffoldState = rememberScaffoldState()
 
@@ -56,11 +55,11 @@ fun ClockPreviewScreen(navigationActions: NavigationActions, clockPreviewViewMod
         scaffoldState = scaffoldState,
         topBar = {
             TopAppBar(
-                title = { Text(getString(R.string.clock_preview_title)) },
+                title = { Text(stringResource(R.string.clock_preview_title)) },
                 navigationIcon = {
                     val backIcon = painterResource(id = R.drawable.ic_arrow_back_24)
                     IconButton(onClick = clockPreviewViewModel::onBackClick) {
-                        Icon(painter = backIcon, contentDescription = getString(R.string.navigate_back_content_description))
+                        Icon(painter = backIcon, contentDescription = stringResource(R.string.navigate_back_content_description))
                     }
                 }
             )
