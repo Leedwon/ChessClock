@@ -1,19 +1,16 @@
 package com.ledwon.jakub.chessclock.feature.choose_clock
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
@@ -21,11 +18,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import com.ledwon.jakub.chessclock.R
-import com.ledwon.jakub.chessclock.model.Clock
-import com.ledwon.jakub.chessclock.model.PlayerTime
 import com.ledwon.jakub.chessclock.navigation.NavigationActions
 import com.ledwon.jakub.chessclock.navigation.OpenClockPayload
-import com.ledwon.jakub.chessclock.util.ClockNameProvider.obtainDeferrableName
 import com.ledwon.jakub.chessclock.util.getString
 import com.ledwon.jakub.chessclock.util.showInAppReviewIfPossible
 import kotlinx.coroutines.flow.collect
@@ -35,7 +29,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun ChooseClockScreen(navigationActions: NavigationActions, chooseClockViewModel: ChooseClockViewModel) {
 
-    val chooseClockState = chooseClockViewModel.chooseClockState.observeAsState(initial = ChooseClockState.Loading)
+    val chooseClockState = chooseClockViewModel.chooseClockState.collectAsState()
+    val state = chooseClockState.value
 
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
@@ -66,7 +61,13 @@ fun ChooseClockScreen(navigationActions: NavigationActions, chooseClockViewModel
 
     Scaffold(
         scaffoldState = scaffoldState,
-        topBar = { ChooseClockTopBar(onSettingsIconClick = chooseClockViewModel::onOpenSettingsClicked) },
+        topBar = {
+            ChooseClockTopBar(
+                isSelectableModeOn = state is ChooseClockState.Loaded && state.isSelectableModeOn,
+                onRemoveClocksClick = chooseClockViewModel::onRemoveClocks,
+                onSettingsClick = chooseClockViewModel::onOpenSettingsClicked
+            )
+        },
         floatingActionButton = {
             if (state is ChooseClockState.Loaded && !state.isSelectableModeOn) {
                 CreateNewClockFab(onClick = chooseClockViewModel::onCreateClockClicked)
@@ -75,16 +76,15 @@ fun ChooseClockScreen(navigationActions: NavigationActions, chooseClockViewModel
     ) { paddingValues ->
         when (state) {
             is ChooseClockState.Loaded -> {
-                ChooseClockLoaded(
+                ClocksList(
                     modifier = Modifier
-                        .fillMaxHeight()
+                        .fillMaxHeight() //todo max size?
                         .padding(paddingValues),
                     state = state,
                     onSelectClockClick = chooseClockViewModel::onSelectClockClick,
                     onClockClick = chooseClockViewModel::onClockClicked,
                     onClockLongClick = chooseClockViewModel::onClockLongClicked,
                     onStarClick = chooseClockViewModel::onStarClicked,
-                    onRemoveClocksClick = chooseClockViewModel::onRemoveClocks
                 )
             }
             ChooseClockState.Loading -> ChooseClockLoading()
@@ -99,202 +99,46 @@ private fun ChooseClockLoading(modifier: Modifier = Modifier) {
     }
 }
 
-@ExperimentalFoundationApi
 @Composable
-private fun ChooseClockLoaded(
-    modifier: Modifier = Modifier,
-    state: ChooseClockState.Loaded,
-    onSelectClockClick: (Clock) -> Unit = {},
-    onClockClick: (Clock) -> Unit = {},
-    onClockLongClick: () -> Unit = {},
-    onStarClick: (Clock) -> Unit = {},
-    onRemoveClocksClick: () -> Unit = {},
-) {
-    ConstraintLayout(modifier = modifier) {
-
-        val (column, removeSelectedButton) = createRefs()
-        //this padding is a hack for bottom.linkTo(removeSelectedButton.top) causing Create new clock button to move up and be below TopAppBar
-        LazyColumn(
-            modifier = Modifier
-                .padding(
-                    bottom = if (state.isSelectableModeOn) 48.dp else
-                        0.dp
-                )
-                .constrainAs(column) {
-                    top.linkTo(parent.top)
-                },
-            content = {
-                items(state.clocksToSelected.toList()) { (clock, selected) ->
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        if (state.isSelectableModeOn) {
-                            RadioButton(
-                                modifier = Modifier.padding(start = 8.dp),
-                                selected = selected,
-                                onClick = { onSelectClockClick(clock) }
-                            )
-                        }
-                        ClockCard(
-                            modifier = Modifier
-                                .padding(vertical = 12.dp, horizontal = 16.dp)
-                                .fillMaxWidth()
-                                .combinedClickable(
-                                    onClick = {
-                                        if (state.isSelectableModeOn) {
-                                            onSelectClockClick(clock)
-                                        } else {
-                                            onClockClick(clock)
-                                        }
-                                    },
-                                    onLongClick = onClockLongClick
-                                ),
-                            clock = clock,
-                            onStarClicked = onStarClick
-                        )
-                    }
-                }
-            }
-        )
-        if (state.isSelectableModeOn) {
-            DeleteClocksButton(
-                modifier = Modifier.constrainAs(removeSelectedButton) {
-                    bottom.linkTo(parent.bottom)
-                },
-                onClick = onRemoveClocksClick
-            )
-        }
-    }
-}
-
-@Composable
-fun DeleteClocksButton(
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit = {},
-) {
-    Button(
-        elevation = ButtonDefaults.elevation(6.dp),
-        colors = ButtonDefaults.buttonColors(
-            backgroundColor = MaterialTheme.colors.primaryVariant,
-            contentColor = MaterialTheme.colors.onSurface
-        ),
-        modifier = modifier.fillMaxWidth(),
-        onClick = onClick,
-    ) {
-        Text(
-            modifier = Modifier.padding(vertical = 8.dp),
-            text = getString(R.string.delete_selected_clocks),
-            fontSize = 18.sp
-        )
-    }
-}
-
-@Composable
-fun ChooseClockTopBar(
-    onSettingsIconClick: () -> Unit
+private fun ChooseClockTopBar(
+    isSelectableModeOn: Boolean,
+    onRemoveClocksClick: () -> Unit,
+    onSettingsClick: () -> Unit,
 ) {
     TopAppBar(
         title = { Text(text = getString(resId = R.string.choose_clock_title)) },
         actions = {
-            val icon = painterResource(id = R.drawable.ic_settings_24)
-            IconButton(onClick = onSettingsIconClick) {
-                Icon(painter = icon, contentDescription = getString(resId = R.string.settings_content_description))
+            when (isSelectableModeOn) {
+                true -> RemoveClocksButton(onRemoveClocksClick)
+                false -> SettingsButton(onSettingsClick)
             }
         }
     )
 }
 
 @Composable
+private fun RowScope.RemoveClocksButton(onClick: () -> Unit) {
+    IconButton(onClick = onClick) {
+        Icon(
+            imageVector = Icons.Filled.Delete,
+            contentDescription = stringResource(id = R.string.remove_selected_clocks_content_description)
+        )
+    }
+}
+
+@Composable
+private fun RowScope.SettingsButton(onClick: () -> Unit) {
+    IconButton(onClick = onClick) {
+        Icon(imageVector = Icons.Filled.Settings, contentDescription = stringResource(id = R.string.settings_content_description))
+    }
+}
+
+@Composable
 fun CreateNewClockFab(
     onClick: () -> Unit = {}
 ) {
-    val icon = painterResource(id = R.drawable.ic_add_24)
-    FloatingActionButton(
-        onClick = onClick,
-
-        ) {
-        Icon(painter = icon, contentDescription = getString(R.string.create_new_clock))
-    }
-}
-
-@Composable
-fun ClockCard(
-    clock: Clock,
-    modifier: Modifier = Modifier,
-    onStarClicked: (Clock) -> Unit
-) {
-    Card(
-        modifier = modifier,
-        elevation = 6.dp,
-    ) {
-        Column(modifier = Modifier.padding(8.dp), horizontalAlignment = Alignment.Start) {
-            Text(
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-                text = clock.obtainDeferrableName().getString(),
-                color = MaterialTheme.colors.onSurface,
-                fontSize = 19.sp
-            )
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                ClockIconsColumn(playerTime = clock.whitePlayerTime)
-                ClockIconsColumn(playerTime = clock.blackPlayerTime, isWhite = false)
-                val star = painterResource(id = R.drawable.ic_star_24)
-                val starOutline = painterResource(id = R.drawable.ic_star_border_24)
-                IconButton(
-                    modifier = Modifier
-                        .height(24.dp)
-                        .width(24.dp)
-                        .align(alignment = Alignment.CenterVertically),
-                    onClick = { onStarClicked(clock) }) {
-                    Icon(
-                        painter = if (clock.isFavourite) star else starOutline,
-                        contentDescription = getString(resId = R.string.favourite_clock_content_description),
-                        tint = MaterialTheme.colors.secondary
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun ClockIconsColumn(playerTime: PlayerTime, modifier: Modifier = Modifier, isWhite: Boolean = true) {
-    Column(modifier = modifier.padding(top = 4.dp)) {
-        Row(modifier = Modifier.defaultMinSize(minHeight = 24.dp)) {
-            val clockImage = painterResource(id = R.drawable.ic_clock_24)
-            Image(
-                modifier = Modifier.padding(end = 8.dp),
-                painter = clockImage,
-                contentDescription = getString(resId = R.string.clock_content_description),
-                colorFilter = ColorFilter.tint(if (isWhite) Color.White else Color.Black)
-            )
-            Text(
-                text = playerTime.toString(),
-                color = MaterialTheme.colors.onSurface,
-                fontSize = 17.sp
-            )
-        }
-        if (playerTime.increment > 0) {
-            Row {
-                val incrementClock = PlayerTime(
-                    seconds = playerTime.increment
-                )
-                val incrementImage = painterResource(id = R.drawable.ic_arrow_circle_up_24)
-                Image(
-                    modifier = Modifier.padding(end = 8.dp),
-                    painter = incrementImage,
-                    contentDescription = getString(resId = R.string.increment_content_description),
-                    colorFilter = ColorFilter.tint(if (isWhite) Color.White else Color.Black)
-                )
-                Text(
-                    text = incrementClock.toString(),
-                    fontSize = 17.sp,
-                    color = MaterialTheme.colors.onSurface
-                )
-            }
-        }
+    val addIcon = painterResource(id = R.drawable.ic_add_24)
+    FloatingActionButton(onClick = onClick) {
+        Icon(painter = addIcon, contentDescription = getString(R.string.create_new_clock))
     }
 }

@@ -4,7 +4,7 @@ import android.view.Window
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 
 val LocalNavController = compositionLocalOf<NavController>(defaultFactory = { error("no nav controller available") })
@@ -14,7 +14,7 @@ val LocalWindowProvider = compositionLocalOf<Window>(defaultFactory = { error("n
 
 @Composable
 fun getString(@StringRes resId: Int, formatArgs: List<Any> = emptyList()): String {
-    return LocalContext.current.getString(resId, *formatArgs.toTypedArray())
+    return stringResource(resId, *formatArgs.toTypedArray())
 }
 
 sealed interface DeferrableString {
