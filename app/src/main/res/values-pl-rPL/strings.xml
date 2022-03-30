@@ -71,4 +71,8 @@
     <string name="stats_content_description">statystyki gry</string>
     <string name="white_wins">Białe wygrały</string>
     <string name="black_wins">Czarne wygrały</string>
+    <string name="white">Białe</string>
+    <string name="black">Czarne</string>
+    <string name="remove_selected_clocks_content_description">usuń zaznaczone zegary</string>
+    <string name="clocks_removed">Usunięto zegary</string>
 </resources>
