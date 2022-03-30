@@ -20,7 +20,6 @@ import androidx.lifecycle.lifecycleScope
 import com.ledwon.jakub.chessclock.R
 import com.ledwon.jakub.chessclock.navigation.NavigationActions
 import com.ledwon.jakub.chessclock.navigation.OpenClockPayload
-import com.ledwon.jakub.chessclock.util.getString
 import com.ledwon.jakub.chessclock.util.showInAppReviewIfPossible
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -106,7 +105,7 @@ private fun ChooseClockTopBar(
     onSettingsClick: () -> Unit,
 ) {
     TopAppBar(
-        title = { Text(text = getString(resId = R.string.choose_clock_title)) },
+        title = { Text(text = stringResource(R.string.choose_clock_title)) },
         actions = {
             when (isSelectableModeOn) {
                 true -> RemoveClocksButton(onRemoveClocksClick)
@@ -139,6 +138,6 @@ fun CreateNewClockFab(
 ) {
     val addIcon = painterResource(id = R.drawable.ic_add_24)
     FloatingActionButton(onClick = onClick) {
-        Icon(painter = addIcon, contentDescription = getString(R.string.create_new_clock))
+        Icon(painter = addIcon, contentDescription = stringResource(R.string.create_new_clock))
     }
 }

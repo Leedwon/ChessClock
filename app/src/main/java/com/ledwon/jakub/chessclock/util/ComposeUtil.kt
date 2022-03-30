@@ -11,12 +11,6 @@ val LocalNavController = compositionLocalOf<NavController>(defaultFactory = { er
 val LocalIsDarkMode = compositionLocalOf<Boolean>(defaultFactory = { false })
 val LocalWindowProvider = compositionLocalOf<Window>(defaultFactory = { error("no window available") })
 
-
-@Composable
-fun getString(@StringRes resId: Int, formatArgs: List<Any> = emptyList()): String {
-    return stringResource(resId, *formatArgs.toTypedArray())
-}
-
 sealed interface DeferrableString {
     @Composable
     fun getString(): String
@@ -27,7 +21,7 @@ data class ResDeferrableString(
     private val formatArgs: List<Any> = emptyList()
 ) : DeferrableString {
     @Composable
-    override fun getString(): String = getString(resId = resId, formatArgs)
+    override fun getString(): String = stringResource(resId, *formatArgs.toTypedArray())
 }
 
 data class ValueDeferrableString(

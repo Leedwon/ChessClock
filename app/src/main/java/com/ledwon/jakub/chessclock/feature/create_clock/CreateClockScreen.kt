@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ledwon.jakub.chessclock.R
@@ -18,7 +19,6 @@ import com.ledwon.jakub.chessclock.navigation.OpenClockPayload
 import com.ledwon.jakub.chessclock.ui.widgets.NumberPicker
 import com.ledwon.jakub.chessclock.ui.widgets.NumberPickerState
 import com.ledwon.jakub.chessclock.ui.widgets.OutlinePrimaryButton
-import com.ledwon.jakub.chessclock.util.getString
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -99,11 +99,11 @@ fun CreateClockScreen(navigationActions: NavigationActions, createClockViewModel
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = getString(R.string.create_clock_title)) },
+                title = { Text(text = stringResource(R.string.create_clock_title)) },
                 navigationIcon = {
                     val backIcon = painterResource(id = R.drawable.ic_arrow_back_24)
                     IconButton(onClick = createClockViewModel::onBackClick) {
-                        Icon(painter = backIcon, contentDescription = getString(R.string.navigate_back_content_description))
+                        Icon(painter = backIcon, contentDescription = stringResource(R.string.navigate_back_content_description))
                     }
                 }
             )
@@ -125,7 +125,7 @@ fun CreateClockScreen(navigationActions: NavigationActions, createClockViewModel
                 ) {
                     Text(
                         modifier = Modifier.padding(horizontal = 8.dp),
-                        text = getString(R.string.create_clock_same_clock)
+                        text = stringResource(R.string.create_clock_same_clock)
                     )
                     Switch(
                         modifier = Modifier
@@ -138,7 +138,7 @@ fun CreateClockScreen(navigationActions: NavigationActions, createClockViewModel
             }
             item {
                 Text(
-                    text = if (clocksMerged.value) getString(R.string.create_clock_for_both_players) else getString(R.string.create_clock_white),
+                    text = if (clocksMerged.value) stringResource(R.string.create_clock_for_both_players) else stringResource(R.string.create_clock_white),
                     fontSize = 24.sp
                 )
             }
@@ -157,7 +157,7 @@ fun CreateClockScreen(navigationActions: NavigationActions, createClockViewModel
                 )
             }
             if (!clocksMerged.value) {
-                item { Text(text = getString(R.string.create_clock_black), fontSize = 24.sp) }
+                item { Text(text = stringResource(R.string.create_clock_black), fontSize = 24.sp) }
                 item {
                     ClockPicker(
                         clockPickerData = ClockPickerData(
@@ -182,15 +182,15 @@ fun CreateClockScreen(navigationActions: NavigationActions, createClockViewModel
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     OutlinePrimaryButton(onClick = createClockViewModel::onStartGameClick) {
-                        Text(getString(R.string.start), fontSize = 19.sp)
+                        Text(stringResource(R.string.start), fontSize = 19.sp)
                     }
                     OutlinePrimaryButton(
                         onClick = createClockViewModel::onStartGameAndSaveClockClick
                     ) {
-                        Text(getString(R.string.start_and_save), fontSize = 19.sp)
+                        Text(stringResource(R.string.start_and_save), fontSize = 19.sp)
                     }
                     OutlinePrimaryButton(onClick = createClockViewModel::onSaveClockClick) {
-                        Text(getString(R.string.save), fontSize = 19.sp)
+                        Text(stringResource(R.string.save), fontSize = 19.sp)
                     }
                 }
             }
@@ -217,22 +217,22 @@ fun ClockPicker(
     Row {
         TimePickerWithDescription(
             numberPickerState = clockPickerData.hoursPickerState,
-            text = getString(R.string.hours),
+            text = stringResource(R.string.hours),
             onValueChangedListener = onHoursChanged
         )
         TimePickerWithDescription(
             numberPickerState = clockPickerData.minutesPickerState,
-            text = getString(R.string.minutes),
+            text = stringResource(R.string.minutes),
             onValueChangedListener = onMinutesChanged
         )
         TimePickerWithDescription(
             numberPickerState = clockPickerData.secondsPickerState,
-            text = getString(R.string.seconds),
+            text = stringResource(R.string.seconds),
             onValueChangedListener = onSecondsChanged
         )
         TimePickerWithDescription(
             numberPickerState = clockPickerData.incrementPickerState,
-            text = getString(R.string.increment),
+            text = stringResource(R.string.increment),
             onValueChangedListener = onIncrementChanged
         )
     }
