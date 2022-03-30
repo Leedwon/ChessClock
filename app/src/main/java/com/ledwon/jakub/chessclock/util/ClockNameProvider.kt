@@ -1,57 +1,49 @@
 package com.ledwon.jakub.chessclock.util
 
 import com.ledwon.jakub.chessclock.R
-import com.ledwon.jakub.chessclock.model.PlayerTime
+import com.ledwon.jakub.chessclock.feature.choose_clock.ClockTimeType
+import com.ledwon.jakub.chessclock.feature.choose_clock.clockTimeType
 import com.ledwon.jakub.chessclock.model.Clock
 
 object ClockNameProvider {
 
-    fun Clock.obtainDeferrableName(): ResDeferrableString = createClockName(
-        whitePlayerTime = this.whitePlayerTime,
-        blackPlayerTime = this.blackPlayerTime
-    )
-
-    private fun createClockName(whitePlayerTime: PlayerTime, blackPlayerTime: PlayerTime): ResDeferrableString {
-        return when {
-            whitePlayerTime != blackPlayerTime -> ResDeferrableString(R.string.clock_name_custom)
-            else -> createNameForClock(whitePlayerTime)
-        }
-    }
-
-    private fun createNameForClock(PlayerTime: PlayerTime): ResDeferrableString {
-        val incrementSuffix = createSuffixIncrement(PlayerTime.increment)
+    fun Clock.obtainDeferrableName(): ResDeferrableString {
+        val playerTime = whitePlayerTime
+        val incrementSuffix = createSuffixIncrement(playerTime.increment)
         val twoDigitMinutes =
-            ":${formatToTwoDigitsString(PlayerTime.minutes)}".takeIf { PlayerTime.minutes > 0 } ?: ""
+            ":${formatToTwoDigitsString(playerTime.minutes)}".takeIf { playerTime.minutes > 0 } ?: ""
         val twoDigitSeconds =
-            ":${formatToTwoDigitsString(PlayerTime.seconds)}".takeIf { PlayerTime.seconds > 0 } ?: ""
-        return when {
-            PlayerTime.hours > 0 -> ResDeferrableString(
-                resId = R.string.clock_name_classic,
-                formatArgs = listOf("${PlayerTime.hours}$twoDigitMinutes$twoDigitSeconds$incrementSuffix")
-            )
-            PlayerTime.minutes > 10 -> ResDeferrableString(
-                resId = R.string.clock_name_rapid,
-                formatArgs = listOf("${PlayerTime.minutes}$twoDigitSeconds$incrementSuffix")
-            )
-            PlayerTime.minutes in 3..10 -> ResDeferrableString(
+            ":${formatToTwoDigitsString(playerTime.seconds)}".takeIf { playerTime.seconds > 0 } ?: ""
+        return when (this.clockTimeType) {
+            ClockTimeType.Bullet ->
+                if (playerTime.minutes > 0) {
+                    ResDeferrableString(
+                        resId = R.string.clock_name_bullet,
+                        formatArgs = listOf("${playerTime.minutes}$twoDigitSeconds$incrementSuffix")
+                    )
+                } else {
+                    ResDeferrableString(
+                        resId = R.string.clock_name_bullet,
+                        formatArgs = listOf("${playerTime.seconds}s$incrementSuffix")
+                    )
+                }
+            ClockTimeType.Blitz -> ResDeferrableString(
                 resId = R.string.clock_name_blitz,
-                formatArgs = listOf("${PlayerTime.minutes}$twoDigitSeconds$incrementSuffix")
+                formatArgs = listOf("${playerTime.minutes}$twoDigitSeconds$incrementSuffix")
             )
-            PlayerTime.minutes > 0 -> ResDeferrableString(
-                resId = R.string.clock_name_bullet,
-                formatArgs = listOf("${PlayerTime.minutes}$twoDigitSeconds$incrementSuffix")
+            ClockTimeType.Rapid -> ResDeferrableString(
+                resId = R.string.clock_name_rapid,
+                formatArgs = listOf("${playerTime.minutes}$twoDigitSeconds$incrementSuffix")
             )
-            else -> ResDeferrableString(
-                resId = R.string.clock_name_bullet,
-                formatArgs = listOf("${PlayerTime.seconds}s$incrementSuffix")
+            ClockTimeType.Classic -> ResDeferrableString(
+                resId = R.string.clock_name_classic,
+                formatArgs = listOf("${playerTime.hours}$twoDigitMinutes$twoDigitSeconds$incrementSuffix")
             )
+            ClockTimeType.Custom -> ResDeferrableString(R.string.clock_name_custom)
         }
     }
 
-    private fun createSuffixIncrement(increment: Int): String {
-        return " + $increment".takeIf { increment > 0 } ?: ""
-    }
+    private fun createSuffixIncrement(increment: Int): String = " + $increment".takeIf { increment > 0 } ?: ""
 
     private fun formatToTwoDigitsString(value: Int) = if (value < 10) "0$value" else value
-
 }

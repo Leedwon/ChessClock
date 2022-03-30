@@ -9,6 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -17,7 +18,6 @@ import androidx.compose.ui.unit.sp
 import com.ledwon.jakub.chessclock.R
 import com.ledwon.jakub.chessclock.feature.stats.data.Move
 import com.ledwon.jakub.chessclock.feature.stats.data.Moves
-import com.ledwon.jakub.chessclock.util.getString
 
 @Composable
 fun MovesStats(
@@ -27,16 +27,16 @@ fun MovesStats(
     fastestMoves: Moves,
     movesCount: Int
 ) {
-    val slowestMoveText = getString(resId = R.string.slowest_move)
-    val averageMoveText = getString(resId = R.string.average_move)
-    val fastestMoveText = getString(resId = R.string.fastest_move)
+    val slowestMoveText = stringResource(id = R.string.slowest_move)
+    val averageMoveText = stringResource(id = R.string.average_move)
+    val fastestMoveText = stringResource(id = R.string.fastest_move)
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             modifier = Modifier.padding(vertical = 8.dp),
-            text = getString(resId = R.string.moves_count, formatArgs = listOf(movesCount)),
+            text = stringResource(id = R.string.moves_count, movesCount),
             fontSize = 21.sp
         )
         Row(
@@ -79,17 +79,17 @@ fun MoveStat(
             tint = Color.Unspecified
         )
         Text(
-            getString(resId = R.string.stats_white_move, listOf(moves.white?.duration ?: getString(R.string.stats_no_moves_yet))),
+            stringResource(id = R.string.stats_white_move, moves.white?.duration ?: stringResource(R.string.stats_no_moves_yet)),
             textAlign = TextAlign.Center,
             fontSize = 17.sp
         )
         Text(
-            getString(resId = R.string.stats_black_move, listOf(moves.black?.duration ?: getString(R.string.stats_no_moves_yet))),
+            stringResource(id = R.string.stats_black_move, moves.black?.duration ?: stringResource(R.string.stats_no_moves_yet)),
             textAlign = TextAlign.Center,
             fontSize = 17.sp
         )
         Text(
-            getString(resId = R.string.stats_general_move, listOf(moves.general?.duration ?: getString(R.string.stats_no_moves_yet))),
+            stringResource(id = R.string.stats_general_move, moves.general?.duration ?: stringResource(R.string.stats_no_moves_yet)),
             textAlign = TextAlign.Center,
             fontSize = 17.sp,
             fontWeight = FontWeight.Bold
