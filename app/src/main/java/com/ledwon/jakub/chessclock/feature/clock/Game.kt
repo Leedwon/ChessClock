@@ -5,10 +5,7 @@ import com.ledwon.jakub.chessclock.feature.clock.model.ClockState
 import com.ledwon.jakub.chessclock.feature.clock.model.PlayerColor
 import com.ledwon.jakub.chessclock.util.DeferrableString
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 
 data class Player(
     val millis: Long,
@@ -71,7 +68,7 @@ class Game(
             clockState = if (gameOver) ClockState.Over else gameState.toClockState(),
             movesTracked = movesTracked,
         )
-    }
+    }.distinctUntilChanged()
 
     fun playerMoveFinished() {
         check(gameStateFlow.value == InternalGameState.Running) { "Can't finish player's move when game is not running" }
@@ -103,6 +100,7 @@ class Game(
 
     fun restart() {
         gameStateFlow.value = InternalGameState.BeforeStarted
+        currentPlayerColorFlow.value = PlayerColor.White
         whiteClock.restart()
         blackClock.restart()
         movesTracker.restart()
