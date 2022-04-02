@@ -300,9 +300,19 @@ class GameTest {
                 )
                 awaitItem().should.beEqualTo(createState())
 
-                game.restart()
+                game.playerMoveFinished()
+
+                movesTracked = listOf(100L)
+                awaitItem().should.beEqualTo(createState())
 
                 white = white.copy(isActive = false)
+                black = black.copy(isActive = true)
+
+                awaitItem().should.beEqualTo(createState())
+
+                game.restart()
+
+                black = black.copy(isActive = false)
                 clockState = ClockState.BeforeStarted
 
                 awaitItem().should.beEqualTo(createState())
@@ -310,6 +320,16 @@ class GameTest {
                 white = white.copy(text = "01:00".toDeferrableString(), percentageLeft = 1.0f)
                 black = black.copy(text = "01:00".toDeferrableString())
 
+                awaitItem().should.beEqualTo(createState())
+
+                movesTracked = emptyList()
+
+                awaitItem().should.beEqualTo(createState())
+
+                start()
+
+                clockState = ClockState.Running
+                white = white.copy(isActive = true)
                 awaitItem().should.beEqualTo(createState())
             }
         }
