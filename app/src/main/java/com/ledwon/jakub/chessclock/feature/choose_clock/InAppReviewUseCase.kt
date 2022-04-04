@@ -46,7 +46,7 @@ class InAppReviewUseCase(
     }
 
     private companion object {
-        const val clockOpenedThreshold = 2
+        const val clockOpenedThreshold = 3
         const val inAppReviewLastShowTimeThresholdMillis = 1_000 * 60 * 60 * 24 * 10 //10 days
     }
 }
