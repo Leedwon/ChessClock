@@ -52,7 +52,7 @@ class InAppReviewUseCaseTest {
     fun `should get null when clock interaction is less than threshold`() = runBlocking {
         val useCase = createUseCase()
 
-        mockClockInteractionCounter(0) // 4 is a threshold
+        mockClockInteractionCounter(0) // 8 is a threshold
 
         currentTimeMillis = 1_000L * 60 * 60 * 24 * 10 + 1 //10 days + 1s, 10 days is a threshold
         mockLastInAppReviewShowMillis(0)
@@ -64,7 +64,7 @@ class InAppReviewUseCaseTest {
     fun `should get null when last in app review show time is less than threshold`() = runBlocking {
         val useCase = createUseCase()
 
-        mockClockInteractionCounter(4) //4 is a threshold
+        mockClockInteractionCounter(8) //8 is a threshold
 
         currentTimeMillis = 1_000L * 60 * 60 * 24 * 10 - 1 //10 days - 1s, 10 days is a threshold
         mockLastInAppReviewShowMillis(0)
@@ -76,7 +76,7 @@ class InAppReviewUseCaseTest {
     fun `should get in app review info`() = runBlocking {
         val useCase = createUseCase()
 
-        mockClockInteractionCounter(4) // 4 is a threshold
+        mockClockInteractionCounter(8) // 8 is a threshold
 
         currentTimeMillis = 1_000L * 60 * 60 * 24 * 10 + 1 //10 days + 1s, 10 days is a threshold
         mockLastInAppReviewShowMillis(0)
@@ -88,7 +88,7 @@ class InAppReviewUseCaseTest {
     fun `should get in app review info for the first time`() = runBlocking {
         val useCase = createUseCase()
 
-        mockClockInteractionCounter(4) //4 is a threshold
+        mockClockInteractionCounter(8) //8 is a threshold
 
         currentTimeMillis = 1
         mockLastInAppReviewShowMillis(null)
