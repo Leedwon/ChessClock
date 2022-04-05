@@ -14,7 +14,7 @@ android {
 
     def major = 1
     def minor = 4
-    def patch = 0
+    def patch = 1
 
     defaultConfig {
         applicationId "com.ledwon.jakub.chessclock"
