@@ -21,6 +21,7 @@ import com.ledwon.jakub.chessclock.R
 import com.ledwon.jakub.chessclock.navigation.NavigationActions
 import com.ledwon.jakub.chessclock.navigation.OpenClockPayload
 import com.ledwon.jakub.chessclock.util.showInAppReviewIfPossible
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -49,7 +50,11 @@ fun ChooseClockScreen(navigationActions: NavigationActions, chooseClockViewModel
                 is ChooseClockViewModel.Command.NavigateToCreateClock -> navigationActions.openCreateClock()
                 is ChooseClockViewModel.Command.NavigateToSettings -> navigationActions.openSettings()
                 is ChooseClockViewModel.Command.ShowInAppReview -> lifecycleOwner.lifecycleScope.launch {
-                    context.showInAppReviewIfPossible(command.reviewInfo)
+                    try {
+                        context.showInAppReviewIfPossible(command.reviewInfo)
+                    } catch (exception: Exception) {
+                        if (exception is CancellationException) throw exception
+                    }
                 }
                 ChooseClockViewModel.Command.ShowClocksRemovedMessage -> lifecycleOwner.lifecycleScope.launch {
                     scaffoldState.snackbarHostState.showSnackbar(removedClocksMessage)
