@@ -12,18 +12,18 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class ClockRepositoryTest {
 
     @MockK
     private lateinit var dbInteractorMock: DatabaseInteractor
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private val testDispatcher = TestCoroutineDispatcher()
+    private val testDispatcher = StandardTestDispatcher()
 
     @Before
     fun setUp() {
@@ -35,9 +35,8 @@ class ClockRepositoryTest {
         ioDispatcher = testDispatcher
     )
 
-    @ExperimentalCoroutinesApi
     @Test
-    fun `should get all clocks`() = runBlockingTest {
+    fun `should get all clocks`() = runTest(testDispatcher) {
         val clocks = listOf(
             Clock(
                 id = 1,
