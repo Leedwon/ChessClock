@@ -17,13 +17,12 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
@@ -41,11 +40,12 @@ class ClockViewModelTest {
 
     private var millis = 0L
 
-    private val testDispatcher = TestCoroutineDispatcher()
+    private val mainDispatcher = StandardTestDispatcher()
+    private val defaultDispatcher = StandardTestDispatcher()
 
     @Before
     fun setUp() {
-        Dispatchers.setMain(testDispatcher)
+        Dispatchers.setMain(mainDispatcher)
 
         millis = 0L
 
@@ -53,6 +53,11 @@ class ClockViewModelTest {
         mockPulsationEnabled(true)
         mockPositionRandomizer()
         mockClockDisplay()
+    }
+
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
     }
 
     @Test
@@ -68,7 +73,7 @@ class ClockViewModelTest {
 
     @Test
     fun `should randomize positions`() = vmTestCase {
-        every { settingsRepository.randomizePosition } returns flowOf(true).flowOn(testDispatcher)
+        every { settingsRepository.randomizePosition } returns flowOf(true)
 
         mockPositionRandomizer(
             listOf(
@@ -81,13 +86,12 @@ class ClockViewModelTest {
         )
 
         //pausing because randomization is done in vm's init block, we want to first collect state (by .test) and then resume
-        testDispatcher.pauseDispatcher()
         val vm = createViewModel()
 
         vm.state.test {
             awaitItem().should.beEqualTo(createState())
 
-            testDispatcher.resumeDispatcher()
+            defaultDispatcher.scheduler.runCurrent()
             clockState = ClockState.RandomizingPositions
             awaitItem().should.beEqualTo(createState())
 
@@ -110,10 +114,7 @@ class ClockViewModelTest {
 
     @Test
     fun `should correctly stop position randomization`() = vmTestCase {
-        val delayDispatcher = TestCoroutineDispatcher()
         every { settingsRepository.randomizePosition } returns flowOf(true)
-            .onEach { delay(100) }
-            .flowOn(delayDispatcher)
 
         val positions = MutableStateFlow(White to Black)
 
@@ -123,24 +124,34 @@ class ClockViewModelTest {
 
         vm.state.test {
             awaitItem().should.beEqualTo(createState())
-            delayDispatcher.advanceTimeBy(100)
+
+            defaultDispatcher.scheduler.runCurrent()
+
             clockState = ClockState.RandomizingPositions
             awaitItem().should.beEqualTo(createState())
 
             positions.value = Black to White
+            defaultDispatcher.scheduler.runCurrent()
+
             playersDisplayOrder = Black to White
             awaitItem().should.beEqualTo(createState())
 
             positions.value = White to Black
+            defaultDispatcher.scheduler.runCurrent()
+
             playersDisplayOrder = White to Black
             awaitItem().should.beEqualTo(createState())
 
             positions.value = Black to White
+            defaultDispatcher.scheduler.runCurrent()
+
             playersDisplayOrder = Black to White
             awaitItem().should.beEqualTo(createState())
 
             vm.cancelRandomization()
+
             positions.value = White to Black
+            defaultDispatcher.scheduler.runCurrent()
 
             clockState = ClockState.BeforeStarted
             awaitItem().should.beEqualTo(createState())
@@ -162,6 +173,7 @@ class ClockViewModelTest {
             white = white.copy(isActive = true)
 
             awaitItem().should.beEqualTo(createState())
+            println("123")
         }
     }
 
@@ -182,6 +194,7 @@ class ClockViewModelTest {
             awaitItem().should.beEqualTo(createState())
 
             advanceTimeBy(100)
+            defaultDispatcher.scheduler.runCurrent()
 
             white = white.copy(
                 text = "00:59".toDeferrableString(),
@@ -233,6 +246,7 @@ class ClockViewModelTest {
             awaitItem().should.beEqualTo(createState())
 
             advanceTimeBy(100)
+            defaultDispatcher.scheduler.runCurrent()
 
             white = white.copy(
                 text = "00:59".toDeferrableString(),
@@ -277,6 +291,7 @@ class ClockViewModelTest {
             awaitItem().should.beEqualTo(createState())
 
             advanceTimeBy(100)
+            defaultDispatcher.scheduler.runCurrent()
 
             white = white.copy(
                 text = "00:59".toDeferrableString(),
@@ -290,6 +305,7 @@ class ClockViewModelTest {
             awaitItem().should.beEqualTo(createState())
 
             advanceTimeBy(100)
+            defaultDispatcher.scheduler.runCurrent()
 
             vm.resumeClock()
 
@@ -297,6 +313,7 @@ class ClockViewModelTest {
             awaitItem().should.beEqualTo(createState())
 
             advanceTimeBy(100)
+            defaultDispatcher.scheduler.runCurrent()
 
             white = white.copy(percentageLeft = 59_800F / 60_000F)
             awaitItem().should.beEqualTo(createState())
@@ -311,12 +328,24 @@ class ClockViewModelTest {
 
         vm.command.test {
             vm.clockClicked(white)
+            mainDispatcher.scheduler.runCurrent()
+
             advanceTimeBy(100)
+            defaultDispatcher.scheduler.runCurrent()
+
             vm.pauseClock()
+
             advanceTimeBy(100)
+            defaultDispatcher.scheduler.runCurrent()
+
             vm.resumeClock()
+
             advanceTimeBy(100)
+            defaultDispatcher.scheduler.runCurrent()
+
             vm.clockClicked(white)
+            mainDispatcher.scheduler.runCurrent()
+
             vm.pauseClock()
             vm.showStats()
 
@@ -352,7 +381,7 @@ class ClockViewModelTest {
         )
     }
 
-    private fun vmTestCase(testBlock: suspend VmTestCase.() -> Unit) = runBlocking {
+    private fun vmTestCase(testBlock: suspend VmTestCase.() -> Unit) = runTest {
         val vmTestCase = VmTestCase()
         testBlock(vmTestCase)
     }
@@ -366,7 +395,7 @@ class ClockViewModelTest {
             white = white,
             black = black,
             movesTracker = MovesTracker(currentMillisProvider),
-            defaultDispatcher = testDispatcher,
+            defaultDispatcher = defaultDispatcher,
             currentTimeMillisProvider = currentMillisProvider,
             intervalMillis = 100,
         )
@@ -376,12 +405,12 @@ class ClockViewModelTest {
             settingsRepository = settingsRepository,
             analyticsManager = analyticsManager,
             positionRandomizer = positionRandomizer,
-            defaultDispatcher = testDispatcher,
+            defaultDispatcher = defaultDispatcher,
         )
     }
 
     private fun mockPositionRandomizer(values: List<Pair<PlayerColor, PlayerColor>> = listOf(White to Black)) {
-        every { positionRandomizer.randomizePositions() } returns values.asFlow().flowOn(testDispatcher)
+        every { positionRandomizer.randomizePositions() } returns values.asFlow().flowOn(defaultDispatcher)
     }
 
     private fun mockPositionRandomizationEnabled(value: Boolean) {
@@ -398,6 +427,6 @@ class ClockViewModelTest {
 
     private fun advanceTimeBy(period: Long) {
         millis += period
-        testDispatcher.advanceTimeBy(period)
+        defaultDispatcher.scheduler.advanceTimeBy(period)
     }
 }
