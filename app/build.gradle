@@ -19,7 +19,7 @@ android {
     defaultConfig {
         applicationId "com.ledwon.jakub.chessclock"
         minSdkVersion 23
-        targetSdkVersion 31
+        targetSdkVersion 33
         versionCode major * 100 + minor * 10 + patch
         versionName "$major.$minor.$patch"
 
