@@ -7,6 +7,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlin.math.abs
 import kotlin.random.Random
 
 class PositionRandomizer(
@@ -16,7 +17,8 @@ class PositionRandomizer(
 
     fun randomizePositions(minRandomRounds: Int = 9): Flow<Pair<PlayerColor, PlayerColor>> = flow {
         var value = PlayerColor.White to PlayerColor.Black
-        val rounds = (randomNumberProvider() * 100 % 2 + minRandomRounds)
+        val rand = randomNumberProvider()
+        val rounds = (abs(rand % 2) + minRandomRounds)
 
         emit(value)
         var currentRound = 0
