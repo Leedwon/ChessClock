@@ -10,14 +10,14 @@ import com.ledwon.jakub.chessclock.util.ResDeferrableString
 import com.ledwon.jakub.chessclock.util.toDeferrableString
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.StandardTestDispatcher
 import org.junit.Before
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class GameTest {
 
-    private val testDispatcher = TestCoroutineDispatcher()
+    private val testDispatcher = StandardTestDispatcher()
     private val movesTracker = MovesTracker(currentTimeMillisProvider = { millis })
     private val interval = 100L
 
@@ -70,6 +70,8 @@ class GameTest {
 
                 repeat(10) {
                     advanceTimeBy(interval)
+                    testDispatcher.scheduler.runCurrent()
+
                     white = PlayerUiState(
                         "00:59".toDeferrableString(),
                         percentageLeft = (60_000.toFloat() - interval * (it + 1)) / 60_000,
@@ -89,7 +91,10 @@ class GameTest {
 
                 repeat(15) {
                     val timePassed = it + 1
+
                     advanceTimeBy(interval)
+                    testDispatcher.scheduler.runCurrent()
+
                     val text = if (timePassed <= 10) "00:59".toDeferrableString() else "00:58".toDeferrableString()
                     black = PlayerUiState(
                         text = text,
@@ -127,6 +132,8 @@ class GameTest {
 
                 repeat(5) {
                     advanceTimeBy(interval)
+                    testDispatcher.scheduler.runCurrent()
+
                     white = PlayerUiState(
                         "00:59".toDeferrableString(),
                         percentageLeft = (60_000.toFloat() - interval * (it + 1)) / 60_000,
@@ -140,6 +147,7 @@ class GameTest {
                 awaitItem().should.beEqualTo(createState())
 
                 advanceTimeBy(500)
+                testDispatcher.scheduler.runCurrent()
 
                 resume()
                 clockState = ClockState.Running
@@ -147,6 +155,8 @@ class GameTest {
 
                 repeat(5) {
                     advanceTimeBy(interval)
+                    testDispatcher.scheduler.runCurrent()
+
                     white = PlayerUiState(
                         "00:59".toDeferrableString(),
                         percentageLeft = (59_500.toFloat() - interval * (it + 1)) / 60_000,
@@ -185,6 +195,7 @@ class GameTest {
                 awaitItem().should.beEqualTo(createState())
 
                 advanceTimeBy(100)
+                testDispatcher.scheduler.runCurrent()
 
                 white = PlayerUiState(
                     "00:59".toDeferrableString(),
@@ -210,6 +221,7 @@ class GameTest {
                 awaitItem().should.beEqualTo(createState())
 
                 advanceTimeBy(100)
+                testDispatcher.scheduler.runCurrent()
 
                 black = PlayerUiState(
                     "00:59".toDeferrableString(),
@@ -256,7 +268,10 @@ class GameTest {
 
                 repeat(20) {
                     val timePassed = it + 1
+
                     advanceTimeBy(interval)
+                    testDispatcher.scheduler.runCurrent()
+
                     val text = when {
                         timePassed <= 10 -> "00:01".toDeferrableString()
                         timePassed == 20 -> ResDeferrableString(R.string.black_wins)
@@ -292,6 +307,7 @@ class GameTest {
                 awaitItem().should.beEqualTo(createState())
 
                 advanceTimeBy(interval)
+                testDispatcher.scheduler.runCurrent()
 
                 white = PlayerUiState(
                     "00:59".toDeferrableString(),
@@ -376,7 +392,7 @@ class GameTest {
     //order of execution matters details in Game class
     private fun advanceTimeBy(intervalMillis: Long) {
         millis += intervalMillis
-        testDispatcher.advanceTimeBy(intervalMillis)
+        testDispatcher.scheduler.advanceTimeBy(intervalMillis)
     }
 
     companion object {
