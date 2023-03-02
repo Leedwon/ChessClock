@@ -81,8 +81,8 @@ fun SettingsScreen(navigationActions: NavigationActions, settingsViewModel: Sett
                 }
             )
         }
-    ) {
-        LazyColumn(modifier = Modifier.padding(16.dp)) {
+    ) { contentPadding ->
+        LazyColumn(modifier = Modifier.padding(contentPadding).padding(16.dp)) {
             item { SettingHeader(modifier = Modifier.padding(bottom = 8.dp), text = stringResource(R.string.dark_mode_option)) }
             item {
                 Row(
