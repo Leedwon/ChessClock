@@ -74,7 +74,7 @@ fun CreateClockScreen(navigationActions: NavigationActions, createClockViewModel
     val lifecycleObserver = LocalLifecycleOwner.current
 
     LaunchedEffect(Unit) {
-        createClockViewModel.command.observe(lifecycleObserver, {
+        createClockViewModel.command.observe(lifecycleObserver) {
             when (it) {
                 is CreateClockViewModel.Command.NavigateToClock -> {
                     navigationActions.openClock(
@@ -93,7 +93,7 @@ fun CreateClockScreen(navigationActions: NavigationActions, createClockViewModel
                     //noop
                 }
             }
-        })
+        }
     }
 
     val clocksMerged = createClockViewModel.clocksMerged.collectAsState()
