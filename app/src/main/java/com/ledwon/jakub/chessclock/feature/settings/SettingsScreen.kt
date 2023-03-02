@@ -23,7 +23,6 @@ import com.ledwon.jakub.chessclock.R
 import com.ledwon.jakub.chessclock.data.repository.AppColorThemeType
 import com.ledwon.jakub.chessclock.data.repository.AppDarkTheme
 import com.ledwon.jakub.chessclock.feature.common.ClockDisplay
-import com.ledwon.jakub.chessclock.feature.common.exhaustive
 import com.ledwon.jakub.chessclock.navigation.NavigationActions
 import com.ledwon.jakub.chessclock.util.LocalIsDarkMode
 
@@ -65,7 +64,7 @@ fun SettingsScreen(navigationActions: NavigationActions, settingsViewModel: Sett
                 is SettingsViewModel.Command.Noop -> {
 
                 }
-            }.exhaustive
+            }
         }
     }
 
@@ -81,8 +80,8 @@ fun SettingsScreen(navigationActions: NavigationActions, settingsViewModel: Sett
                 }
             )
         }
-    ) {
-        LazyColumn(modifier = Modifier.padding(16.dp)) {
+    ) { contentPadding ->
+        LazyColumn(modifier = Modifier.padding(contentPadding).padding(16.dp)) {
             item { SettingHeader(modifier = Modifier.padding(bottom = 8.dp), text = stringResource(R.string.dark_mode_option)) }
             item {
                 Row(

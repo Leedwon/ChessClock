@@ -35,11 +35,20 @@ fun StatsScreen(actions: NavigationActions, viewModel: StatsViewModel) {
                 }
             )
         }
-    ) {
-
+    ) { contentPadding ->
         when (val data = viewModel.data) {
-            StatsViewModel.Stats.Empty -> EmptyStats()
-            is StatsViewModel.Stats.Data -> Stats(data)
+            StatsViewModel.Stats.Empty -> EmptyStats(
+                Modifier
+                    .fillMaxSize()
+                    .padding(contentPadding)
+            )
+
+            is StatsViewModel.Stats.Data -> Stats(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(contentPadding),
+                data = data
+            )
         }
     }
 }
@@ -55,10 +64,11 @@ fun StatsDivider() {
 
 @Composable
 fun Stats(
+    modifier: Modifier = Modifier,
     data: StatsViewModel.Stats.Data
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         MovesStats(
@@ -82,11 +92,9 @@ fun Stats(
 }
 
 @Composable
-fun EmptyStats() {
+fun EmptyStats(modifier: Modifier = Modifier) {
     Row(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = darkGray),
+        modifier = modifier.background(color = darkGray),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
