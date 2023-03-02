@@ -24,6 +24,7 @@ import com.ledwon.jakub.chessclock.util.toDeferrableString
 
 @Composable
 fun CircleAnimatedClock(
+    modifier: Modifier = Modifier,
     playersDisplay: Pair<PlayerDisplay, PlayerDisplay>,
     rotations: Pair<Float, Float>,
     onClockButtonClick: (PlayerDisplay) -> Unit,
@@ -48,7 +49,7 @@ fun CircleAnimatedClock(
 
     val circleSize = remember { height / 2 * 0.75f }
 
-    Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceAround) {
+    Column(modifier = modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceAround) {
         val btnModifier = Modifier
             .weight(1f)
             .fillMaxWidth()

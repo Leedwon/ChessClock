@@ -13,6 +13,7 @@ import com.ledwon.jakub.chessclock.feature.clock.model.PlayerDisplay
 
 @Composable
 fun OwnPlayerTimeClock(
+    modifier: Modifier = Modifier,
     playersDisplay: Pair<PlayerDisplay, PlayerDisplay>,
     rotations: Pair<Float, Float>,
     onClockButtonClick: (PlayerDisplay) -> Unit,
@@ -33,7 +34,7 @@ fun OwnPlayerTimeClock(
         35f
     }
 
-    Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceAround) {
+    Column(modifier = modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceAround) {
         val btnModifier = Modifier
             .weight(1f)
             .fillMaxWidth()

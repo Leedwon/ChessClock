@@ -1,9 +1,11 @@
 package com.ledwon.jakub.chessclock.feature.clock_preview
 
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -63,7 +65,7 @@ fun ClockPreviewScreen(navigationActions: NavigationActions, clockPreviewViewMod
                 }
             )
         }
-    ) {
+    ) { contentPadding ->
         if (clockType == null) {
             return@Scaffold
         }
@@ -95,21 +97,26 @@ fun ClockPreviewScreen(navigationActions: NavigationActions, clockPreviewViewMod
         when (clockType.display) {
             is ClockDisplay.OwnPlayerTimeClock -> {
                 OwnPlayerTimeClock(
+                    modifier = Modifier.padding(contentPadding),
                     playersDisplay = playersDisplay,
                     rotations = clockType.display.rotations,
                     onClockButtonClick = { /* no-op */ },
                     pulsationEnabled = pulsationEnabled.value
                 )
             }
+
             is ClockDisplay.BothPlayersTimeClock -> {
                 BothPlayersTimeClock(
+                    modifier = Modifier.padding(contentPadding),
                     playersDisplay = playersDisplay,
                     onClockButtonClick = { /* no-op */ },
                     pulsationEnabled = pulsationEnabled.value
                 )
             }
+
             is ClockDisplay.CircleAnimatedClock -> {
                 CircleAnimatedClock(
+                    modifier = Modifier.padding(contentPadding),
                     playersDisplay = playersDisplay,
                     rotations = clockType.display.rotations,
                     onClockButtonClick = { /* no-op */ },

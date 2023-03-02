@@ -84,9 +84,11 @@ fun CreateClockScreen(navigationActions: NavigationActions, createClockViewModel
                         )
                     )
                 }
+
                 is CreateClockViewModel.Command.NavigateBack -> {
                     navigationActions.navigateBack()
                 }
+
                 is CreateClockViewModel.Command.Noop -> {
                     //noop
                 }
@@ -108,10 +110,11 @@ fun CreateClockScreen(navigationActions: NavigationActions, createClockViewModel
                 }
             )
         }
-    ) {
+    ) { contentPadding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(contentPadding)
                 .padding(vertical = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

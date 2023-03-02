@@ -16,6 +16,7 @@ import com.ledwon.jakub.chessclock.util.toDeferrableString
 
 @Composable
 fun BothPlayersTimeClock(
+    modifier: Modifier = Modifier,
     playersDisplay: Pair<PlayerDisplay, PlayerDisplay>,
     onClockButtonClick: (PlayerDisplay) -> Unit,
     pulsationEnabled: Boolean,
@@ -34,7 +35,7 @@ fun BothPlayersTimeClock(
         35f
     }
 
-    Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceAround) {
+    Column(modifier = modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceAround) {
         val btnModifier = Modifier
             .weight(1f)
             .fillMaxWidth()
