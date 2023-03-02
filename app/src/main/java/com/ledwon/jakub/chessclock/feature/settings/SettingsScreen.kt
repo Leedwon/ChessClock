@@ -23,7 +23,6 @@ import com.ledwon.jakub.chessclock.R
 import com.ledwon.jakub.chessclock.data.repository.AppColorThemeType
 import com.ledwon.jakub.chessclock.data.repository.AppDarkTheme
 import com.ledwon.jakub.chessclock.feature.common.ClockDisplay
-import com.ledwon.jakub.chessclock.feature.common.exhaustive
 import com.ledwon.jakub.chessclock.navigation.NavigationActions
 import com.ledwon.jakub.chessclock.util.LocalIsDarkMode
 
@@ -65,7 +64,7 @@ fun SettingsScreen(navigationActions: NavigationActions, settingsViewModel: Sett
                 is SettingsViewModel.Command.Noop -> {
 
                 }
-            }.exhaustive
+            }
         }
     }
 

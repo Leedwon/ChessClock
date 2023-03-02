@@ -14,7 +14,6 @@ import com.ledwon.jakub.chessclock.feature.clock.widget.BothPlayersTimeClock
 import com.ledwon.jakub.chessclock.feature.clock.widget.CircleAnimatedClock
 import com.ledwon.jakub.chessclock.feature.clock.widget.OwnPlayerTimeClock
 import com.ledwon.jakub.chessclock.feature.common.ClockDisplay
-import com.ledwon.jakub.chessclock.feature.common.exhaustive
 import com.ledwon.jakub.chessclock.navigation.NavigationActions
 import com.ledwon.jakub.chessclock.util.ResDeferrableString
 import kotlinx.coroutines.launch
@@ -29,7 +28,7 @@ fun ClockPreviewScreen(navigationActions: NavigationActions, clockPreviewViewMod
         clockPreviewViewModel.command.observe(lifecycleObserver) {
             when (it) {
                 is ClockPreviewViewModel.Command.NavigateBack -> navigationActions.navigateBack()
-            }.exhaustive
+            }
         }
     }
 
@@ -117,6 +116,6 @@ fun ClockPreviewScreen(navigationActions: NavigationActions, clockPreviewViewMod
                     pulsationEnabled = pulsationEnabled.value
                 )
             }
-        }.exhaustive
+        }
     }
 }
