@@ -58,10 +58,11 @@ fun RotatingDice(modifier: Modifier = Modifier, onDiceClick: (() -> Unit)? = nul
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
+        val index = diceIndex.value.toInt().coerceIn(0..images.lastIndex)
         Icon(
             modifier = Modifier.rotate(rotation.value),
             contentDescription = null,
-            painter = images[diceIndex.value.toInt()],
+            painter = images[index],
             tint = Color.Green
         )
     }
