@@ -13,8 +13,8 @@ android {
     buildToolsVersion "30.0.3"
 
     def major = 1
-    def minor = 4
-    def patch = 3
+    def minor = 5
+    def patch = 0
 
     defaultConfig {
         applicationId "com.ledwon.jakub.chessclock"
