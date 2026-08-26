@@ -118,6 +118,7 @@ class CreateClockViewModel(
     }
 
     fun onStartGameClick() {
+        if (!_state.value.hasPositiveDuration) return
         navigateToClock()
         analyticsManager.logEvent(AnalyticsEvent.OpenClockFromCreateClock(clock = buildClockFromState()))
     }
@@ -132,6 +133,7 @@ class CreateClockViewModel(
     }
 
     fun onSaveClockClick() {
+        if (!_state.value.hasPositiveDuration) return
         viewModelScope.launch(Dispatchers.IO) {
             val clock = buildClockFromState()
             clockRepository.addClock(clock)
@@ -142,6 +144,7 @@ class CreateClockViewModel(
     }
 
     fun onStartGameAndSaveClockClick() {
+        if (!_state.value.hasPositiveDuration) return
         val clock = buildClockFromState()
         viewModelScope.launch(Dispatchers.IO) {
             clockRepository.addClock(clock)
@@ -153,6 +156,9 @@ class CreateClockViewModel(
     fun onBackClick() {
         _command.value = Command.NavigateBack
     }
+
+    private val CreateClockState.hasPositiveDuration: Boolean
+        get() = whiteClock.secondsSum > 0 && blackClock.secondsSum > 0
 
     sealed class Command {
         data class NavigateToClock(val state: CreateClockState) : Command()
