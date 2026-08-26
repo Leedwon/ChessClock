@@ -1,14 +1,18 @@
 package com.ledwon.jakub.chessclock.feature.clock_preview
 
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.Observer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import com.ledwon.jakub.chessclock.R
 import com.ledwon.jakub.chessclock.feature.clock.model.PlayerDisplay
@@ -26,12 +30,14 @@ fun ClockPreviewScreen(navigationActions: NavigationActions, clockPreviewViewMod
 
     val lifecycleObserver = LocalLifecycleOwner.current
 
-    LaunchedEffect(Unit) {
-        clockPreviewViewModel.command.observe(lifecycleObserver) {
+    DisposableEffect(lifecycleObserver) {
+        val observer = Observer<ClockPreviewViewModel.Command> {
             when (it) {
                 is ClockPreviewViewModel.Command.NavigateBack -> navigationActions.navigateBack()
             }
         }
+        clockPreviewViewModel.command.observe(lifecycleObserver, observer)
+        onDispose { clockPreviewViewModel.command.removeObserver(observer) }
     }
 
     val pulsationEnabled = clockPreviewViewModel.pulsationEnabled.collectAsState(true)
@@ -56,6 +62,8 @@ fun ClockPreviewScreen(navigationActions: NavigationActions, clockPreviewViewMod
         scaffoldState = scaffoldState,
         topBar = {
             TopAppBar(
+                modifier = Modifier.background(MaterialTheme.colors.primaryVariant).statusBarsPadding(),
+                elevation = 0.dp,
                 title = { Text(stringResource(R.string.clock_preview_title)) },
                 navigationIcon = {
                     val backIcon = painterResource(id = R.drawable.ic_arrow_back_24)

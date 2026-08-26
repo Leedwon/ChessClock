@@ -65,7 +65,7 @@ fun MoveBars(modifier: Modifier = Modifier, moves: List<Move>) {
     LazyColumn(modifier.fillMaxWidth()) {
         items(moves) { move ->
             MoveBar(
-                widthFraction = move.ratioToSlowestMove?.let { it - 0.1f } ?: 0.0f,
+                widthFraction = move.ratioToSlowestMove?.minus(0.1f)?.coerceAtLeast(0f) ?: 0f,
                 move = move
             )
         }
