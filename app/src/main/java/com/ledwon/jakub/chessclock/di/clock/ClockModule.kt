@@ -4,7 +4,7 @@ import com.ledwon.jakub.chessclock.feature.clock.*
 import com.ledwon.jakub.chessclock.feature.clock.model.ClockInitialData
 import com.ledwon.jakub.chessclock.feature.clock.util.PauseClock
 import kotlinx.coroutines.Dispatchers
-import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
 

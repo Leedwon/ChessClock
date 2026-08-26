@@ -5,7 +5,7 @@ import com.ledwon.jakub.chessclock.feature.choose_clock.ChooseClockViewModel
 import com.ledwon.jakub.chessclock.feature.choose_clock.InAppReviewUseCase
 import com.ledwon.jakub.chessclock.feature.choose_clock.ReviewManagerWrapper
 import com.ledwon.jakub.chessclock.feature.choose_clock.ReviewManagerWrapperImpl
-import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val chooseClockModule = module {
