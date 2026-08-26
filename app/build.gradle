@@ -31,10 +31,12 @@ android {
 
     signingConfigs {
         release {
-            storeFile file(signingProperties.getProperty("storeFile", ""))
-            storePassword signingProperties.getProperty("storePassword", "")
-            keyAlias signingProperties.getProperty("keyAlias", "")
-            keyPassword signingProperties.getProperty("keyPassword", "")
+            if (signingPropertiesFile.exists()) {
+                storeFile file(signingProperties.getProperty("storeFile"))
+                storePassword signingProperties.getProperty("storePassword")
+                keyAlias signingProperties.getProperty("keyAlias")
+                keyPassword signingProperties.getProperty("keyPassword")
+            }
         }
     }
 
