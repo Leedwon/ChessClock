@@ -69,6 +69,11 @@ class GameUtilTest {
                 millisLeft = 250,
                 expected = 0.25f
             ),
+            TestPercentageData(
+                player = Player(0),
+                millisLeft = 0,
+                expected = 0f
+            ),
         )
 
         testData.forEach { it.assertPercentage() }

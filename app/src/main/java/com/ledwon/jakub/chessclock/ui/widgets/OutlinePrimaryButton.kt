@@ -13,11 +13,13 @@ import androidx.compose.ui.unit.dp
 inline fun OutlinePrimaryButton(
     noinline onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     noinline content: @Composable RowScope.() -> Unit
 ) {
     OutlinedButton(
         onClick = onClick,
         modifier = modifier,
+        enabled = enabled,
         shape = RoundedCornerShape(25),
         border = BorderStroke(1.dp, MaterialTheme.colors.primary)
     ) {

@@ -9,12 +9,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.Observer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -40,8 +42,8 @@ fun SettingsScreen(navigationActions: NavigationActions, settingsViewModel: Sett
     val context = LocalContext.current
     val lifecycleObserver = LocalLifecycleOwner.current
 
-    LaunchedEffect(Unit) {
-        settingsViewModel.command.observe(lifecycleObserver) {
+    DisposableEffect(lifecycleObserver) {
+        val observer = Observer<SettingsViewModel.Command> {
             //todo move links to build config
             when (it) {
                 is SettingsViewModel.Command.NavigateBack -> navigationActions.navigateBack()
@@ -51,12 +53,19 @@ fun SettingsScreen(navigationActions: NavigationActions, settingsViewModel: Sett
                     context.startActivity(intent)
                 }
                 is SettingsViewModel.Command.RateApp -> {
-                    context.startActivity(
+                    val marketIntent = Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("market://details?id=com.ledwon.jakub.chessclock")
+                    )
+                    val intent = if (marketIntent.resolveActivity(context.packageManager) != null) {
+                        marketIntent
+                    } else {
                         Intent(
                             Intent.ACTION_VIEW,
-                            Uri.parse("market://details?id=com.ledwon.jakub.chessclock")
+                            Uri.parse("https://play.google.com/store/apps/details?id=com.ledwon.jakub.chessclock")
                         )
-                    )
+                    }
+                    context.startActivity(intent)
                 }
                 is SettingsViewModel.Command.OpenClockPreview -> {
                     navigationActions.openClockDisplayPreview(it.clockDisplayTypeId)
@@ -66,11 +75,15 @@ fun SettingsScreen(navigationActions: NavigationActions, settingsViewModel: Sett
                 }
             }
         }
+        settingsViewModel.command.observe(lifecycleObserver, observer)
+        onDispose { settingsViewModel.command.removeObserver(observer) }
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
+                modifier = Modifier.background(MaterialTheme.colors.primaryVariant).statusBarsPadding(),
+                elevation = 0.dp,
                 title = { Text(text = stringResource(R.string.settings_title)) },
                 navigationIcon = {
                     val backIcon = painterResource(id = R.drawable.ic_arrow_back_24)

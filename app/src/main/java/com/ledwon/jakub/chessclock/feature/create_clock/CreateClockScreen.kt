@@ -8,7 +8,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.Observer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -73,8 +74,8 @@ fun CreateClockScreen(navigationActions: NavigationActions, createClockViewModel
 
     val lifecycleObserver = LocalLifecycleOwner.current
 
-    LaunchedEffect(Unit) {
-        createClockViewModel.command.observe(lifecycleObserver) {
+    DisposableEffect(lifecycleObserver) {
+        val observer = Observer<CreateClockViewModel.Command> {
             when (it) {
                 is CreateClockViewModel.Command.NavigateToClock -> {
                     navigationActions.openClock(
@@ -94,13 +95,19 @@ fun CreateClockScreen(navigationActions: NavigationActions, createClockViewModel
                 }
             }
         }
+        createClockViewModel.command.observe(lifecycleObserver, observer)
+        onDispose { createClockViewModel.command.removeObserver(observer) }
     }
 
     val clocksMerged = createClockViewModel.clocksMerged.collectAsState()
+    val createClockState = createClockViewModel.state.collectAsState()
+    val hasPositiveDuration = createClockState.value.whiteClock.secondsSum > 0 && createClockState.value.blackClock.secondsSum > 0
 
     Scaffold(
         topBar = {
             TopAppBar(
+                modifier = Modifier.background(MaterialTheme.colors.primaryVariant).statusBarsPadding(),
+                elevation = 0.dp,
                 title = { Text(text = stringResource(R.string.create_clock_title)) },
                 navigationIcon = {
                     val backIcon = painterResource(id = R.drawable.ic_arrow_back_24)
@@ -184,15 +191,22 @@ fun CreateClockScreen(navigationActions: NavigationActions, createClockViewModel
                         .padding(16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    OutlinePrimaryButton(onClick = createClockViewModel::onStartGameClick) {
+                    OutlinePrimaryButton(
+                        onClick = createClockViewModel::onStartGameClick,
+                        enabled = hasPositiveDuration
+                    ) {
                         Text(stringResource(R.string.start), fontSize = 19.sp)
                     }
                     OutlinePrimaryButton(
-                        onClick = createClockViewModel::onStartGameAndSaveClockClick
+                        onClick = createClockViewModel::onStartGameAndSaveClockClick,
+                        enabled = hasPositiveDuration
                     ) {
                         Text(stringResource(R.string.start_and_save), fontSize = 19.sp)
                     }
-                    OutlinePrimaryButton(onClick = createClockViewModel::onSaveClockClick) {
+                    OutlinePrimaryButton(
+                        onClick = createClockViewModel::onSaveClockClick,
+                        enabled = hasPositiveDuration
+                    ) {
                         Text(stringResource(R.string.save), fontSize = 19.sp)
                     }
                 }
@@ -266,4 +280,3 @@ fun TimePickerWithDescription(
         )
     }
 }
-

@@ -104,4 +104,13 @@ class StatsViewModelTest {
             )
         )
     }
+
+    @Test
+    fun `zero duration moves should have a zero ratio`() {
+        init(listOf(0L, 0L))
+
+        val data = viewModel.data as StatsViewModel.Stats.Data
+
+        data.moves.map { it.ratioToSlowestMove }.should.beEqualTo(listOf(0f, 0f))
+    }
 }

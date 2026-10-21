@@ -30,7 +30,8 @@ object GameUtil {
         }
 
     @FloatRange(from = 0.0, to = 1.0, fromInclusive = true, toInclusive = true)
-    fun Player.percentageLeft(millisLeft: Long): Float = millisLeft.toFloat() / millis
+    fun Player.percentageLeft(millisLeft: Long): Float =
+        if (millis <= 0) 0f else millisLeft.toFloat() / millis
 
     /**
      * Get hours from millis

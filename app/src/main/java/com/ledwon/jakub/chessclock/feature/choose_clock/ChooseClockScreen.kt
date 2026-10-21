@@ -1,6 +1,7 @@
 package com.ledwon.jakub.chessclock.feature.choose_clock
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -12,7 +13,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -110,6 +111,8 @@ private fun ChooseClockTopBar(
     onSettingsClick: () -> Unit,
 ) {
     TopAppBar(
+        modifier = Modifier.background(MaterialTheme.colors.primaryVariant).statusBarsPadding(),
+        elevation = 0.dp,
         title = { Text(text = stringResource(R.string.choose_clock_title)) },
         actions = {
             when (isSelectableModeOn) {

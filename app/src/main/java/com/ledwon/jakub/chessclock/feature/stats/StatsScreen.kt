@@ -26,6 +26,8 @@ fun StatsScreen(actions: NavigationActions, viewModel: StatsViewModel) {
         backgroundColor = darkGray,
         topBar = {
             TopAppBar(
+                modifier = Modifier.background(MaterialTheme.colors.primaryVariant).statusBarsPadding(),
+                elevation = 0.dp,
                 title = { Text(text = stringResource(R.string.stats)) },
                 navigationIcon = {
                     val backIcon = painterResource(id = R.drawable.ic_arrow_back_24)

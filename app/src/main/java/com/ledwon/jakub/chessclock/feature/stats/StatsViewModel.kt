@@ -18,7 +18,7 @@ class StatsViewModel(
             val moves = movesMillis.mapIndexed { index, value ->
                 Move(
                     millis = value,
-                    ratioToSlowestMove = value.toFloat() / slowestMoveMillis,
+                    ratioToSlowestMove = if (slowestMoveMillis > 0) value.toFloat() / slowestMoveMillis else 0f,
                     color = if (index % 2 == 0) PlayerColor.White else PlayerColor.Black
                 )
             }

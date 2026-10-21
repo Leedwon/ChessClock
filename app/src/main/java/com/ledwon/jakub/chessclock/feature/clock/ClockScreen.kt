@@ -1,6 +1,7 @@
 package com.ledwon.jakub.chessclock.feature.clock
 
 import android.view.WindowManager
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -41,12 +42,12 @@ fun ClockScreen(actions: NavigationActions, clockViewModel: ClockViewModel) {
 
     val window = LocalWindowProvider.current
 
-    DisposableEffect(key1 = Unit, effect = {
+    DisposableEffect(Unit) {
         window.addFlags((WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON))
         onDispose {
             window.clearFlags((WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON))
         }
-    })
+    }
 
     LaunchedEffect(Unit) {
         clockViewModel.command.collect { command ->
@@ -65,7 +66,13 @@ fun ClockScreen(actions: NavigationActions, clockViewModel: ClockViewModel) {
         is ClockDisplay.BothPlayersTimeClock -> 0f to 0f
     }
 
-    Box(contentAlignment = Alignment.Center) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black)
+            .statusBarsPadding(),
+        contentAlignment = Alignment.Center
+    ) {
         val clockEnabled =
             state.clockState != ClockState.Paused && state.clockState != ClockState.RandomizingPositions
         when (clockType.value) {
@@ -183,9 +190,5 @@ fun ClockScreen(actions: NavigationActions, clockViewModel: ClockViewModel) {
         }
     }
 }
-
-
-
-
 
 

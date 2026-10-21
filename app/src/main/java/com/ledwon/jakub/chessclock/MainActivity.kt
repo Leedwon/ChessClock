@@ -1,6 +1,9 @@
 package com.ledwon.jakub.chessclock
 
+import android.graphics.Color
 import android.os.Bundle
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -9,7 +12,6 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.toArgb
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -47,6 +49,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT)
+        )
         super.onCreate(savedInstanceState)
 
         setContent {
@@ -63,9 +69,6 @@ class MainActivity : AppCompatActivity() {
                 darkTheme = isDarkTheme,
                 colorTheme = appColorThemeState.value.value
             ) {
-                window.statusBarColor =
-                    appColorThemeState.value.value.colorTheme.darkColors.primaryVariant.toArgb()
-
                 CompositionLocalProvider(
                     LocalIsDarkMode provides isDarkTheme,
                     LocalWindowProvider provides window

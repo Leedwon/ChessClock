@@ -11,6 +11,8 @@ class ChessClock(
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default,
     private val currentTimeMillisProvider: () -> Long = { System.currentTimeMillis() }
 ) {
+    private val clockScope = CoroutineScope(SupervisorJob() + defaultDispatcher)
+
     private val gameClock = flow {
         delay(intervalMillis)
         while (true) {
@@ -31,7 +33,6 @@ class ChessClock(
     /**
      * Starts countdown clock, after calling start make sure to call stop when you don't need clock anymore
      */
-    @OptIn(DelicateCoroutinesApi::class)
     fun start() {
         endMillis.compareAndSet(NOT_INITIALIZED, currentTimeMillisProvider() + initialMillis)
 
@@ -41,9 +42,11 @@ class ChessClock(
         }
 
         clockJob?.cancel()
-        clockJob = GlobalScope.launch(defaultDispatcher) {
+        clockJob = clockScope.launch {
             gameClock.collect {
-                calculateTimeAndSet()
+                if (calculateTimeAndSet()) {
+                    cancel()
+                }
             }
         }
     }
@@ -82,11 +85,14 @@ class ChessClock(
         }
     }
 
-    private fun calculateTimeAndSet() {
+    private fun calculateTimeAndSet(): Boolean {
+        var expired = false
         _millisLeft.update {
             val newMillis = endMillis.get() - currentTimeMillisProvider()
-            if (newMillis >= 0) newMillis else 0
+            expired = newMillis <= 0
+            newMillis.coerceAtLeast(0)
         }
+        return expired
     }
 
     companion object {
